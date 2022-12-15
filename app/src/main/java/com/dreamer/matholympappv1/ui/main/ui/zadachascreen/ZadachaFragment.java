@@ -1,16 +1,19 @@
 package com.dreamer.matholympappv1.ui.main.ui.zadachascreen;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.placeholder.PlaceholderContent;
@@ -20,6 +23,8 @@ import com.dreamer.matholympappv1.placeholder.PlaceholderContent;
  */
 public class ZadachaFragment extends Fragment {
 
+    static final String TAG = "TAG";
+    NavController navController;
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
@@ -65,7 +70,21 @@ public class ZadachaFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyZadachaRecyclerViewAdapter(PlaceholderContent.ITEMS));
+            recyclerView.setAdapter(new MyZadachaRecyclerViewAdapter(PlaceholderContent.ITEMS, new MyZadachaRecyclerViewAdapter.MyAdapterListener() {
+                @Override
+                public void iconTextViewOnClick(View v, int position) {
+                    Log.e(TAG, "iconTextViewOnClick at position " + position);
+                }
+
+                @Override
+                public void iconImageViewOnClick(View v, int position) {
+                    Log.e(TAG, "iconImageViewOnClick at position " + position);
+                    Activity MainActivity = getActivity();
+                    assert MainActivity != null;
+                    navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+                    navController.navigate(R.id.action_zadachaFragment_to_scrollingFragment2);
+                }
+            }));
         }
         return view;
     }

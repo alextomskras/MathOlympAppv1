@@ -1,14 +1,14 @@
 package com.dreamer.matholympappv1.ui.main.ui.zadachascreen;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.dreamer.matholympappv1.placeholder.PlaceholderContent.PlaceholderItem;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.dreamer.matholympappv1.databinding.FragmentItemBinding;
+import com.dreamer.matholympappv1.placeholder.PlaceholderContent.PlaceholderItem;
 
 import java.util.List;
 
@@ -18,10 +18,21 @@ import java.util.List;
  */
 public class MyZadachaRecyclerViewAdapter extends RecyclerView.Adapter<MyZadachaRecyclerViewAdapter.ViewHolder> {
 
+    public MyAdapterListener onClickListener;
+
+    public MyZadachaRecyclerViewAdapter(List<PlaceholderItem> items, MyAdapterListener listener) {
+        mValues = items;
+        onClickListener = listener;
+    }
+
+
     private final List<PlaceholderItem> mValues;
 
-    public MyZadachaRecyclerViewAdapter(List<PlaceholderItem> items) {
-        mValues = items;
+    public interface MyAdapterListener {
+
+        void iconTextViewOnClick(View v, int position);
+
+        void iconImageViewOnClick(View v, int position);
     }
 
     @Override
@@ -54,7 +65,18 @@ public class MyZadachaRecyclerViewAdapter extends RecyclerView.Adapter<MyZadacha
             super(binding.getRoot());
             mIdView = binding.itemNumber;
             mContentView = binding.content;
-            
+            mIdView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.iconTextViewOnClick(v, getAdapterPosition());
+                }
+            });
+            mContentView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.iconImageViewOnClick(v, getAdapterPosition());
+                }
+            });
         }
 
         @Override

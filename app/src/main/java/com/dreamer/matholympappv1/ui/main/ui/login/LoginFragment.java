@@ -1,14 +1,5 @@
 package com.dreamer.matholympappv1.ui.main.ui.login;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,10 +15,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dreamer.matholympappv1.MainActivity;
-import com.dreamer.matholympappv1.databinding.FragmentLoginBinding;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.dreamer.matholympappv1.R;
+import com.dreamer.matholympappv1.databinding.FragmentLoginBinding;
 
 public class LoginFragment extends Fragment {
     NavController navController;
@@ -142,7 +140,9 @@ public class LoginFragment extends Fragment {
             Activity MainActivity = getActivity();
             assert MainActivity != null;
             navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+            navController.clearBackStack(R.id.loginFragment);
             navController.navigate(R.id.action_loginFragment_to_zadachaFragment);
+
         }
     }
 
