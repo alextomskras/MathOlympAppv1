@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.dreamer.matholympappv1.ui.main.ui.login.LoginFragment"
+        android:name="com.dreamer.matholympappv1.ui.ui.login.LoginFragment"
         android:label="login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/zadachaFragment"
-        android:name="com.dreamer.matholympappv1.ui.main.ui.zadachascreen.ZadachaFragment"
+        android:name="com.dreamer.matholympappv1.ui.ui.zadachascreen.ZadachaFragment"
         android:label="zadachi"
         tools:layout="@layout/fragment_item_list" >
         <action
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/scrollingFragment2"
-        android:name="com.dreamer.matholympappv1.ui.main.ui.scrollingscreen.ScrollingFragment"
+        android:name="com.dreamer.matholympappv1.ui.ui.scrollingscreen.ScrollingFragment"
         android:label="zadacha"
         tools:layout="@layout/fragment_scrolling" />
 </navigation>

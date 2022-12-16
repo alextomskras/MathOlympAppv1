@@ -13,7 +13,7 @@
     android:id="@+id/scrollingfragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.ui.scrollingscreen.ScrollingFragment">
+    tools:context=".ui.ui.scrollingscreen.ScrollingFragment">
 
     <TextView
         android:layout_width="wrap_content"
