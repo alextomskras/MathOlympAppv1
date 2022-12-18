@@ -3,8 +3,14 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
+    <string name="action_register_in">To Register Screen</string>
+    <string name="action_register_in_short">Open Register Screen</string>
+    <string name="action_signout_in">Sign out</string>
+    <string name="action_signout_in_short">Sign out</string>
+    <string name="action_register">Register user</string>
+    <string name="action_register_short">Register</string>
     <string name="welcome">"Welcome!"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -114,4 +120,5 @@
     </string>
     <string name="please_wait">please wait</string>
     <string name="splashfragment">SplashFragment</string>
+    <string name="msg_token_fmt">Token</string>
 </resources>

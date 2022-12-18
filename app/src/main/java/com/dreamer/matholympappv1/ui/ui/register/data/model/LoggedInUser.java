@@ -1,4 +1,4 @@
-package com.dreamer.matholympappv1.data.data.model;
+package com.dreamer.matholympappv1.ui.ui.register.data.model;
 
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository
@@ -7,12 +7,10 @@ public class LoggedInUser {
 
     private String userId;
     private String displayName;
-    private String passwordUser;
 
-    public LoggedInUser(String userId, String displayName, String passwordUser) {
+    public LoggedInUser(String userId, String displayName) {
         this.userId = userId;
         this.displayName = displayName;
-        this.passwordUser = passwordUser;
     }
 
     public String getUserId() {
@@ -21,9 +19,5 @@ public class LoggedInUser {
 
     public String getDisplayName() {
         return displayName;
-    }
-
-    public String getPassword() {
-        return passwordUser;
     }
 }

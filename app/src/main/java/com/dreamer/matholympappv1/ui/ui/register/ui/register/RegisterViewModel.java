@@ -1,4 +1,4 @@
-package com.dreamer.matholympappv1.ui.ui.login;
+package com.dreamer.matholympappv1.ui.ui.register.ui.register;
 
 import android.util.Patterns;
 
@@ -7,26 +7,25 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.dreamer.matholympappv1.R;
-import com.dreamer.matholympappv1.data.data.LoginRepository;
-import com.dreamer.matholympappv1.data.data.Result;
-import com.dreamer.matholympappv1.data.data.model.LoggedInUser;
-//import com.dreamer.matholympappv1.utils.main.R;
+import com.dreamer.matholympappv1.ui.ui.register.data.LoginRepository;
+import com.dreamer.matholympappv1.ui.ui.register.data.Result;
+import com.dreamer.matholympappv1.ui.ui.register.data.model.LoggedInUser;
 
-public class LoginViewModel extends ViewModel {
+public class RegisterViewModel extends ViewModel {
 
-    private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
+    private MutableLiveData<RegisterFormState> loginFormState = new MutableLiveData<>();
+    private MutableLiveData<RegisterResult> loginResult = new MutableLiveData<>();
     private LoginRepository loginRepository;
 
-    LoginViewModel(LoginRepository loginRepository) {
+    RegisterViewModel(LoginRepository loginRepository) {
         this.loginRepository = loginRepository;
     }
 
-    LiveData<LoginFormState> getLoginFormState() {
+    LiveData<RegisterFormState> getLoginFormState() {
         return loginFormState;
     }
 
-    LiveData<LoginResult> getLoginResult() {
+    LiveData<RegisterResult> getLoginResult() {
         return loginResult;
     }
 
@@ -36,19 +35,19 @@ public class LoginViewModel extends ViewModel {
 
         if (result instanceof Result.Success) {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName(), data.getPassword())));
+            loginResult.setValue(new RegisterResult(new RegisterInUserView(data.getDisplayName())));
         } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
+            loginResult.setValue(new RegisterResult(R.string.login_failed));
         }
     }
 
     public void loginDataChanged(String username, String password) {
         if (!isUserNameValid(username)) {
-            loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
+            loginFormState.setValue(new RegisterFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
-            loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
+            loginFormState.setValue(new RegisterFormState(null, R.string.invalid_password));
         } else {
-            loginFormState.setValue(new LoginFormState(true));
+            loginFormState.setValue(new RegisterFormState(true));
         }
     }
 

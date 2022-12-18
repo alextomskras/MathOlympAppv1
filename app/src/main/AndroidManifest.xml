@@ -51,6 +51,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name="com.dreamer.matholympappv1.ui.ui.register.ui.register.RegisterFragment$LatestFirebaseMessagingService" />
     </application>
 
 </manifest>

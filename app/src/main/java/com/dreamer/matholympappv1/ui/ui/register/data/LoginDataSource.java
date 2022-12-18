@@ -1,6 +1,6 @@
-package com.dreamer.matholympappv1.data.data;
+package com.dreamer.matholympappv1.ui.ui.register.data;
 
-import com.dreamer.matholympappv1.data.data.model.LoggedInUser;
+import com.dreamer.matholympappv1.ui.ui.register.data.model.LoggedInUser;
 
 import java.io.IOException;
 
@@ -16,8 +16,7 @@ public class LoginDataSource {
             LoggedInUser fakeUser =
                     new LoggedInUser(
                             java.util.UUID.randomUUID().toString(),
-                            "123@123.com",
-                            "123321");
+                            "Jane Doe");
             return new Result.Success<>(fakeUser);
         } catch (Exception e) {
             return new Result.Error(new IOException("Error logging in", e));

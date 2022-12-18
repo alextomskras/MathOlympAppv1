@@ -2,4 +2,5 @@
 <resources>
     <string name="please_wait">please wait</string>
     <string name="splashfragment">SplashFragment</string>
+    <string name="msg_token_fmt">Token</string>
 </resources>

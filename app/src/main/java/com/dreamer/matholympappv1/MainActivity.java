@@ -8,8 +8,11 @@ import androidx.navigation.NavHost;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 public class MainActivity extends AppCompatActivity {
     NavController navController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationUI.setupActionBarWithNavController(this, navController);
 
+        //init FirebaseDB
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction()
 ////                    .replace(R.id.login_fragment, MainFragment.newInstance())
