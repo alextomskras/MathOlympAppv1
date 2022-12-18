@@ -4,7 +4,7 @@ public class Users {
 
     public String User_id;
     //    String name="",user_image="";
-    String name = "";
+    public String username = "", token_id = "";
 
 
     public Users() {
@@ -12,21 +12,30 @@ public class Users {
     }
 
     //    public Users(String name, String image) {
-    public Users(String name) {
-        this.name = name;
+    public Users(String username) {
+        this.username = username;
+        this.token_id = token_id;
 //        this.user_image = image;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
 
-//    public String getUser_image() {
+    public String getUser_token_id() {
+        return token_id;
+    }
+
+    public void setUser_token_id(String token_id) {
+        this.token_id = token_id;
+    }
+
+    //    public String getUser_image() {
 //        return user_image;
 //    }
 
