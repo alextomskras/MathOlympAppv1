@@ -35,13 +35,13 @@ public class Zadachi {
         this.list_name = list_name;
     }
 
-    //    public String getUser_image() {
-//        return user_image;
-//    }
+    public String getZadachi_main_body() {
+        return main_body;
+    }
 
-//    public void setUser_image(String user_image) {
-//        this.user_image = user_image;
-//    }
+    public void setZadachi_main_body(String main_body) {
+        this.main_body = main_body;
+    }
 
 
     public Zadachi WithId(String id) {

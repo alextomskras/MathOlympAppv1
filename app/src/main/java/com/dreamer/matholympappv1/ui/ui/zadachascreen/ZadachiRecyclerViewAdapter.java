@@ -5,6 +5,7 @@ import static com.google.android.material.internal.ContextUtils.getActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
     private List<Zadachi> zadachiList;
     private Context context;
 
+
     public ZadachiRecyclerViewAdapter(List<Zadachi> zadachiList, Context context) {
         this.zadachiList = zadachiList;
         this.context = context;
@@ -48,6 +50,7 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         holder.name.setText(zadachiList.get(position).getZadachi_list_name());
+
 //         CircleImageView circleImageView = holder.circleImageView;
 //        Glide.with(context).load(usersList.get(position).getUser_image()).listener(new RequestListener<Drawable>() {
 //            @Override
@@ -67,13 +70,19 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
         final String user_id = zadachiList.get(position).Zadachi_id;
 //        final String user_name = usersList.get(position).getUsername();
         final String user_name = zadachiList.get(position).getZadachi_list_name();
+        final String zadacha_main_body = zadachiList.get(position).getZadachi_main_body();
+        final String zadacha_answer = zadachiList.get(position).getZadachi_Answer();
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("MyArgZadacha_main_body", zadacha_main_body);
+                bundle.putString("MyArgZadacha_answer", zadacha_answer);
+
                 @SuppressLint("RestrictedApi") Activity MainActivity = getActivity(context);
                 assert MainActivity != null;
                 navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
-                navController.navigate(R.id.action_zadachaFragment_to_scrollingFragment2);
+                navController.navigate(R.id.action_zadachaFragment_to_scrollingFragment2, bundle);
 
 //               Intent intent = new Intent(context, SendActivity.class);
 //               intent.putExtra("user_id",user_id);
