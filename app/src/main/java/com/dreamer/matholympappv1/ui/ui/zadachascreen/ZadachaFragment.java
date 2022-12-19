@@ -1,5 +1,6 @@
 package com.dreamer.matholympappv1.ui.ui.zadachascreen;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,12 +10,14 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.data.model.Users;
+import com.dreamer.matholympappv1.data.data.model.Zadachi;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,8 +42,10 @@ public class ZadachaFragment extends Fragment {
     RecyclerView recyclerView;
     MyZadachaRecyclerViewAdapter myZadachaRecyclerViewAdapter;
     UserRecyclerViewAdapter userRecyclerViewAdapter;
+    ZadachiRecyclerViewAdapter zadachiRecyclerViewAdapter;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
     private List<Users> usersList;
+    private List<Zadachi> zadachiList;
 //    public UsersFragment() {
 //
 //    }
@@ -65,8 +70,10 @@ public class ZadachaFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        intNavcontroller();
         if (getArguments() != null) {
+
+
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
 //            myZadachaRecyclerViewAdapter = new MyZadachaRecyclerViewAdapter(PlaceholderContent.ITEMS,);
 
@@ -79,7 +86,9 @@ public class ZadachaFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
 
         usersList = new ArrayList<>();
+        zadachiList = new ArrayList<>();
         userRecyclerViewAdapter = new UserRecyclerViewAdapter(usersList, getContext());
+        zadachiRecyclerViewAdapter = new ZadachiRecyclerViewAdapter(zadachiList, getContext());
 //        recyclerView.setHasFixedSize(true);
 
         // Set the adapter
@@ -107,7 +116,8 @@ public class ZadachaFragment extends Fragment {
 //                }
 //            }));
 
-            recyclerView.setAdapter(userRecyclerViewAdapter);
+            recyclerView.setAdapter(zadachiRecyclerViewAdapter);
+//            recyclerView.setAdapter(userRecyclerViewAdapter);
         }
         return view;
     }
@@ -136,10 +146,57 @@ public class ZadachaFragment extends Fragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("firebase", "Error getting data", databaseError.toException());
             }
 
         });
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Zadachi");
+        zadachiList.clear();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ZadachiList : dataSnapshot.getChildren()) {
+                    Log.e(TAG, "iconImageViewOnClick at position5 " + ZadachiList);
+                    String user_id = ZadachiList.getKey();
+//                     HashMap user_name = (HashMap) UserList.getValue();
+                    Log.e(TAG, "iconImageViewOnClick at position6 " + user_id);
+//                    Log.e(TAG, "iconImageViewOnClick at position2user_name " + user_name);
+//                    Users users = UserList.getValue(Users.class).WithId(user_id);
+                    Zadachi users = ZadachiList.getValue(Zadachi.class).WithId(user_id);
+                    zadachiList.add(users);
+                    Log.e(TAG, "iconImageViewOnClick at position7 " + zadachiList);
+//                    userRecyclerViewAdapter.notifyDataSetChanged();
+                    zadachiRecyclerViewAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("TAG", "iconImageViewOnClick at position8 Error getting data", databaseError.toException());
+            }
+
+        });
+
+//        databaseReference.child("Zadachi").child("1").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+//
+//
+//            @Override
+//            public void onComplete(@NonNull Task<DataSnapshot> task) {
+//                if (!task.isSuccessful()) {
+//                    Log.e("firebase_zadachi", "Error getting data", task.getException());
+//                }
+//                else {
+//                    Log.d("firebase_zadachi", String.valueOf(task.getResult().getValue()));
+//                }
+//            }
+//        });
+
+
     }
 
+    private void intNavcontroller() {
+        Activity MainActivity = getActivity();
+        assert MainActivity != null;
+        navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+    }
 }

@@ -1,5 +1,9 @@
 package com.dreamer.matholympappv1.ui.ui.zadachascreen;
 
+import static com.google.android.material.internal.ContextUtils.getActivity;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,25 +13,30 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dreamer.matholympappv1.MainActivity;
 import com.dreamer.matholympappv1.R;
-import com.dreamer.matholympappv1.data.data.model.Users;
 import com.dreamer.matholympappv1.data.data.model.Zadachi;
 
 import java.util.List;
 
 
-public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder> {
+public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecyclerViewAdapter.ViewHolder> {
 
     static final String TAG = "TAG";
-    private List<Users> usersList;
+    //    private List<Users> usersList;
+    NavController navController;
+    MainActivity mainActivity;
     private List<Zadachi> zadachiList;
     private Context context;
 
-    public UserRecyclerViewAdapter(List<Users> usersList, Context context) {
-        this.usersList = usersList;
+    public ZadachiRecyclerViewAdapter(List<Zadachi> zadachiList, Context context) {
+        this.zadachiList = zadachiList;
         this.context = context;
+        intNavcontroller();
     }
 
     @Override
@@ -38,7 +47,7 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        holder.name.setText(usersList.get(position).getUsername());
+        holder.name.setText(zadachiList.get(position).getZadachi_list_name());
 //         CircleImageView circleImageView = holder.circleImageView;
 //        Glide.with(context).load(usersList.get(position).getUser_image()).listener(new RequestListener<Drawable>() {
 //            @Override
@@ -55,12 +64,17 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 //            }
 //        }).into(circleImageView);
 
-        final String user_id = usersList.get(position).User_id;
+        final String user_id = zadachiList.get(position).Zadachi_id;
 //        final String user_name = usersList.get(position).getUsername();
-        final String user_name = usersList.get(position).getUsername();
+        final String user_name = zadachiList.get(position).getZadachi_list_name();
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                @SuppressLint("RestrictedApi") Activity MainActivity = getActivity(context);
+                assert MainActivity != null;
+                navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+                navController.navigate(R.id.action_zadachaFragment_to_scrollingFragment2);
+
 //               Intent intent = new Intent(context, SendActivity.class);
 //               intent.putExtra("user_id",user_id);
 //               intent.putExtra("user_name",user_name);
@@ -71,8 +85,14 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
     @Override
     public int getItemCount() {
-        Log.e(TAG, "iconImageViewOnClick at position4 " + usersList.size());
-        return usersList.size();
+        Log.e(TAG, "iconImageViewOnClick at position8 " + zadachiList.size());
+        return zadachiList.size();
+    }
+
+    private void intNavcontroller() {
+        @SuppressLint("RestrictedApi") Activity MainActivity = getActivity(context);
+        assert MainActivity != null;
+        navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
