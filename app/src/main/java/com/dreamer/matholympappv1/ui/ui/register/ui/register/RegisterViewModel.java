@@ -7,18 +7,18 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.dreamer.matholympappv1.R;
-import com.dreamer.matholympappv1.ui.ui.register.data.LoginRepository;
+import com.dreamer.matholympappv1.ui.ui.register.data.RegisterRepository;
 import com.dreamer.matholympappv1.ui.ui.register.data.Result;
-import com.dreamer.matholympappv1.ui.ui.register.data.model.LoggedInUser;
+import com.dreamer.matholympappv1.ui.ui.register.data.model.RegisteredInUser;
 
 public class RegisterViewModel extends ViewModel {
 
     private MutableLiveData<RegisterFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<RegisterResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
+    private RegisterRepository registerRepository;
 
-    RegisterViewModel(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
+    RegisterViewModel(RegisterRepository registerRepository) {
+        this.registerRepository = registerRepository;
     }
 
     LiveData<RegisterFormState> getLoginFormState() {
@@ -31,10 +31,10 @@ public class RegisterViewModel extends ViewModel {
 
     public void login(String username, String password) {
         // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
+        Result<RegisteredInUser> result = registerRepository.login(username, password);
 
         if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
+            RegisteredInUser data = ((Result.Success<RegisteredInUser>) result).getData();
             loginResult.setValue(new RegisterResult(new RegisterInUserView(data.getDisplayName())));
         } else {
             loginResult.setValue(new RegisterResult(R.string.login_failed));

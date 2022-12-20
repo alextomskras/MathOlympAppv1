@@ -1,20 +1,20 @@
 package com.dreamer.matholympappv1.ui.ui.register.data;
 
-import com.dreamer.matholympappv1.ui.ui.register.data.model.LoggedInUser;
+import com.dreamer.matholympappv1.ui.ui.register.data.model.RegisteredInUser;
 
 import java.io.IOException;
 
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
-public class LoginDataSource {
+public class RegisterDataSource {
 
-    public Result<LoggedInUser> login(String username, String password) {
+    public Result<RegisteredInUser> login(String username, String password) {
 
         try {
             // TODO: handle loggedInUser authentication
-            LoggedInUser fakeUser =
-                    new LoggedInUser(
+            RegisteredInUser fakeUser =
+                    new RegisteredInUser(
                             java.util.UUID.randomUUID().toString(),
                             "Jane Doe");
             return new Result.Success<>(fakeUser);
