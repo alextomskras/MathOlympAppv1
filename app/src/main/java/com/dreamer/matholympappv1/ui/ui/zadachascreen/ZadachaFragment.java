@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
-import com.dreamer.matholympappv1.data.data.model.Users;
-import com.dreamer.matholympappv1.data.data.model.Zadachi;
+import com.dreamer.matholympappv1.data.model.model.Users;
+import com.dreamer.matholympappv1.data.model.model.Zadachi;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

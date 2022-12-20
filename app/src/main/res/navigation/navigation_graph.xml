@@ -34,7 +34,7 @@
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.dreamer.matholympappv1.ui.ui.register.ui.register.RegisterFragment"
-        android:label="fragment_register"
+        android:label="register"
         tools:layout="@layout/fragment_register">
         <action
             android:id="@+id/action_registerFragment_to_loginFragment2"

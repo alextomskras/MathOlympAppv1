@@ -12,8 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
-import com.dreamer.matholympappv1.data.data.model.Users;
-import com.dreamer.matholympappv1.data.data.model.Zadachi;
+import com.dreamer.matholympappv1.data.model.model.Users;
+import com.dreamer.matholympappv1.data.model.model.Zadachi;
 
 import java.util.List;
 

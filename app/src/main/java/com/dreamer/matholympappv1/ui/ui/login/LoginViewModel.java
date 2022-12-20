@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel;
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.data.LoginRepository;
 import com.dreamer.matholympappv1.data.data.Result;
-import com.dreamer.matholympappv1.data.data.model.LoggedInUser;
+import com.dreamer.matholympappv1.data.model.model.LoggedInUser;
 //import com.dreamer.matholympappv1.utils.main.R;
 
 public class LoginViewModel extends ViewModel {

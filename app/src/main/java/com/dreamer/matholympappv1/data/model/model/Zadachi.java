@@ -1,4 +1,4 @@
-package com.dreamer.matholympappv1.data.data.model;
+package com.dreamer.matholympappv1.data.model.model;
 
 public class Zadachi {
 
