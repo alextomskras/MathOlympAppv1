@@ -2,24 +2,36 @@ package com.dreamer.matholympappv1.ui.ui.scrollingscreen;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Zadachi;
 import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.List;
 
 public class ScrollingFragment extends Fragment {
 
     static final String TAG = "TAG";
+    MenuItem menuScroll;
     private @NonNull
     FragmentScrollingBinding binding;
     private List<Zadachi> zadachiList;
@@ -34,6 +46,20 @@ public class ScrollingFragment extends Fragment {
 //        this.zadachiList = zadachiList;
 //        this.context = context;
 
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.scroll_frag_menu, menu);
+////        menuScroll = menu.add("hint");
+//        menuScroll.setTitle(zadacha_hint);
+//        menuScroll.setTitleCondensed("hint");
+//        menuScroll.setIcon(R.drawable.ic_baseline_alt_route_24);
     }
 
     @Nullable
@@ -63,6 +89,12 @@ public class ScrollingFragment extends Fragment {
 
     }
 
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.scroll_frag_menu, menu);
+//        return true;
+//    }
+
     public void ScrollingFragmentZdachiList(List<Zadachi> zadachiList, Context context) {
         this.zadachiList = zadachiList;
         this.context = context;
@@ -72,10 +104,13 @@ public class ScrollingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //Ищем все что есть на макете
         final TextView zadachaTextView = binding.tvScrollMainText;
         final TextView answerTextView = binding.tvScrollAnswerText;
         final TextView hintTextView = binding.tvScrollHintText;
         final TextView solutionTextView = binding.tvScrollSolutionText;
+        final TextInputEditText edtxtAnswer = binding.edtxtAnswer;
+        final Button btnVerify = binding.btnVerify;
 
         //Set all to CAPS
         zadachaTextView.setAllCaps(true);
@@ -84,6 +119,46 @@ public class ScrollingFragment extends Fragment {
         answerTextView.setText(zadacha_answer);
         hintTextView.setText(zadacha_hint);
         solutionTextView.setText(zadacha_solution);
+        edtxtAnswer.getHint();
+        btnVerify.setOnClickListener(view1 -> {
+            Snackbar.make(getActivity().findViewById(android.R.id.content),
+                    "task.getResult().getUser().getEmail()", Snackbar.LENGTH_LONG).show();
+        });
+
+        TextWatcher afterTextChangedListener = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // ignore
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // ignore
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+//                registerViewModel.loginDataChanged(usernameEditText.getText().toString(),
+//                        passwordEditText.getText().toString());
+            }
+        };
+
+        edtxtAnswer.addTextChangedListener(afterTextChangedListener);
+        edtxtAnswer.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                    registerViewModel.login(usernameEditText.getText().toString(),
+//                            passwordEditText.getText().toString());
+                    Snackbar.make(getActivity().findViewById(android.R.id.content),
+                            "task.getResult().getUser().getEmail()", Snackbar.LENGTH_LONG).show();
+                }
+                return false;
+            }
+        });
+
+
     }
 
 }

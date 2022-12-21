@@ -13,18 +13,22 @@ import com.google.firebase.database.FirebaseDatabase;
 public class MainActivity extends AppCompatActivity {
     NavController navController;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        NavHost navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+//    private Toolbar toolbar;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+//        toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+    NavHost navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
 //        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        navController = navHost.getNavController();
+    navController = navHost.getNavController();
 
-        NavigationUI.setupActionBarWithNavController(this, navController);
+    NavigationUI.setupActionBarWithNavController(this, navController);
 
-        //init FirebaseDB
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+    //init FirebaseDB
+    FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction()
 ////                    .replace(R.id.login_fragment, MainFragment.newInstance())
@@ -32,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 //                    .replace(R.id.login_fragment, ScrollingFragment.newInstance())
 //                    .commitNow();
 //        }
-    }
+}
 
 
     @Override
@@ -45,5 +49,9 @@ public class MainActivity extends AppCompatActivity {
 //        return navController.navigateUp() || super.onSupportNavigateUp()
 //    }
 
-
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.scroll_frag_menu, menu);
+//        return true;
+//    }
 }
