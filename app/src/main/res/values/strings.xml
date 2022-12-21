@@ -121,4 +121,9 @@
     <string name="please_wait">please wait</string>
     <string name="splashfragment">SplashFragment</string>
     <string name="msg_token_fmt">Token</string>
+    <string name="btn_scrl_frag_verify">Verify</string>
+    <string name="ed_txt_scrl_hint">hint</string>
+    <string name="txt_solution_text">solution_text</string>
+    <string name="txt_hint_text">hint_text</string>
+    <string name="txt_answer_text">answer_text</string>
 </resources>

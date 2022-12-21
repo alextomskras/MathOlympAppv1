@@ -4,7 +4,7 @@ public class Zadachi {
 
     public String Zadachi_id;
     //    String name="",user_image="";
-    public String answer = "", list_name = "", main_body = "";
+    public String answer = "", list_name = "", main_body = "", hint = "", solution = "";
 
 
     public Zadachi() {
@@ -12,10 +12,12 @@ public class Zadachi {
     }
 
     //    public Users(String name, String image) {
-    public Zadachi(String username) {
+    public Zadachi(String answer, String list_name, String main_body, String hint, String solution) {
         this.answer = answer;
         this.list_name = list_name;
         this.main_body = main_body;
+        this.hint = hint;
+        this.solution = solution;
     }
 
     public String getZadachi_Answer() {
@@ -26,6 +28,21 @@ public class Zadachi {
         this.answer = answer;
     }
 
+    public String getZadachi_Hint() {
+        return hint;
+    }
+
+    public void setZadachi_Hint(String hint) {
+        this.hint = hint;
+    }
+
+    public String getZadachi_solution() {
+        return solution;
+    }
+
+    public void setZadachi_solution(String solution) {
+        this.solution = solution;
+    }
 
     public String getZadachi_list_name() {
         return list_name;

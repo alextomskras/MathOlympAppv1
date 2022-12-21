@@ -18,17 +18,48 @@
 
             <TextView
                 android:id="@+id/tvScrollMainText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/text_margin"
                 android:text="@string/app_name" />
 
             <TextView
                 android:id="@+id/tvScrollAnswerText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/text_margin"
-                android:text="answer_text" />
+                android:text="@string/txt_answer_text" />
+
+
+            <TextView
+                android:id="@+id/tvScrollHintText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/text_margin"
+                android:text="@string/txt_hint_text" />
+
+            <TextView
+                android:id="@+id/tvScrollSolutionText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/text_margin"
+                android:text="@string/txt_solution_text" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/ed_txt_scrl_hint" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_scrl_frag_verify" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

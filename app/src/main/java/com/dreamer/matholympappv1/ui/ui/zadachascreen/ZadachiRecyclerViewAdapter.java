@@ -69,15 +69,19 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 
         final String user_id = zadachiList.get(position).Zadachi_id;
 //        final String user_name = usersList.get(position).getUsername();
-        final String user_name = zadachiList.get(position).getZadachi_list_name();
+//        final String user_name = zadachiList.get(position).getZadachi_list_name();
         final String zadacha_main_body = zadachiList.get(position).getZadachi_main_body();
         final String zadacha_answer = zadachiList.get(position).getZadachi_Answer();
+        final String zadacha_hint = zadachiList.get(position).getZadachi_Hint();
+        final String zadacha_solution = zadachiList.get(position).getZadachi_solution();
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putString("MyArgZadacha_main_body", zadacha_main_body);
                 bundle.putString("MyArgZadacha_answer", zadacha_answer);
+                bundle.putString("MyArgZadacha_hint", zadacha_hint);
+                bundle.putString("MyArgZadacha_solution", zadacha_solution);
 
                 @SuppressLint("RestrictedApi") Activity MainActivity = getActivity(context);
                 assert MainActivity != null;

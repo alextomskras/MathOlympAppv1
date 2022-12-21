@@ -27,6 +27,8 @@ public class ScrollingFragment extends Fragment {
     //    private String mainBodyZadacha;
     private String zadacha_main_body;
     private String zadacha_answer;
+    private String zadacha_hint;
+    private String zadacha_solution;
 
     public ScrollingFragment() {
 //        this.zadachiList = zadachiList;
@@ -42,12 +44,16 @@ public class ScrollingFragment extends Fragment {
 //        zadachiList = (List<Zadachi>) zadachiList.get(1);
         zadacha_main_body = "";
         zadacha_answer = "";
+        zadacha_hint = "";
+        zadacha_solution = "";
         ;
         Bundle bundle = getArguments();
         if (bundle != null) {
 
             zadacha_main_body = bundle.getString("MyArgZadacha_main_body");
             zadacha_answer = bundle.getString("MyArgZadacha_answer");
+            zadacha_hint = bundle.getString("MyArgZadacha_hint");
+            zadacha_solution = bundle.getString("MyArgZadacha_solution");
         }
         Log.e(TAG, "iconImageViewOnClick at position8 " + bundle.getString("MyArgZadacha_main_body", "_PlaceHolder_"));
         binding = FragmentScrollingBinding.inflate(inflater, container, false);
@@ -68,12 +74,16 @@ public class ScrollingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         final TextView zadachaTextView = binding.tvScrollMainText;
         final TextView answerTextView = binding.tvScrollAnswerText;
+        final TextView hintTextView = binding.tvScrollHintText;
+        final TextView solutionTextView = binding.tvScrollSolutionText;
 
         //Set all to CAPS
         zadachaTextView.setAllCaps(true);
 
         zadachaTextView.setText(zadacha_main_body);
         answerTextView.setText(zadacha_answer);
+        hintTextView.setText(zadacha_hint);
+        solutionTextView.setText(zadacha_solution);
     }
 
 }

@@ -12,7 +12,7 @@ public class Users {
     }
 
     //    public Users(String name, String image) {
-    public Users(String username) {
+    public Users(String username, String token_id) {
         this.username = username;
         this.token_id = token_id;
 //        this.user_image = image;
