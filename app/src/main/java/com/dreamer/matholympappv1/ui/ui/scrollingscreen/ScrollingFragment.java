@@ -1,6 +1,7 @@
 package com.dreamer.matholympappv1.ui.ui.scrollingscreen;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,9 +19,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Zadachi;
 import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
 import com.google.android.material.snackbar.Snackbar;
@@ -41,6 +42,7 @@ public class ScrollingFragment extends Fragment {
     private String zadacha_answer;
     private String zadacha_hint;
     private String zadacha_solution;
+    public AlertDialog.Builder builder;
 
     public ScrollingFragment() {
 //        this.zadachiList = zadachiList;
@@ -55,12 +57,47 @@ public class ScrollingFragment extends Fragment {
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.scroll_frag_menu, menu);
-////        menuScroll = menu.add("hint");
-//        menuScroll.setTitle(zadacha_hint);
-//        menuScroll.setTitleCondensed("hint");
+//        menuInflater.inflate(R.menu.scroll_frag_menu, menu);
+        menuScroll = menu.add("hint");
+        menuScroll.setTitle(zadacha_hint);
+        menuScroll.setTitleCondensed("hint");
 //        menuScroll.setIcon(R.drawable.ic_baseline_alt_route_24);
+        menuScroll.setOnMenuItemClickListener(v ->
+                {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content),
+                            v.toString(), Snackbar.LENGTH_LONG).show();
+                    return true;
+                }
+        );
     }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//
+//            case R.drawable.ic_baseline_alt_route_24:
+//                Log.e(TAG, "iconImageViewOnClick at position9 " + item);
+////                onBackPressed();
+//                Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                        item.toString(), Snackbar.LENGTH_LONG).show();
+//                return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        if(item.getItemId() == R.drawable.ic_baseline_alt_route_24) {
+////            Intent intent = new Intent(this, SearchUsersActivity.class);
+////            startActivity(intent);
+//                            Log.e(TAG, "iconImageViewOnClick at position9 " + item);
+////                onBackPressed();
+//                Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                        item.toString(), Snackbar.LENGTH_LONG).show();
+//        }
+//        return true;
+//    }
 
     @Nullable
     @Override
@@ -117,12 +154,16 @@ public class ScrollingFragment extends Fragment {
 
         zadachaTextView.setText(zadacha_main_body);
         answerTextView.setText(zadacha_answer);
-        hintTextView.setText(zadacha_hint);
-        solutionTextView.setText(zadacha_solution);
+        hintTextView.setText("HINT:" + zadacha_hint);
+        solutionTextView.setText("SOLUTION:" + zadacha_solution);
         edtxtAnswer.getHint();
+        edtxtAnswer.getText().toString();
+        Log.e(TAG, "iconImageViewOnClick at position9 " + edtxtAnswer);
         btnVerify.setOnClickListener(view1 -> {
-            Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "task.getResult().getUser().getEmail()", Snackbar.LENGTH_LONG).show();
+            String textEnter = edtxtAnswer.getText().toString();
+            checkAnswer(textEnter.toString());
+//            Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                    "task.getResult().getUser().getEmail()", Snackbar.LENGTH_LONG).show();
         });
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
@@ -149,16 +190,82 @@ public class ScrollingFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    String textEnter = edtxtAnswer.getText().toString();
+                    checkAnswer(textEnter.toString());
 //                    registerViewModel.login(usernameEditText.getText().toString(),
 //                            passwordEditText.getText().toString());
-                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-                            "task.getResult().getUser().getEmail()", Snackbar.LENGTH_LONG).show();
+//                    Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                            "task.getResult().getUser().getEmail()", Snackbar.LENGTH_LONG).show();
                 }
                 return false;
             }
         });
 
 
+    }
+
+    private void checkAnswer(String answer) {
+
+        builder = new AlertDialog.Builder(getActivity());
+//        binding.content.saveButton.setOnClickListener(v -> {
+        String etTexttitle = answer.toString();
+        Log.d(TAG, "viewId: " + etTexttitle);
+        if (!etTexttitle.equals("") && etTexttitle.equals(zadacha_answer)) {
+
+//                snackbar[0] = Snackbar
+//                        .make(constraintLayout, "2222.journaldev.com", Snackbar.LENGTH_LONG);
+//                snackbar[0].show();
+            alertDiaShow("USPEH", "TAK-TAKKKKKKKKKK");
+        } else {
+            alertDiaShow("OSHIBKA", "VOTT-TAK-TAKKKKKKKKKK");
+//                snackbar[0] = Snackbar.make(constraintLayout, R.string.no_title, Snackbar.LENGTH_LONG);
+//                snackbar[0].show();
+
+        }
+    }
+
+
+//        Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                answer, Snackbar.LENGTH_LONG).show();
+
+
+    private void alertDiaShow(String Title, String MainMessage) {
+//        TextInputEditText etTitle = (TextInputEditText) findViewById(R.id.event_title_user_input_et);
+//        TextInputEditText etTime = (TextInputEditText) findViewById(R.id.event_time_user_input_et);
+//        TextInputEditText etNote = (TextInputEditText) findViewById(R.id.event_notes_user_input_et);
+//        String date = getCurrentLocalDateTimeStamp();
+//        Log.d(TAG,"____DATE= "+date);
+        builder
+//                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
+                .setMessage(MainMessage)
+//                .setMessage(R.string.alertEvent_date)
+//                .setMessage(R.string.alertEvent_time)
+//                .setMessage(R.string.alertEvent_notes)
+                .setTitle("REZULTAT " + Title)
+                .setCancelable(true)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+//                        finish();
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                "YESSSS", Snackbar.LENGTH_LONG).show();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //  Action for 'NO' Button
+                        dialog.cancel();
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                "NOOOOOO", Snackbar.LENGTH_LONG).show();
+                    }
+                });
+
+//        Creating dialog box
+//        AlertDialog alert = builder.create();
+//        //Setting the title manually
+////        alert.setTitle("AlertDialogExample");
+//        alert.show();
+        builder.show();
+//    }
     }
 
 }
