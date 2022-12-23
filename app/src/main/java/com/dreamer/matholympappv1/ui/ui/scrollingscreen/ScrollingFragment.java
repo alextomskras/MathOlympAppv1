@@ -59,13 +59,14 @@ public class ScrollingFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
 //        menuInflater.inflate(R.menu.scroll_frag_menu, menu);
         menuScroll = menu.add("hint");
-        menuScroll.setTitle(zadacha_hint);
+        menuScroll.setTitle("hint");
+//        menuScroll.setTitle(zadacha_hint);
         menuScroll.setTitleCondensed("hint");
 //        menuScroll.setIcon(R.drawable.ic_baseline_alt_route_24);
         menuScroll.setOnMenuItemClickListener(v ->
                 {
                     Snackbar.make(getActivity().findViewById(android.R.id.content),
-                            v.toString(), Snackbar.LENGTH_LONG).show();
+                            zadacha_hint.toString(), Snackbar.LENGTH_LONG).show();
                     return true;
                 }
         );
@@ -153,11 +154,11 @@ public class ScrollingFragment extends Fragment {
         zadachaTextView.setAllCaps(true);
 
         zadachaTextView.setText(zadacha_main_body);
-        answerTextView.setText(zadacha_answer);
-        hintTextView.setText("HINT:" + zadacha_hint);
-        solutionTextView.setText("SOLUTION:" + zadacha_solution);
-        edtxtAnswer.getHint();
-        edtxtAnswer.getText().toString();
+//        answerTextView.setText(zadacha_answer);
+//        hintTextView.setText("HINT:" + zadacha_hint);
+//        solutionTextView.setText("SOLUTION:" + zadacha_solution);
+//        edtxtAnswer.getHint();
+//        edtxtAnswer.getText().toString();
         Log.e(TAG, "iconImageViewOnClick at position9 " + edtxtAnswer);
         btnVerify.setOnClickListener(view1 -> {
             String textEnter = edtxtAnswer.getText().toString();
@@ -179,6 +180,8 @@ public class ScrollingFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                String textEnter = edtxtAnswer.getText().toString();
+                checkAnswer(textEnter.toString());
 //                registerViewModel.loginDataChanged(usernameEditText.getText().toString(),
 //                        passwordEditText.getText().toString());
             }
