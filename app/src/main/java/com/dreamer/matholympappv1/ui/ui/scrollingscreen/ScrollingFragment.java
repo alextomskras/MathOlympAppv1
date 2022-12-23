@@ -157,6 +157,9 @@ public class ScrollingFragment extends Fragment {
 //        answerTextView.setText(zadacha_answer);
 //        hintTextView.setText("HINT:" + zadacha_hint);
 //        solutionTextView.setText("SOLUTION:" + zadacha_solution);
+        answerTextView.setVisibility(View.GONE);
+        hintTextView.setVisibility(View.GONE);
+        solutionTextView.setVisibility(View.GONE);
 //        edtxtAnswer.getHint();
 //        edtxtAnswer.getText().toString();
         Log.e(TAG, "iconImageViewOnClick at position9 " + edtxtAnswer);
@@ -281,6 +284,50 @@ public class ScrollingFragment extends Fragment {
                                     "NOOOOOO", Snackbar.LENGTH_LONG).show();
                         }
                     });
+        } else if (!Title.equals("") && Title.equals("HINT")) {
+            builder
+//                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
+                    .setMessage(MainMessage)
+//                .setMessage(R.string.alertEvent_date)
+//                .setMessage(R.string.alertEvent_time)
+//                .setMessage(R.string.alertEvent_notes)
+                    .setTitle("REZULTAT " + Title)
+                    .setCancelable(true)
+                    .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+//                        finish();
+//                        getActivity().getFragmentManager().popBackStack();
+//                        navController.navigateUp();
+                            dialog.cancel();
+//                            alertDiaShow("HINT", "zadacha_hint " + zadacha_hint);
+//                            Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                                    "YESSSS", Snackbar.LENGTH_LONG).show();
+                        }
+                    })
+//                    .setNeutralButton("exit", new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int id) {
+//                                    //  Action for 'NO' Button
+//
+//                                    dialog.cancel();
+//                                    navController.navigateUp();
+//                                    Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                                            "EXITTT", Snackbar.LENGTH_LONG).show();
+//                                }
+//                            }
+//                    )
+
+                    .setIcon(R.drawable.ic_baseline_bubble_chart_24)
+                    .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //  Action for 'NO' Button
+//                        navController.navigateUp();
+                            dialog.cancel();
+                            navController.navigateUp();
+//                            Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                                    "NOOOOOO", Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+
         } else {
             builder
 //                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
