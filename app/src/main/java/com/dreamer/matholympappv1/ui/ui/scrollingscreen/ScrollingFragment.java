@@ -221,9 +221,9 @@ public class ScrollingFragment extends Fragment {
 //                snackbar[0] = Snackbar
 //                        .make(constraintLayout, "2222.journaldev.com", Snackbar.LENGTH_LONG);
 //                snackbar[0].show();
-            alertDiaShow("USPEH", "TAK-TAKKKKKKKKKK");
+            alertDiaShow(getString(R.string.alertDialogShowUSPEHTitle), getString(R.string.alertDialogShowUSPEHMessageBodySet));
         } else {
-            alertDiaShow("OSHIBKA", "VOTT-TAK-TAKKKKKKKKKK");
+            alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), getString(R.string.alertDialogShowOSHIBKAMessageBodySet));
 //                snackbar[0] = Snackbar.make(constraintLayout, R.string.no_title, Snackbar.LENGTH_LONG);
 //                snackbar[0].show();
 
@@ -243,16 +243,16 @@ public class ScrollingFragment extends Fragment {
 //        String date = getCurrentLocalDateTimeStamp();
 //        Log.d(TAG,"____DATE= "+date);
 //        builder
-        if (!Title.equals("") && Title.equals("USPEH")) {
+        if (!Title.equals("") && Title.equals(getString(R.string.alertDialogUSPEHTitleCheck))) {
             builder
 //                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
                     .setMessage(MainMessage)
 //                .setMessage(R.string.alertEvent_date)
 //                .setMessage(R.string.alertEvent_time)
 //                .setMessage(R.string.alertEvent_notes)
-                    .setTitle("REZULTAT " + Title)
+                    .setTitle(getString(R.string.alertDialogUSPEHSetTitle) + Title)
                     .setCancelable(true)
-                    .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.alertDialogUSPEHPositiveButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 //                        finish();
 //                        getActivity().getFragmentManager().popBackStack();
@@ -276,7 +276,7 @@ public class ScrollingFragment extends Fragment {
 //                    )
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.alertDialogUSPEHNegativeButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             //  Action for 'NO' Button
 //                        navController.navigateUp();
@@ -285,16 +285,16 @@ public class ScrollingFragment extends Fragment {
                                     "NOOOOOO", Snackbar.LENGTH_LONG).show();
                         }
                     });
-        } else if (!Title.equals("") && Title.equals("HINT")) {
+        } else if (!Title.equals("") && Title.equals(getString(R.string.alertDialogTitleHintCheck))) {
             builder
 //                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
                     .setMessage(MainMessage)
 //                .setMessage(R.string.alertEvent_date)
 //                .setMessage(R.string.alertEvent_time)
 //                .setMessage(R.string.alertEvent_notes)
-                    .setTitle("REZULTAT " + Title)
+                    .setTitle(getString(R.string.alertDialogHintSetTitle) + Title)
                     .setCancelable(true)
-                    .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.alertDialogHintPositiveButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 //                        finish();
 //                        getActivity().getFragmentManager().popBackStack();
@@ -318,7 +318,7 @@ public class ScrollingFragment extends Fragment {
 //                    )
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-                    .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.allertDialogNegativeButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             //  Action for 'NO' Button
 //                        navController.navigateUp();
@@ -329,7 +329,7 @@ public class ScrollingFragment extends Fragment {
                         }
                     });
 
-        } else if (!Title.equals("") && Title.equals("Solution")) {
+        } else if (!Title.equals("") && Title.equals(getString(R.string.alertDialogTitleSolution))) {
             builder
 //                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
                     .setMessage(MainMessage)
@@ -337,8 +337,9 @@ public class ScrollingFragment extends Fragment {
 //                .setMessage(R.string.alertEvent_time)
 //                .setMessage(R.string.alertEvent_notes)
                     .setTitle("Title " + Title)
+
                     .setCancelable(true)
-                    .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.alertDialogPositiveButtonSolution, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 //                        finish();
 //                        getActivity().getFragmentManager().popBackStack();
@@ -362,7 +363,7 @@ public class ScrollingFragment extends Fragment {
 //                    )
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-                    .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.allertDialogNegativeButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             //  Action for 'NO' Button
 //                        navController.navigateUp();
@@ -380,22 +381,22 @@ public class ScrollingFragment extends Fragment {
 //                .setMessage(R.string.alertEvent_date)
 //                .setMessage(R.string.alertEvent_time)
 //                .setMessage(R.string.alertEvent_notes)
-                    .setTitle("REZULTAT " + Title)
+                    .setTitle(getString(R.string.alertDialogTitleForREZULTAT) + Title)
                     .setCancelable(true)
-                    .setPositiveButton("Hint", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.alertDialogHintButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 //                        finish();
 //                        getActivity().getFragmentManager().popBackStack();
 //                        navController.navigateUp();
-                            alertDiaShow("HINT", "zadacha_hint " + zadacha_hint);
+                            alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
                             Snackbar.make(getActivity().findViewById(android.R.id.content),
                                     "YESSSS", Snackbar.LENGTH_LONG).show();
                         }
                     })
-                    .setNeutralButton("Solution", new DialogInterface.OnClickListener() {
+                    .setNeutralButton(R.string.alertDialogREZULTATNeutralButton, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     //  Action for 'NO' Button
-                                    alertDiaShow("Solution", "solution " + zadacha_solution);
+                                    alertDiaShow(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
 //                                    dialog.cancel();
 //                                    navController.navigateUp();
                                     Snackbar.make(getActivity().findViewById(android.R.id.content),
@@ -405,7 +406,7 @@ public class ScrollingFragment extends Fragment {
                     )
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-                    .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.alertDialogRezultatNegativeButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             //  Action for 'NO' Button
 //                        navController.navigateUp();
@@ -443,10 +444,10 @@ public class ScrollingFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
 //        menuInflater.inflate(R.menu.scroll_frag_menu, menu);
 //        getFragmentBundles();
-        menuScroll = menu.add("hint");
-        menuScroll.setTitle("hint");
+        menuScroll = menu.add(R.string.scrollFrgMenuAddHintTitle);
+        menuScroll.setTitle(R.string.scrollFrgMenuTitle);
 //        menuScroll.setTitle(zadacha_hint);
-        menuScroll.setTitleCondensed("hint");
+        menuScroll.setTitleCondensed(getString(R.string.scrollFrgMenuCondesedTitle));
 //        menuScroll.setIcon(R.drawable.ic_baseline_alt_route_24);
         menuScroll.setOnMenuItemClickListener(v ->
                 {
