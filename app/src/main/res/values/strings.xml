@@ -148,7 +148,7 @@
     <string name="alertDialogHintPositiveButton">Cancel</string>
     <string name="alertDialogUSPEHNegativeButton">Cancel</string>
     <string name="alertDialogUSPEHPositiveButton">Exit</string>
-    <string name="alertDialogUSPEHSetTitle">\"REZULTAT \"</string>
+    <string name="alertDialogUSPEHSetTitle">REZULTAT </string>
     <string name="alertDialogUSPEHTitleCheck">USPEH</string>
     <string name="alertDialogShowUSPEHTitle">USPEH</string>
     <string name="alertDialogShowUSPEHMessageBodySet">TAK-TAKKKKKKKKKK</string>

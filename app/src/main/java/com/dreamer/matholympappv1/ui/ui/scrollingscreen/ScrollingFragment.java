@@ -3,6 +3,8 @@ package com.dreamer.matholympappv1.ui.ui.scrollingscreen;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -237,6 +239,13 @@ public class ScrollingFragment extends Fragment {
 
     private void alertDiaShow(String Title, String MainMessage) {
         builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = this.getLayoutInflater();
+        View team = inflater.inflate(R.layout.allertdialog_layout, null);
+        TextView tw = (TextView) team.findViewById(R.id.allertMesage1);
+        TextView tw1 = (TextView) team.findViewById(R.id.allertMesage2);// id of your imageView element
+        tw1.setVisibility(View.GONE);
+
+        builder.setView(team);
 //        TextInputEditText etTitle = (TextInputEditText) findViewById(R.id.event_title_user_input_et);
 //        TextInputEditText etTime = (TextInputEditText) findViewById(R.id.event_time_user_input_et);
 //        TextInputEditText etNote = (TextInputEditText) findViewById(R.id.event_notes_user_input_et);
@@ -244,9 +253,12 @@ public class ScrollingFragment extends Fragment {
 //        Log.d(TAG,"____DATE= "+date);
 //        builder
         if (!Title.equals("") && Title.equals(getString(R.string.alertDialogUSPEHTitleCheck))) {
+            builder.setView(team);
+            tw.setText(MainMessage);
             builder
+
 //                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
-                    .setMessage(MainMessage)
+//                    .setMessage(MainMessage)
 //                .setMessage(R.string.alertEvent_date)
 //                .setMessage(R.string.alertEvent_time)
 //                .setMessage(R.string.alertEvent_notes)
@@ -286,9 +298,11 @@ public class ScrollingFragment extends Fragment {
                         }
                     });
         } else if (!Title.equals("") && Title.equals(getString(R.string.alertDialogTitleHintCheck))) {
+            builder.setView(team);
+            tw.setText(MainMessage);
             builder
 //                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
-                    .setMessage(MainMessage)
+//                    .setMessage(MainMessage)
 //                .setMessage(R.string.alertEvent_date)
 //                .setMessage(R.string.alertEvent_time)
 //                .setMessage(R.string.alertEvent_notes)
@@ -330,9 +344,11 @@ public class ScrollingFragment extends Fragment {
                     });
 
         } else if (!Title.equals("") && Title.equals(getString(R.string.alertDialogTitleSolution))) {
+            builder.setView(team);
+            tw.setText(MainMessage);
             builder
 //                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
-                    .setMessage(MainMessage)
+//                    .setMessage(MainMessage)
 //                .setMessage(R.string.alertEvent_date)
 //                .setMessage(R.string.alertEvent_time)
 //                .setMessage(R.string.alertEvent_notes)
@@ -375,9 +391,11 @@ public class ScrollingFragment extends Fragment {
                     });
 
         } else {
+            builder.setView(team);
+            tw.setText(MainMessage);
             builder
 //                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
-                    .setMessage(MainMessage)
+//                    .setMessage(MainMessage)
 //                .setMessage(R.string.alertEvent_date)
 //                .setMessage(R.string.alertEvent_time)
 //                .setMessage(R.string.alertEvent_notes)
@@ -424,7 +442,11 @@ public class ScrollingFragment extends Fragment {
 //        //Setting the title manually
 ////        alert.setTitle("AlertDialogExample");
 //        alert.show();
-        builder.show();
+        final AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        builder.setInverseBackgroundForced(true);
+
+        dialog.show();
 //    }
     }
 
