@@ -158,12 +158,15 @@ public class ZadachaFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ZadachiList : dataSnapshot.getChildren()) {
                     Log.e(TAG, "iconImageViewOnClick at position5 " + ZadachiList);
+                    //Get refference to Database
                     String user_id = ZadachiList.getKey();
 //                     HashMap user_name = (HashMap) UserList.getValue();
                     Log.e(TAG, "iconImageViewOnClick at position6 " + user_id);
 //                    Log.e(TAG, "iconImageViewOnClick at position2user_name " + user_name);
 //                    Users users = UserList.getValue(Users.class).WithId(user_id);
+//                    String id = Zadachi;
                     Zadachi users = ZadachiList.getValue(Zadachi.class).WithId(user_id);
+
                     zadachiList.add(users);
                     Log.e(TAG, "iconImageViewOnClick at position7 " + zadachiList);
 //                    userRecyclerViewAdapter.notifyDataSetChanged();

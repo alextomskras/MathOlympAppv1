@@ -20,6 +20,13 @@ public class Zadachi {
         this.solution = solution;
     }
 
+//    public String getZadachi_id(){
+//        return Zadachi_id;
+//    }
+//    public void setZadachi_id(String Zadachi_id) {
+//        this.answer = Zadachi_id;
+//    }
+
     public String getZadachi_Answer() {
         return answer;
     }

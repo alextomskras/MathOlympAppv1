@@ -144,7 +144,7 @@
     <string name="scrollFrgMenuTitle">hint</string>
     <string name="scrollFrgMenuCondesedTitle">hint</string>
     <string name="alertDialogTitleHintCheck">HINT</string>
-    <string name="alertDialogHintSetTitle">\"REZULTAT \"</string>
+    <string name="alertDialogHintSetTitle">REZULTAT </string>
     <string name="alertDialogHintPositiveButton">Cancel</string>
     <string name="alertDialogUSPEHNegativeButton">Cancel</string>
     <string name="alertDialogUSPEHPositiveButton">Exit</string>

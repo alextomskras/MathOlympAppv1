@@ -21,8 +21,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dreamer.matholympappv1.MainActivity;
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Zadachi;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecyclerViewAdapter.ViewHolder> {
@@ -31,14 +38,73 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
     //    private List<Users> usersList;
     NavController navController;
     MainActivity mainActivity;
+    FirebaseStorage storageReference = FirebaseStorage.getInstance();
     private List<Zadachi> zadachiList;
+    private List listFilesFirestore;
+    private List listSolutionFilesFirestore;
     private Context context;
+    private String spotOfSearchImages;
 
 
     public ZadachiRecyclerViewAdapter(List<Zadachi> zadachiList, Context context) {
+        listFilesFirestore = new ArrayList<>();
+        listSolutionFilesFirestore = new ArrayList<>();
         this.zadachiList = zadachiList;
         this.context = context;
+        spotOfSearchImages = "answersimages";
+        listAllFilesDirestore(spotOfSearchImages);
+        spotOfSearchImages = "solutionimages";
+        listAllFilesDirestore(spotOfSearchImages);
         intNavcontroller();
+    }
+
+    private void listAllFilesDirestore(String spotOfSearchImages) {
+        storageReference = FirebaseStorage.getInstance("gs://matholymp1.appspot.com");
+//        StorageReference listRef = storageReference.getReference().child("answersimages");
+        StorageReference listRef = storageReference.getReference().child(this.spotOfSearchImages);
+
+        listRef.listAll()
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        for (StorageReference prefix : listResult.getPrefixes()) {
+                            // All the prefixes under listRef.
+                            // You may call listAll() recursively on them.
+
+                            Log.d(TAG, "____DATEprefix= " + prefix);
+                        }
+
+                        for (StorageReference item : listResult.getItems()) {
+                            // All the items under listRef.
+                            Log.e(TAG, "____DATEitem= " + item);
+                            if (Objects.equals(spotOfSearchImages, "answersimages")) {
+
+                                listFilesFirestore.add(item);
+                                Log.e(TAG, "____DATEitem= " + listFilesFirestore);
+                                int listSize = listFilesFirestore.size();
+                                Log.e(TAG, "____DATEitem2= " + listSize);
+                            } else {
+                                listSolutionFilesFirestore.add(item);
+                                Log.e(TAG, "____DATEitem= " + listSolutionFilesFirestore);
+                                int listSize = listSolutionFilesFirestore.size();
+                                Log.e(TAG, "____DATEitem2= " + listSize);
+                            }
+
+
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Uh-oh, an error occurred!
+                    }
+                });
+        if (listFilesFirestore.size() != 0) {
+            Object stringFileName = listFilesFirestore.get(1);
+            Log.e(TAG, "____DATEitem1= " + stringFileName);
+        }
+
     }
 
     @Override
@@ -68,6 +134,8 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 //        }).into(circleImageView);
 
         final String user_id = zadachiList.get(position).Zadachi_id;
+        Log.e(TAG, "iconImageViewOnClick at position10 " + zadachiList.size());
+
 //        final String user_name = usersList.get(position).getUsername();
 //        final String user_name = zadachiList.get(position).getZadachi_list_name();
         final String zadacha_main_body = zadachiList.get(position).getZadachi_main_body();
@@ -78,6 +146,10 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
+                Log.e(TAG, "_Dateitem=10 " + listFilesFirestore.size());
+                bundle.putString("MyArgZadacha_id", user_id);
+                bundle.putStringArrayList("MyArgZadacha_listFilesFirestore", (ArrayList<String>) listFilesFirestore);
+                bundle.putStringArrayList("MyArgZadacha_listSolutionFilesFirestore", (ArrayList<String>) listSolutionFilesFirestore);
                 bundle.putString("MyArgZadacha_main_body", zadacha_main_body);
                 bundle.putString("MyArgZadacha_answer", zadacha_answer);
                 bundle.putString("MyArgZadacha_hint", zadacha_hint);
