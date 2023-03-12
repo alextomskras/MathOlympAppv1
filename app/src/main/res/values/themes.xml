@@ -20,11 +20,11 @@
         <item name="materialButtonStyle">@style/GlobalButtonStyle</item>
     </style>
 
-    <style name="SplashActivity" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-    </style>
+    <!--    <style name="SplashActivity" parent="Theme.MaterialComponents.Light.NoActionBar">-->
+    <!--        <item name="android:windowBackground">@drawable/splash</item>-->
+    <!--        <item name="android:windowTranslucentStatus">true</item>-->
+    <!--        <item name="android:windowTranslucentNavigation">true</item>-->
+    <!--    </style>-->
 
     <style name="GlobalTextInputStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:minWidth">@dimen/big_width</item>
@@ -103,6 +103,7 @@
     -->
     <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
         <!-- The 'core-splashscreen' switches the theme back to this after splash screen. -->
+
         <item name="postSplashScreenTheme">@style/Theme.App</item>
     </style>
 
@@ -116,14 +117,16 @@
           The animated icon to be displayed at the center of the splash screen.
           Note that the icon is *not* animated on API level 30 and below.
         -->
+        <item name="android:windowBackground">@drawable/splash</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_hourglass_animated</item>
         <!-- The background color behind the icon. -->
-        <item name="windowSplashScreenIconBackgroundColor">@color/lime_700</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/black</item>
         <!-- The background color for the splash screen. -->
         <item name="windowSplashScreenBackground">@color/splash_screen_background</item>
         <!-- The duration, in milliseconds, of the icon animation of the splash screen. -->
         <item name="windowSplashScreenAnimationDuration">1000</item>
         <!-- The 'core-splashscreen' switches the theme back to this after splash screen. -->
         <item name="postSplashScreenTheme">@style/Theme.App</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
     </style>
 </resources>
