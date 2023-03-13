@@ -34,9 +34,9 @@ public class ZadachaFragment extends Fragment {
 
     static final String TAG = "TAG";
     NavController navController;
-    // TODO: Customize parameter argument names
+
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
+
     private int mColumnCount = 1;
 
     RecyclerView recyclerView;
@@ -46,9 +46,7 @@ public class ZadachaFragment extends Fragment {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
     private List<Users> usersList;
     private List<Zadachi> zadachiList;
-//    public UsersFragment() {
-//
-//    }
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -57,7 +55,7 @@ public class ZadachaFragment extends Fragment {
     public ZadachaFragment() {
     }
 
-    // TODO: Customize parameter initialization
+
     @SuppressWarnings("unused")
     public static ZadachaFragment newInstance(int columnCount) {
         ZadachaFragment fragment = new ZadachaFragment();
@@ -76,7 +74,6 @@ public class ZadachaFragment extends Fragment {
 
 
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-//            myZadachaRecyclerViewAdapter = new MyZadachaRecyclerViewAdapter(PlaceholderContent.ITEMS,);
 
         }
     }
@@ -90,7 +87,6 @@ public class ZadachaFragment extends Fragment {
         zadachiList = new ArrayList<>();
         userRecyclerViewAdapter = new UserRecyclerViewAdapter(usersList, getContext());
         zadachiRecyclerViewAdapter = new ZadachiRecyclerViewAdapter(zadachiList, getContext());
-//        recyclerView.setHasFixedSize(true);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -101,24 +97,9 @@ public class ZadachaFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-//            recyclerView.setAdapter(new MyZadachaRecyclerViewAdapter(PlaceholderContent.ITEMS, new MyZadachaRecyclerViewAdapter.MyAdapterListener() {
-//                @Override
-//                public void iconTextViewOnClick(View v, int position) {
-//                    Log.e(TAG, "iconTextViewOnClick at position " + position);
-//                }
-//
-//                @Override
-//                public void iconImageViewOnClick(View v, int position) {
-//                    Log.e(TAG, "iconImageViewOnClick at position " + position);
-//                    Activity MainActivity = getActivity();
-//                    assert MainActivity != null;
-//                    navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
-//                    navController.navigate(R.id.action_zadachaFragment_to_scrollingFragment2);
-//                }
-//            }));
+
 
             recyclerView.setAdapter(zadachiRecyclerViewAdapter);
-//            recyclerView.setAdapter(userRecyclerViewAdapter);
         }
         return view;
     }
@@ -133,14 +114,10 @@ public class ZadachaFragment extends Fragment {
                 for (DataSnapshot UserList : dataSnapshot.getChildren()) {
                     Log.e(TAG, "iconImageViewOnClick at position1 " + UserList);
                     String user_id = UserList.getKey();
-//                     HashMap user_name = (HashMap) UserList.getValue();
                     Log.e(TAG, "iconImageViewOnClick at position2 " + user_id);
-//                    Log.e(TAG, "iconImageViewOnClick at position2user_name " + user_name);
-//                    Users users = UserList.getValue(Users.class).WithId(user_id);
                     Users users = UserList.getValue(Users.class).WithId(user_id);
                     usersList.add(users);
                     Log.e(TAG, "iconImageViewOnClick at position3 " + usersList);
-//                    userRecyclerViewAdapter.notifyDataSetChanged();
                     userRecyclerViewAdapter.notifyDataSetChanged();
                 }
             }
@@ -160,16 +137,14 @@ public class ZadachaFragment extends Fragment {
                     Log.e(TAG, "iconImageViewOnClick at position5 " + ZadachiList);
                     //Get refference to Database
                     String user_id = ZadachiList.getKey();
-//                     HashMap user_name = (HashMap) UserList.getValue();
+
                     Log.e(TAG, "iconImageViewOnClick at position6 " + user_id);
-//                    Log.e(TAG, "iconImageViewOnClick at position2user_name " + user_name);
-//                    Users users = UserList.getValue(Users.class).WithId(user_id);
-//                    String id = Zadachi;
+
                     Zadachi users = ZadachiList.getValue(Zadachi.class).WithId(user_id);
 
                     zadachiList.add(users);
                     Log.e(TAG, "iconImageViewOnClick at position7 " + zadachiList);
-//                    userRecyclerViewAdapter.notifyDataSetChanged();
+
                     zadachiRecyclerViewAdapter.notifyDataSetChanged();
                 }
             }
@@ -180,20 +155,6 @@ public class ZadachaFragment extends Fragment {
             }
 
         });
-
-//        databaseReference.child("Zadachi").child("1").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-//
-//
-//            @Override
-//            public void onComplete(@NonNull Task<DataSnapshot> task) {
-//                if (!task.isSuccessful()) {
-//                    Log.e("firebase_zadachi", "Error getting data", task.getException());
-//                }
-//                else {
-//                    Log.d("firebase_zadachi", String.valueOf(task.getResult().getValue()));
-//                }
-//            }
-//        });
 
 
     }
