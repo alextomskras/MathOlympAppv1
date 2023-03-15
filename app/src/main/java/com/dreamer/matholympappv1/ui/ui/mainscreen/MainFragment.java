@@ -20,10 +20,12 @@ public class MainFragment extends Fragment {
         return new MainFragment();
     }
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
 
     }
 

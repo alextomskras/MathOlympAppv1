@@ -174,11 +174,6 @@ public class ScrollingFragment extends Fragment {
 
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.scroll_frag_menu, menu);
-//        return true;
-//    }
 
     public void ScrollingFragmentZdachiList(List<Zadachi> zadachiList, Context context) {
         this.zadachiList = zadachiList;
@@ -280,10 +275,6 @@ public class ScrollingFragment extends Fragment {
     }
 
 
-//        Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                answer, Snackbar.LENGTH_LONG).show();
-
-
     private void alertDiaShow(String Title, String MainMessage) {
         builder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyTheme);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -293,83 +284,24 @@ public class ScrollingFragment extends Fragment {
         ImageView iv1 = (ImageView) team.findViewById(R.id.imageOtvet1);
         tw1.setVisibility(View.GONE);
         builder.setView(team);
-//        TextInputEditText etTitle = (TextInputEditText) findViewById(R.id.event_title_user_input_et);
-//        TextInputEditText etTime = (TextInputEditText) findViewById(R.id.event_time_user_input_et);
-//        TextInputEditText etNote = (TextInputEditText) findViewById(R.id.event_notes_user_input_et);
-//        String date = getCurrentLocalDateTimeStamp();
-//        Log.d(TAG,"____DATE= "+date);
-//        builder
+
         if (!Title.equals("") && Title.equals(getString(R.string.alertDialogUSPEHTitleCheck))) {
             builder.setView(team);
             tw.setText(MainMessage);
-//            iv1.setImageResource(R.drawable.dudlejump);
             searchimagesPath = "answersimages";
-//            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-//            Log.d(TAG, "____DATE=1 " + storageRef);
-//            Log.d(TAG, "____DATE=11 " + searchimagesPath);
-//            // Reference's name is the last segment of the full path: "space.jpg"
-//// This is analogous to the file name
-////            storageRef.getName();
-//
-//            Log.d(TAG, "____DATE4= " + storageRef);
-//            StorageReference spaceRef = storageRef.child("answersimages/answer" + zadacha_id);
-//            spaceRef.getName();
-//            Log.d(TAG, "____DATE3= " + zadacha_id);
-//            spaceRef.getMetadata();
-//            Log.d(TAG, "____DATE=2 " + spaceRef);
-//            Object splitString = listFilesFirestore.get(Integer.parseInt(zadacha_id) - 1).toString();
-//            Log.d(TAG, "____DATE=21 " + splitString);
-//            String[] parts = ((String) splitString).split(Pattern.quote("/"));
-//            Log.d(TAG, "____DATE=5 " + parts[4]);
-//            String imageLoad = parts[4];
-//            String imagePatch = searchimagesPath + "/" + imageLoad;
-//            Log.d(TAG, "____DATE=51 " + imagePatch);
-////        storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//            storageRef.child("answersimages/" + imageLoad).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                //            spaceRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                @Override
-//                public void onSuccess(Uri uri) {
-//                    Log.d(TAG, "____DATE=12 " + uri);
-//                    // Download directly from StorageReference using Glide
-//// (See MyAppGlideModule for Loader registration)
-//                    Glide.with(getContext())
-//                            .load(uri)
-//                            .into(iv1);
-//
-//                    // Got the download URL for 'users/me/profile.png'
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception exception) {
-//                    Log.d(TAG, "____DATE= " + "storageRef");
-//                    // Handle any errors
-//                }
-//            });
+
             setFirebaseImage(searchimagesPath, iv1);
 
-//            Glide.with(this)
-//                    .load("https://firebasestorage.googleapis.com/v0/b/matholymp1.appspot.com/o/answersimages%2Fanswer1.jpg?alt=media&token=1b22c5ef-6469-4d2a-aa6c-59d13c9c87bd")
-//                    .into(iv1);
-// File path is "images/space.jpg"
-//            String path = spaceRef.getPath();
-//            Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                    answerImageUrl, Snackbar.LENGTH_LONG).show();
-//            Picasso.get().load(answerImageUrl).into(iv1);
+
             builder
 
-//                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
-//                    .setMessage(MainMessage)
-//                .setMessage(R.string.alertEvent_date)
-//                .setMessage(R.string.alertEvent_time)
-//                .setMessage(R.string.alertEvent_notes)
-//                    .setTitle(getString(R.string.alertDialogUSPEHSetTitle) + Title)
+
                     .setCancelable(true)
 
 
                     .setPositiveButton(R.string.alertDialogUSPEHPositiveButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-//                        finish();
-//                        getActivity().getFragmentManager().popBackStack();
+
                             dialog.cancel();
                             navController.navigateUp();
 //                            alertDiaShow("HINT", "zadacha_hint " + zadacha_hint);
@@ -378,17 +310,6 @@ public class ScrollingFragment extends Fragment {
                         }
                     })
 
-//                    .setNeutralButton("exit", new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int id) {
-//                                    //  Action for 'NO' Button
-//
-//                                    dialog.cancel();
-//                                    navController.navigateUp();
-//                                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                                            "EXITTT", Snackbar.LENGTH_LONG).show();
-//                                }
-//                            }
-//                    )
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
                     .setNegativeButton(R.string.alertDialogUSPEHNegativeButton, new DialogInterface.OnClickListener() {
@@ -403,15 +324,9 @@ public class ScrollingFragment extends Fragment {
         } else if (!Title.equals("") && Title.equals(getString(R.string.alertDialogTitleHintCheck))) {
             builder.setView(team);
             tw.setText(MainMessage);
-//            iv1.setImageResource(R.drawable.forti1800f);
-            builder
-//                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
-//                    .setMessage(MainMessage)
-//                .setMessage(R.string.alertEvent_date)
-//                .setMessage(R.string.alertEvent_time)
-//                .setMessage(R.string.alertEvent_notes)
 
-//                    .setTitle(getString(R.string.alertDialogHintSetTitle) + Title)
+            builder
+
                     .setCancelable(true)
                     .setPositiveButton(R.string.alertDialogHintPositiveButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -424,17 +339,7 @@ public class ScrollingFragment extends Fragment {
 //                                    "YESSSS", Snackbar.LENGTH_LONG).show();
                         }
                     })
-//                    .setNeutralButton("exit", new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int id) {
-//                                    //  Action for 'NO' Button
-//
-//                                    dialog.cancel();
-//                                    navController.navigateUp();
-//                                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                                            "EXITTT", Snackbar.LENGTH_LONG).show();
-//                                }
-//                            }
-//                    )
+
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
                     .setNegativeButton(R.string.allertDialogNegativeButton, new DialogInterface.OnClickListener() {
@@ -455,12 +360,7 @@ public class ScrollingFragment extends Fragment {
             searchimagesPath = "solutionimages";
             setFirebaseImage(searchimagesPath, iv1);
             builder
-//                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
-//                    .setMessage(MainMessage)
-//                .setMessage(R.string.alertEvent_date)
-//                .setMessage(R.string.alertEvent_time)
-//                .setMessage(R.string.alertEvent_notes)
-//                    .setTitle("Title " + Title)
+
 
                     .setCancelable(true)
                     .setPositiveButton(R.string.alertDialogPositiveButtonSolution, new DialogInterface.OnClickListener() {
@@ -474,17 +374,7 @@ public class ScrollingFragment extends Fragment {
 //                                    "YESSSS", Snackbar.LENGTH_LONG).show();
                         }
                     })
-//                    .setNeutralButton("exit", new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int id) {
-//                                    //  Action for 'NO' Button
-//
-//                                    dialog.cancel();
-//                                    navController.navigateUp();
-//                                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                                            "EXITTT", Snackbar.LENGTH_LONG).show();
-//                                }
-//                            }
-//                    )
+
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
                     .setNegativeButton(R.string.allertDialogNegativeButton, new DialogInterface.OnClickListener() {
@@ -502,12 +392,7 @@ public class ScrollingFragment extends Fragment {
             builder.setView(team);
             tw.setText(MainMessage);
             builder
-//                .setMessage(getString(R.string.alertEvent_title)+etTitle.getText()+"\n"+getString(R.string.alertEvent_date)+date+"\n"+getString(R.string.alertEvent_time)+etTime.getText()+"\n"+getString(R.string.alertEvent_notes)+etNote.getText()+"\n")
-//                    .setMessage(MainMessage)
-//                .setMessage(R.string.alertEvent_date)
-//                .setMessage(R.string.alertEvent_time)
-//                .setMessage(R.string.alertEvent_notes)
-//                    .setTitle(getString(R.string.alertDialogTitleForREZULTAT) + Title)
+
                     .setCancelable(true)
                     .setPositiveButton(R.string.alertDialogHintButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -546,11 +431,7 @@ public class ScrollingFragment extends Fragment {
 
         }
 
-//        Creating dialog box
-//        AlertDialog alert = builder.create();
-//        //Setting the title manually
-////        alert.setTitle("AlertDialogExample");
-//        alert.show();
+
         final AlertDialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         builder.setInverseBackgroundForced(true);
@@ -574,9 +455,7 @@ public class ScrollingFragment extends Fragment {
         }
         Log.d(TAG, "____DATE=1 " + storageRef);
         Log.d(TAG, "____DATE=11 " + searchimagesPath);
-        // Reference's name is the last segment of the full path: "space.jpg"
-// This is analogous to the file name
-//            storageRef.getName();
+
 
         Log.d(TAG, "____DATE4= " + storageRef);
         StorageReference spaceRef = storageRef.child("answersimages/answer" + zadacha_id);
@@ -595,8 +474,7 @@ public class ScrollingFragment extends Fragment {
         Log.d(TAG, "____DATE=51 " + imagePatch);
 
         storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            //        storageRef.child("answerimages/" + imageLoad).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            //            spaceRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+
             @Override
             public void onSuccess(Uri uri) {
                 Log.d(TAG, "____DATE=12 " + uri);
@@ -623,44 +501,6 @@ public class ScrollingFragment extends Fragment {
         navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
     }
 
-//    private void listAllFilesDirestore(){
-//        storageReference = FirebaseStorage.getInstance("gs://matholymp1.appspot.com");
-//        StorageReference listRef = storageReference.getReference().child("answersimages");
-//
-//        listRef.listAll()
-//                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-//                    @Override
-//                    public void onSuccess(ListResult listResult) {
-//                        for (StorageReference prefix : listResult.getPrefixes()) {
-//                            // All the prefixes under listRef.
-//                            // You may call listAll() recursively on them.
-//
-//                            Log.d(TAG,"____DATEprefix= "+prefix);
-//                        }
-//
-//                        for (StorageReference item : listResult.getItems()) {
-//                            // All the items under listRef.
-//                            Log.e(TAG,"____DATEitem= "+item);
-//                            listFilesFirestore.add(item);
-//                            Log.e(TAG,"____DATEitem= "+listFilesFirestore);
-//                            int listSize = listFilesFirestore.size();
-//                            Log.e(TAG,"____DATEitem2= "+listSize);
-//
-//
-//                        }
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        // Uh-oh, an error occurred!
-//                    }
-//                });
-//        if (listFilesFirestore.size()!=0)  {
-//            Object stringFileName = listFilesFirestore.get(1);
-//            Log.e(TAG,"____DATEitem1= "+stringFileName);
-//        }
-//    }
 
     @Override
     public void onDestroyView() {
@@ -670,17 +510,13 @@ public class ScrollingFragment extends Fragment {
 
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-//        menuInflater.inflate(R.menu.scroll_frag_menu, menu);
-//        getFragmentBundles();
+
         menuScroll = menu.add(R.string.scrollFrgMenuAddHintTitle);
         menuScroll.setTitle(R.string.scrollFrgMenuTitle);
-//        menuScroll.setTitle(zadacha_hint);
         menuScroll.setTitleCondensed(getString(R.string.scrollFrgMenuCondesedTitle));
-//        menuScroll.setIcon(R.drawable.ic_baseline_alt_route_24);
         menuScroll.setOnMenuItemClickListener(v ->
                 {
-//                    getFragmentBundles();
-//                    alertDiaShow("HINT","zadacha_hint");
+
                     Snackbar.make(getActivity().findViewById(android.R.id.content),
                             zadacha_hint, Snackbar.LENGTH_LONG).show();
                     return true;
