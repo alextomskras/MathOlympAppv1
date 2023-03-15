@@ -2,6 +2,7 @@ package com.dreamer.matholympappv1.ui.ui.zadachascreen;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -59,7 +60,8 @@ public class ZadachaViewModel extends ViewModel {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
                 Log.e(TAG, "Error getting data", databaseError.toException());
             }
         });

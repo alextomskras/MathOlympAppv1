@@ -516,7 +516,8 @@ public class ScrollingFragment extends Fragment {
 //                        navController.navigateUp();
                             alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
                             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                    "YESSSS", Snackbar.LENGTH_LONG).show();
+                                    "YESSSS",
+                                    Snackbar.LENGTH_LONG).show();
                         }
                     })
                     .setNeutralButton(R.string.alertDialogREZULTATNeutralButton, new DialogInterface.OnClickListener() {
@@ -681,7 +682,7 @@ public class ScrollingFragment extends Fragment {
 //                    getFragmentBundles();
 //                    alertDiaShow("HINT","zadacha_hint");
                     Snackbar.make(getActivity().findViewById(android.R.id.content),
-                            zadacha_hint.toString(), Snackbar.LENGTH_LONG).show();
+                            zadacha_hint, Snackbar.LENGTH_LONG).show();
                     return true;
                 }
         );
