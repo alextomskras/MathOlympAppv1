@@ -75,6 +75,12 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         return usersList.size();
     }
 
+    public void setUsersList(List<Users> usersList) {
+
+        this.usersList = usersList;
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private View view;

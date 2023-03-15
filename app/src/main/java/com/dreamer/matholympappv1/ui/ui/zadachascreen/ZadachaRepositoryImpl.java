@@ -1,5 +1,20 @@
 package com.dreamer.matholympappv1.ui.ui.zadachascreen;
 
+import android.util.Log;
+
+import androidx.lifecycle.MutableLiveData;
+
+import com.dreamer.matholympappv1.data.model.model.Users;
+import com.dreamer.matholympappv1.data.model.model.Zadachi;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class ZadachaRepositoryImpl implements ZadachaRepository {
 
     private DatabaseReference usersRef;
@@ -10,6 +25,16 @@ public class ZadachaRepositoryImpl implements ZadachaRepository {
     public ZadachaRepositoryImpl() {
         usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         zadachiRef = FirebaseDatabase.getInstance().getReference().child("Zadachi");
+    }
+
+    @Override
+    public void fetchUsers() {
+
+    }
+
+    @Override
+    public void fetchZadachi() {
+
     }
 
     @Override

@@ -180,6 +180,12 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
         navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
     }
 
+    public void setZadachiList(List<Zadachi> zadachiList) {
+
+        this.zadachiList = zadachiList;
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private View view;
