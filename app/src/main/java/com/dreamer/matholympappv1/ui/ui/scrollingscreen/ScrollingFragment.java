@@ -133,17 +133,14 @@ public class ScrollingFragment extends Fragment {
     private void getBundleArguments() {
         Bundle bundle = getArguments();
         if (bundle != null) {
-            zadacha_id = bundle.getString("MyArgZadacha_id");
-            listFilesFirestore = bundle.getStringArrayList("MyArgZadacha_listFilesFirestore");
-            listSolutionFilesFirestore = bundle.getStringArrayList("MyArgZadacha_listSolutionFilesFirestore");
-            zadacha_main_body = bundle.getString("MyArgZadacha_main_body");
-            zadacha_answer = bundle.getString("MyArgZadacha_answer");
-            zadacha_hint = bundle.getString("MyArgZadacha_hint");
-            zadacha_solution = bundle.getString("MyArgZadacha_solution");
-            Log.e(TAG, "iconImageViewOnClick at position8 " + bundle.getString("MyArgZadacha_main_body", "_PlaceHolder_"));
-            Log.e(TAG, "iconImageViewOnClick at position18 " + bundle.getString("MyArgZadacha_id", "_PlaceHolder_"));
-            Log.e(TAG, "iconImageViewOnClick at position19 " + listFilesFirestore);
-            Log.e(TAG, "iconImageViewOnClick at position29 " + listSolutionFilesFirestore);
+            zadacha_id = bundle.getString(ARG_ZADACHA_ID);
+            listFilesFirestore = bundle.getStringArrayList(ARG_ZADACHA_LIST_FILES_FIRESTORE);
+            listSolutionFilesFirestore = bundle.getStringArrayList(ARG_ZADACHA_LIST_SOLUTION_FILES_FIRESTORE);
+            zadacha_main_body = bundle.getString(ARG_ZADACHA_MAIN_BODY);
+            zadacha_answer = bundle.getString(ARG_ZADACHA_ANSWER);
+            zadacha_hint = bundle.getString(ARG_ZADACHA_HINT);
+            zadacha_solution = bundle.getString(ARG_ZADACHA_SOLUTION);
+
         }
     }
 
