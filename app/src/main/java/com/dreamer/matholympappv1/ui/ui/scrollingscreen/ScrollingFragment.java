@@ -177,7 +177,7 @@ public class ScrollingFragment extends Fragment {
         hintTextView.setVisibility(View.GONE);
         solutionTextView.setVisibility(View.GONE);
 
-        Log.e(TAG, "iconImageViewOnClick at position9 " + edtxtAnswer);
+//        Log.e(TAG, "iconImageViewOnClick at position9 " + edtxtAnswer);
         btnVerify.setOnClickListener(view1 -> {
             String textEnter = edtxtAnswer.getText().toString();
             checkAnswer(textEnter.toString());
@@ -209,7 +209,7 @@ public class ScrollingFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String textEnter = edtxtAnswer.getText().toString();
-                    checkAnswer(textEnter.toString());
+                    checkAnswer(textEnter);
 
                 }
                 return false;
@@ -223,7 +223,7 @@ public class ScrollingFragment extends Fragment {
 
 
         String etTexttitle = answer.toString();
-        Log.d(TAG, "viewId: " + etTexttitle);
+//        Log.d(TAG, "viewId: " + etTexttitle);
         if (!etTexttitle.equals("") && etTexttitle.equals(zadacha_answer)) {
 
 
@@ -237,16 +237,28 @@ public class ScrollingFragment extends Fragment {
 
 
     private void alertDiaShow(String Title, String MainMessage) {
+//        AllertdialogLayoutBinding binding = AllertdialogLayoutBinding.inflate(getLayoutInflater());
+//        View team = binding.getRoot();
+//
+//        TextView tw = binding.allertMesage1;
+//        TextView tw1 = binding.allertMesage2;
+//        ImageView iv1 = binding.imageOtvet1;
+
         builder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyTheme);
         LayoutInflater inflater = this.getLayoutInflater();
         View team = inflater.inflate(R.layout.allertdialog_layout, null);
+
         TextView tw = (TextView) team.findViewById(R.id.allertMesage1);
         TextView tw1 = (TextView) team.findViewById(R.id.allertMesage2);// id of your imageView element
         ImageView iv1 = (ImageView) team.findViewById(R.id.imageOtvet1);
         tw1.setVisibility(View.GONE);
         builder.setView(team);
 
-        if (!Title.equals("") && Title.equals(getString(R.string.alertDialogUSPEHTitleCheck))) {
+        final String USPEH_TITLE = getString(R.string.alertDialogUSPEHTitleCheck);
+        final String HINT_TITLE = getString(R.string.alertDialogTitleHintCheck);
+        final String SOLUTION_TITLE = getString(R.string.alertDialogTitleSolution);
+
+        if (!Title.equals("") && Title.equals(USPEH_TITLE)) {
             builder.setView(team);
             tw.setText(MainMessage);
             searchimagesPath = "answersimages";
@@ -281,7 +293,7 @@ public class ScrollingFragment extends Fragment {
                                     "NOOOOOO", Snackbar.LENGTH_LONG).show();
                         }
                     });
-        } else if (!Title.equals("") && Title.equals(getString(R.string.alertDialogTitleHintCheck))) {
+        } else if (!Title.equals("") && Title.equals(HINT_TITLE)) {
             builder.setView(team);
             tw.setText(MainMessage);
 
@@ -308,7 +320,7 @@ public class ScrollingFragment extends Fragment {
                         }
                     });
 
-        } else if (!Title.equals("") && Title.equals(getString(R.string.alertDialogTitleSolution))) {
+        } else if (!Title.equals("") && Title.equals(SOLUTION_TITLE)) {
             builder.setView(team);
             tw.setText(MainMessage);
 
@@ -389,7 +401,7 @@ public class ScrollingFragment extends Fragment {
         buttonPositive.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
         Button buttonNegative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
         buttonNegative.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
-//    }
+
     }
 
     private void setFirebaseImage(String searchimagesPath, ImageView iv1) {
@@ -417,7 +429,6 @@ public class ScrollingFragment extends Fragment {
 
             @Override
             public void onSuccess(Uri uri) {
-                Log.d(TAG, "____DATE=12 " + uri);
                 // Download directly from StorageReference using Glide
 // (See MyAppGlideModule for Loader registration)
                 Glide.with(getContext())
@@ -456,7 +467,6 @@ public class ScrollingFragment extends Fragment {
         menuScroll.setTitleCondensed(getString(R.string.scrollFrgMenuCondesedTitle));
         menuScroll.setOnMenuItemClickListener(v ->
                 {
-
                     Snackbar.make(getActivity().findViewById(android.R.id.content),
                             zadacha_hint, Snackbar.LENGTH_LONG).show();
                     return true;

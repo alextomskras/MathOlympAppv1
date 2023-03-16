@@ -5,6 +5,7 @@ import static com.google.android.material.internal.ContextUtils.getActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,7 +41,10 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
     MainActivity mainActivity;
     FirebaseStorage storageReference = FirebaseStorage.getInstance();
     private List<Zadachi> zadachiList;
+
+    public int testHideZadachiSize;
     private List listFilesFirestore;
+    public ArrayList testHideZadachi;
     private List listSolutionFilesFirestore;
     private Context context;
     private String spotOfSearchImages;
@@ -49,6 +53,10 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
     public ZadachiRecyclerViewAdapter(List<Zadachi> zadachiList, Context context) {
         listFilesFirestore = new ArrayList<>();
         listSolutionFilesFirestore = new ArrayList<>();
+
+        createArray();
+
+//        testHideZadachi = Collections.singletonList(new int[]{1, 3, 4});
         this.zadachiList = zadachiList;
         this.context = context;
         spotOfSearchImages = "answersimages";
@@ -56,6 +64,17 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
         spotOfSearchImages = "solutionimages";
         listAllFilesDirestore(spotOfSearchImages);
         intNavcontroller();
+    }
+
+    private void createArray() {
+
+        ArrayList<Integer> testHideZadachi;
+        testHideZadachi = new ArrayList<>();
+        testHideZadachi.add(1);
+        testHideZadachi.add(2);
+        testHideZadachi.add(4);
+        testHideZadachiSize = testHideZadachi.size();
+        Log.e(TAG, "____testHideZadachiSize= " + testHideZadachiSize);
     }
 
     private void listAllFilesDirestore(String spotOfSearchImages) {
@@ -115,7 +134,34 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        ArrayList<Integer> testHideZadachi;
+        testHideZadachi = new ArrayList<>();
+        testHideZadachi.add(0);
+        testHideZadachi.add(2);
+        testHideZadachi.add(3);
+        testHideZadachiSize = testHideZadachi.size();
+        Log.e(TAG, "____testHideZadachiSize= " + testHideZadachiSize);
+
         holder.name.setText(zadachiList.get(position).getZadachi_list_name());
+
+        for (int i = 0; i < testHideZadachiSize; i++) {
+            int number = (int) testHideZadachi.get(i);
+            Log.e(TAG, "____testHideZadachi= " + number);
+            // Perform your check on each number here
+            if (position == number) {
+                holder.name.setBackgroundColor(Color.RED);
+            }
+        }
+//        for (Integer number : testHideZadachi) {
+//
+//            Log.e(TAG, "____testHideZadachi= " + number);
+//            // Perform your check on each number here
+//            if (number > 3) {
+//                holder.name.setBackgroundColor(Color.RED);
+//            }
+//        }
+
+//        holder.name.setText(zadachiList.get(position).setVisibility(View.GONE));
 
 //         CircleImageView circleImageView = holder.circleImageView;
 //        Glide.with(context).load(usersList.get(position).getUser_image()).listener(new RequestListener<Drawable>() {
