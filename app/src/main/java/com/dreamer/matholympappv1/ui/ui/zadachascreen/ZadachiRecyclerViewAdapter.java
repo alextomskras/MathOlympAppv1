@@ -5,7 +5,7 @@ import static com.google.android.material.internal.ContextUtils.getActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dreamer.matholympappv1.MainActivity;
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Zadachi;
+import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -134,24 +135,61 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        ArrayList<Integer> testHideZadachi;
-        testHideZadachi = new ArrayList<>();
-        testHideZadachi.add(0);
-        testHideZadachi.add(2);
-        testHideZadachi.add(3);
-        testHideZadachiSize = testHideZadachi.size();
-        Log.e(TAG, "____testHideZadachiSize= " + testHideZadachiSize);
+//        ArrayList<Integer> testHideZadachi;
+//        testHideZadachi = new ArrayList<>();
+//        testHideZadachi.add(0);
+//        testHideZadachi.add(2);
+//        testHideZadachi.add(3);
+//        testHideZadachiSize = testHideZadachi.size();
+//        Log.e(TAG, "____testHideZadachiSize= " + testHideZadachiSize);
 
         holder.name.setText(zadachiList.get(position).getZadachi_list_name());
 
-        for (int i = 0; i < testHideZadachiSize; i++) {
-            int number = (int) testHideZadachi.get(i);
-            Log.e(TAG, "____testHideZadachi= " + number);
-            // Perform your check on each number here
-            if (position == number) {
-                holder.name.setBackgroundColor(Color.RED);
+
+//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(context);
+//        Integer number =  sharedPreferencesManager.getDataFromSharedPreferences("zadacha", 0);
+//        List<Integer> myArrayList= Collections.singletonList(sharedPreferencesManager.getArrayFromSharedPreferences("zadacha", 1));
+//        for (Integer integer : myArrayList) {
+//            Log.e("MyApp", "Value: " + myArrayList);
+//        }
+
+
+//        for (int i = 0; i < testHideZadachiSize; i++) {
+        ArrayList<String> myList = null;
+
+        // Get the list and print its contents
+        ArrayList<String> list = MyArrayList.getList();
+        for (String s : list) {
+            Log.e(TAG, "____testHideZadachi= " + list);
+            System.out.println(s);
+            String number = s;
+            Log.e(TAG, "____testHideZadachi2= " + number);
+            if (number != null) {
+                String str = String.valueOf(position + 1); // using String.valueOf()
+                Log.e(TAG, "____testHideZadachi4= " + str);
+                String str2 = Integer.toString(position + 1); // using Integer.toString()
+                Log.e(TAG, "____testHideZadachi3= " + str2);
+                if (str2.equals(number)) {
+//                    holder.name.setBackgroundColor(Color.RED);
+                    //делаем зачеркнутый текст у пройденных задач
+                    holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
             }
         }
+//        assert false;
+//        String number = MyArrayList.();
+//            Log.e(TAG, "____testHideZadachi= " + number);
+//            // Perform your check on each number here
+
+
+//        if (number!=0) {
+//            if (position == number-1) {
+//                holder.name.setBackgroundColor(Color.RED);
+//            }
+//        }
+//        }
+
+
 //        for (Integer number : testHideZadachi) {
 //
 //            Log.e(TAG, "____testHideZadachi= " + number);
@@ -250,4 +288,6 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
             progressBar = (ProgressBar) view.findViewById(androidx.appcompat.R.id.progress_circular);
         }
     }
+
+
 }

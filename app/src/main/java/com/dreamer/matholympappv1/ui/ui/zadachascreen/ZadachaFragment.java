@@ -91,6 +91,7 @@ public class ZadachaFragment extends Fragment {
         viewModel.loadZadachi();
     }
 
+
     private void intNavcontroller() {
         Activity MainActivity = getActivity();
         assert MainActivity != null;

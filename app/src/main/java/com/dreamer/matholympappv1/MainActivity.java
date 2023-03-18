@@ -17,6 +17,7 @@ import androidx.navigation.NavHost;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +30,8 @@ protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+// Create a new instance of MyArrayList
+    MyArrayList myArrayList = new MyArrayList();
 
     ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 //    private Object getSystemService(String connectivityService) {

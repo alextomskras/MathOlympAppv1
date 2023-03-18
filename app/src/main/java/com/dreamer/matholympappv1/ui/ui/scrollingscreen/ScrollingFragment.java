@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Zadachi;
 import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
+import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -71,6 +72,7 @@ public class ScrollingFragment extends Fragment {
     private String zadacha_hint;
     private List listSolutionFilesFirestore;
     private String zadacha_solution;
+    public ArrayList<String> myList;
     private String zadacha_id;
     public AlertDialog.Builder builder;
     private String MainMessage;
@@ -158,7 +160,8 @@ public class ScrollingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        ArrayList<String> myList = new ArrayList<String>();
+//        MyArrayList myArrayList = new MyArrayList();
         //Ищем все что есть на макете
         NavController navController;
         final TextView zadachaTextView = binding.tvScrollMainText;
@@ -180,7 +183,7 @@ public class ScrollingFragment extends Fragment {
 //        Log.e(TAG, "iconImageViewOnClick at position9 " + edtxtAnswer);
         btnVerify.setOnClickListener(view1 -> {
             String textEnter = edtxtAnswer.getText().toString();
-            checkAnswer(textEnter.toString());
+            checkAnswer(textEnter.toString(), myList);
 
         });
 
@@ -209,7 +212,7 @@ public class ScrollingFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String textEnter = edtxtAnswer.getText().toString();
-                    checkAnswer(textEnter);
+                    checkAnswer(textEnter, myList);
 
                 }
                 return false;
@@ -219,7 +222,7 @@ public class ScrollingFragment extends Fragment {
 
     }
 
-    private void checkAnswer(String answer) {
+    private void checkAnswer(String answer, ArrayList myArrayList) {
 
 
         String etTexttitle = answer.toString();
@@ -228,6 +231,19 @@ public class ScrollingFragment extends Fragment {
 
 
             alertDiaShow(getString(R.string.alertDialogShowUSPEHTitle), getString(R.string.alertDialogShowUSPEHMessageBodySet));
+            // Add a string to the list
+
+            MyArrayList.addString(zadacha_id);
+
+//            ArrayList<String> myList = new ArrayList<String>();
+//            String myString = zadacha_id;
+//            MyArrayListUtils.addStringToList(myList, myString);
+//            Log.e(TAG, "viewId: " + myList);
+
+//            ZadachaFragment.saveDataToSharedPreferences("username", "John");
+//            SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(getContext());
+//            sharedPreferencesManager.saveData("zadacha", Integer.valueOf(zadacha_id));
+//            sharedPreferencesManager.putArrayFromSharedPreferences("zadacha", 1);
         } else {
             alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), getString(R.string.alertDialogShowOSHIBKAMessageBodySet));
 
