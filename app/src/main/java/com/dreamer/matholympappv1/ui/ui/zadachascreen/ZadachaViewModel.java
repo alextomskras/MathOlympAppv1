@@ -25,24 +25,24 @@ public class ZadachaViewModel extends ViewModel {
     private MutableLiveData<List<Zadachi>> zadachiLiveData = new MutableLiveData<>();
 
     public void loadUsers() {
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Users> usersList = new ArrayList<>();
-                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                    String user_id = userSnapshot.getKey();
-                    Users user = userSnapshot.getValue(Users.class).WithId(user_id);
-                    usersList.add(user);
-                }
-                usersLiveData.setValue(usersList);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "Error getting data", databaseError.toException());
-            }
-        });
+//        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+//        databaseReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                List<Users> usersList = new ArrayList<>();
+//                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+//                    String user_id = userSnapshot.getKey();
+//                    Users user = userSnapshot.getValue(Users.class).WithId(user_id);
+//                    usersList.add(user);
+//                }
+//                usersLiveData.setValue(usersList);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.e(TAG, "Error getting data", databaseError.toException());
+//            }
+//        });
     }
 
     public void loadZadachi() {

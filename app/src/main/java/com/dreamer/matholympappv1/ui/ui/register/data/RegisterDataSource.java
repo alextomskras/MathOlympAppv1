@@ -12,7 +12,7 @@ public class RegisterDataSource {
     public Result<RegisteredInUser> login(String username, String password) {
 
         try {
-            // TODO: handle loggedInUser authentication
+
             RegisteredInUser fakeUser =
                     new RegisteredInUser(
                             java.util.UUID.randomUUID().toString(),
@@ -24,6 +24,6 @@ public class RegisterDataSource {
     }
 
     public void logout() {
-        // TODO: revoke authentication
+
     }
 }

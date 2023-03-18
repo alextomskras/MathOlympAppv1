@@ -4,7 +4,7 @@ public class Users {
 
     public String User_id;
     //    String name="",user_image="";
-    public String username = "", token_id = "";
+    public String username = "", token_id = "", userscore = "";
 
 
     public Users() {
@@ -15,6 +15,7 @@ public class Users {
     public Users(String username, String token_id) {
         this.username = username;
         this.token_id = token_id;
+        this.userscore = userscore;
 //        this.user_image = image;
     }
 
@@ -25,6 +26,7 @@ public class Users {
     public void setUsername(String username) {
         this.username = username;
     }
+
 
 
     public String getUser_token_id() {
@@ -43,6 +45,13 @@ public class Users {
 //        this.user_image = user_image;
 //    }
 
+    public String getUserscore() {
+        return userscore;
+    }
+
+    public void setUserscore(String userscore) {
+        this.userscore = userscore;
+    }
 
     public Users WithId(String id) {
         this.User_id = id;

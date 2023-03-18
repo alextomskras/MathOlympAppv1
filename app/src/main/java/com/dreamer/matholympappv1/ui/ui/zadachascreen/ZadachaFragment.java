@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
+import com.dreamer.matholympappv1.utils.MyArrayList;
 
 import java.util.ArrayList;
 
@@ -79,6 +82,13 @@ public class ZadachaFragment extends Fragment {
         recyclerView.setAdapter(zadachiRecyclerViewAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+//        MyArrayList.readArrayListFromFirebase();
+        MyArrayList.loadArrayListFromFirebase();
     }
 
     @Override

@@ -41,6 +41,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -242,7 +246,7 @@ public class ScrollingFragment extends Fragment {
             // Add a string to the list
 
             MyArrayList.addString(zadacha_id);
-            
+
             //делаем операции со счетчиком юзера
             Integer userScore = sharedPreffsLoadUserScore();
             Log.e(TAG, "userScore: " + userScore);
@@ -250,6 +254,7 @@ public class ScrollingFragment extends Fragment {
             userScore = i;
             Log.e(TAG, "userScore: " + userScore);
             sharedPreffsSaveUserScore(userScore);
+            firebaseSaveUserScore(userScore);
 
 //            ArrayList<String> myList = new ArrayList<String>();
 //            String myString = zadacha_id;
@@ -487,6 +492,22 @@ public class ScrollingFragment extends Fragment {
     private void sharedPreffsSaveUserScore(Integer zadacha_score) {
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
         sharedPreferencesManager.saveData("zadacha_score", Integer.valueOf(zadacha_score));
+    }
+
+    private void firebaseSaveUserScore(Integer zadacha_score) {
+        String str2 = Integer.toString(zadacha_score);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Log.e(TAG, "Error: current user is null");
+            return;
+        }
+        String uid = user.getUid();
+        try {
+            DatabaseReference scoreRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("userscore");
+            scoreRef.setValue(str2);
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
+        }
     }
 
     private Integer sharedPreffsLoadUserScore() {
