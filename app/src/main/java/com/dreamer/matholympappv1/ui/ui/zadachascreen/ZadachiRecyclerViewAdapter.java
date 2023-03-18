@@ -5,6 +5,7 @@ import static com.google.android.material.internal.ContextUtils.getActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
@@ -155,7 +156,7 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 
 
 //        for (int i = 0; i < testHideZadachiSize; i++) {
-        ArrayList<String> myList = null;
+//        ArrayList<String> myList = null;
 
         // Get the list and print its contents
         ArrayList<String> list = MyArrayList.getList();
@@ -173,9 +174,14 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 //                    holder.name.setBackgroundColor(Color.RED);
                     //делаем зачеркнутый текст у пройденных задач
                     holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    holder.name.setTextColor(Color.GRAY);
+
+//                    Log.e(TAG, "____testHideZadachi5= " + holder.name.getPaintFlags());
                 }
             }
         }
+
+
 //        assert false;
 //        String number = MyArrayList.();
 //            Log.e(TAG, "____testHideZadachi= " + number);
@@ -229,6 +235,16 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (holder.name.getCurrentTextColor() == Color.GRAY) {
+                    // Strike-through flag is set
+                    // Do something...
+                    Log.e(TAG, "____testHideZadachi5= " + "Color.GRAY");
+                    return;
+                } else {
+                    // Strike-through flag is not set
+                    // Do something else...
+                    Log.e(TAG, "____testHideZadachi6= " + "No-Color.GRAY");
+                }
                 Bundle bundle = new Bundle();
                 Log.e(TAG, "_Dateitem=10 " + listFilesFirestore.size());
                 bundle.putString("MyArgZadacha_id", user_id);
