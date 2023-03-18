@@ -235,6 +235,8 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //проверяем что цвет серый и не пускаем в уже пройденные задачи - ибо не надо накручивать счетчик очков
                 if (holder.name.getCurrentTextColor() == Color.GRAY) {
                     // Strike-through flag is set
                     // Do something...
