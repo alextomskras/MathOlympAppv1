@@ -35,6 +35,7 @@ import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Zadachi;
 import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
 import com.dreamer.matholympappv1.utils.MyArrayList;
+import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -73,6 +74,9 @@ public class ScrollingFragment extends Fragment {
     private List listSolutionFilesFirestore;
     private String zadacha_solution;
     public ArrayList<String> myList;
+    public SharedPreffUtils sharedPreferencesManager;
+
+    private Integer userScore;
     private String zadacha_id;
     public AlertDialog.Builder builder;
     private String MainMessage;
@@ -84,13 +88,14 @@ public class ScrollingFragment extends Fragment {
 //        this.zadachiList = zadachiList;
 //        this.context = context;
 
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
         zadacha_main_body = "";
         zadacha_answer = "";
         zadacha_hint = "";
@@ -98,6 +103,7 @@ public class ScrollingFragment extends Fragment {
         zadacha_solution = "";
         MainMessage = "";
         searchimagesPath = "";
+        userScore = 0;
         answerImageUrl = "gs://matholymp1.appspot.com/answersimages/";
         solutionImageUrl = "gs://matholymp1.appspot.com/solutionimages/";
         listFilesFirestore = new ArrayList<>();
@@ -160,7 +166,9 @@ public class ScrollingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         ArrayList<String> myList = new ArrayList<String>();
+
 //        MyArrayList myArrayList = new MyArrayList();
         //Ищем все что есть на макете
         NavController navController;
@@ -234,6 +242,14 @@ public class ScrollingFragment extends Fragment {
             // Add a string to the list
 
             MyArrayList.addString(zadacha_id);
+            
+            //делаем операции со счетчиком юзера
+            Integer userScore = sharedPreffsLoadUserScore();
+            Log.e(TAG, "userScore: " + userScore);
+            Integer i = userScore + 10;
+            userScore = i;
+            Log.e(TAG, "userScore: " + userScore);
+            sharedPreffsSaveUserScore(userScore);
 
 //            ArrayList<String> myList = new ArrayList<String>();
 //            String myString = zadacha_id;
@@ -468,6 +484,16 @@ public class ScrollingFragment extends Fragment {
         navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
     }
 
+    private void sharedPreffsSaveUserScore(Integer zadacha_score) {
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        sharedPreferencesManager.saveData("zadacha_score", Integer.valueOf(zadacha_score));
+    }
+
+    private Integer sharedPreffsLoadUserScore() {
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        Integer zadacha_score = sharedPreferencesManager.getDataFromSharedPreferences("zadacha_score");
+        return zadacha_score;
+    }
 
     @Override
     public void onDestroyView() {

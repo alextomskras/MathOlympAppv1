@@ -31,9 +31,9 @@ public class SharedPreffUtils {
         editor.apply();
     }
 
-    public int getDataFromSharedPreferences(String key, int defaultValue) {
+    public int getDataFromSharedPreferences(String key) {
 //        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MySharedPreferences", Context.MODE_PRIVATE);
-        return sharedPreferences.getInt(key, defaultValue);
+        return sharedPreferences.getInt(key, 0);
     }
 
     public int getArrayFromSharedPreferences(String key, int defaultValue) {
