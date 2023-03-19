@@ -3,12 +3,16 @@ package com.dreamer.matholympappv1.ui.ui.zadachascreen;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -28,7 +32,8 @@ import java.util.ArrayList;
 public class ZadachaFragment extends Fragment {
     NavController navController;
     private static final String ARG_COLUMN_COUNT = "column-count";
-
+    private TextView myAppBarTitleTextView;
+    private TextView myAppBarScoreTextView;
     private int mColumnCount = 1;
     private RecyclerView recyclerView;
     private UserRecyclerViewAdapter userRecyclerViewAdapter;
@@ -36,9 +41,12 @@ public class ZadachaFragment extends Fragment {
 
     private ZadachaViewModel viewModel;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         intNavcontroller();
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -51,6 +59,27 @@ public class ZadachaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+// Inflate the custom view
+        View customView = inflater.inflate(R.layout.actionbar, null);
+        // Set the text on the ActionBar
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayShowCustomEnabled(true);
+            // Add the custom layout to the ActionBar
+            ActionBar.LayoutParams layout = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.MATCH_PARENT);
+            layout.gravity = Gravity.END;
+            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP);
+
+            myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
+            myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
+            updateActionBarTextViewTitle("Your");
+            updateActionBarTextViewScore("Score:");
+
+
+            actionBar.setCustomView(customView);
+        }
+
 
         userRecyclerViewAdapter = new UserRecyclerViewAdapter(new ArrayList<>(), getContext());
         zadachiRecyclerViewAdapter = new ZadachiRecyclerViewAdapter(new ArrayList<>(), getContext());
@@ -84,9 +113,12 @@ public class ZadachaFragment extends Fragment {
         return view;
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Obtain a reference to the ActionBar object in the parent activity
+
 //        MyArrayList.readArrayListFromFirebase();
         MyArrayList.loadArrayListFromFirebase();
     }
@@ -101,6 +133,24 @@ public class ZadachaFragment extends Fragment {
         viewModel.loadZadachi();
     }
 
+    // Update the text of the TextView in the ActionBar
+    private void updateActionBarTextViewTitle(String title) {
+        myAppBarTitleTextView.setText(title);
+
+    }
+
+    private void updateActionBarTextViewScore(String score) {
+        myAppBarScoreTextView.setText(score);
+        // Set the layout parameters for the TextView
+        // Set the layout parameters for the TextView
+//        Toolbar.LayoutParams layoutParams = new Toolbar.LayoutParams(
+//                Toolbar.LayoutParams.WRAP_CONTENT,
+//                Toolbar.LayoutParams.WRAP_CONTENT,
+//                Gravity.END);
+//        myAppBarScoreTextView.setLayoutParams(layoutParams);
+
+
+    }
 
     private void intNavcontroller() {
         Activity MainActivity = getActivity();
