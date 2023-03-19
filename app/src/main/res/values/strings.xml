@@ -151,8 +151,8 @@
     <string name="alertDialogUSPEHSetTitle">REZULTAT </string>
     <string name="alertDialogUSPEHTitleCheck">USPEH</string>
     <string name="alertDialogShowUSPEHTitle">USPEH</string>
-    <string name="alertDialogShowUSPEHMessageBodySet">TAK-TAKKKKKKKKKK</string>
-    <string name="alertDialogShowOSHIBKAMessageBodySet">VOTT-TAK-TAKKKKKKKKKK</string>
+    <string name="alertDialogShowUSPEHMessageBodySet">CONGRATULATION</string>
+    <string name="alertDialogShowOSHIBKAMessageBodySet">SORRY-TRY-AGAIN</string>
     <string name="alertDialogShowOSHIBKASetTitle">OSHIBKA</string>
     <string name="appbar_score">Score: </string>
     <string name="appbar_title_scroll_fragm">Uslovie zadachi</string>
