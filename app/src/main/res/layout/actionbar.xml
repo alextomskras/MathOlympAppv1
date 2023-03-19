@@ -8,7 +8,6 @@
         android:id="@+id/appBarTVtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_centerVertical="true"
         android:text="AppBarTitle"
         android:textSize="18sp"
@@ -19,7 +18,8 @@
         android:id="@+id/appBarTVscore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:textSize="18sp"
+        android:textStyle="bold"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:text="Score: 66" />

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,7 +25,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -84,6 +87,8 @@ public class ScrollingFragment extends Fragment {
     private String zadacha_id;
     public AlertDialog.Builder builder;
     private String MainMessage;
+    private TextView myAppBarTitleTextView;
+    private TextView myAppBarScoreTextView;
     private String searchimagesPath;
     private String answerImageUrl;
     private String solutionImageUrl;
@@ -131,7 +136,26 @@ public class ScrollingFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         getBundleArguments();
 
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+// Inflate the custom view
+        View customView = inflater.inflate(R.layout.actionbar, null);
+        // Set the text on the ActionBar
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayShowCustomEnabled(false);
+            // Add the custom layout to the ActionBar
+            ActionBar.LayoutParams layout = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.MATCH_PARENT);
+            layout.gravity = Gravity.END;
+//            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP);
 
+            myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
+            myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
+            updateActionBarTextViewTitle(getString(R.string.appbar_title_scroll_fragm));
+            updateActionBarTextViewScore(getString(R.string.appbar_score));
+
+
+            actionBar.setCustomView(customView);
+        }
         binding = FragmentScrollingBinding.inflate(inflater, container, false);
         setupFirebaseStorage();
 
@@ -272,6 +296,21 @@ public class ScrollingFragment extends Fragment {
         }
     }
 
+    // Update the text of the TextView in the ActionBar
+    private void updateActionBarTextViewTitle(String title) {
+        myAppBarTitleTextView.setText(title);
+
+    }
+
+
+    private void updateActionBarTextViewScore(String score) {
+        myAppBarScoreTextView.setText("");
+//        Integer userScore = sharedPreffsLoadUserScore();
+//        if (userScore != 0) {
+//            myAppBarScoreTextView.setText(score + userScore);
+//
+//        }
+    }
 
     private void alertDiaShow(String Title, String MainMessage) {
 //        AllertdialogLayoutBinding binding = AllertdialogLayoutBinding.inflate(getLayoutInflater());

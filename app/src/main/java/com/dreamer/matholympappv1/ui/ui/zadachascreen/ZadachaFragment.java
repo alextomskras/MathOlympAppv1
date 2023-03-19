@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.utils.MyArrayList;
+import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 
 import java.util.ArrayList;
 
@@ -73,8 +74,8 @@ public class ZadachaFragment extends Fragment {
 
             myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
             myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
-            updateActionBarTextViewTitle("Your");
-            updateActionBarTextViewScore("Score:");
+            updateActionBarTextViewTitle(getString(R.string.appbar_title_zadacha_fragm));
+            updateActionBarTextViewScore(getString(R.string.appbar_score));
 
 
             actionBar.setCustomView(customView);
@@ -139,17 +140,20 @@ public class ZadachaFragment extends Fragment {
 
     }
 
+
     private void updateActionBarTextViewScore(String score) {
-        myAppBarScoreTextView.setText(score);
-        // Set the layout parameters for the TextView
-        // Set the layout parameters for the TextView
-//        Toolbar.LayoutParams layoutParams = new Toolbar.LayoutParams(
-//                Toolbar.LayoutParams.WRAP_CONTENT,
-//                Toolbar.LayoutParams.WRAP_CONTENT,
-//                Gravity.END);
-//        myAppBarScoreTextView.setLayoutParams(layoutParams);
+        Integer userScore = sharedPreffsLoadUserScore();
+        if (userScore != 0) {
+            myAppBarScoreTextView.setText(score + userScore);
 
+        }
 
+    }
+
+    private Integer sharedPreffsLoadUserScore() {
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        Integer zadacha_score = sharedPreferencesManager.getDataFromSharedPreferences("zadacha_score");
+        return zadacha_score;
     }
 
     private void intNavcontroller() {
