@@ -21,15 +21,17 @@ import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Integer solutionlimits;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_NETWORK_STATE = 1;
     NavController navController;
 
-//    private Toolbar toolbar;
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-
+    //    private Toolbar toolbar;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+//    sharedPreffsSaveSolutionLimits(3);
 // Create a new instance of MyArrayList
     MyArrayList myArrayList = new MyArrayList();
 
@@ -38,7 +40,8 @@ protected void onCreate(Bundle savedInstanceState) {
 //        return null;
 //    }
 
-    NetworkInfo networkInfo;
+
+        NetworkInfo networkInfo;
 
     {
         assert connectivityManager != null;

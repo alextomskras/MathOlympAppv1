@@ -85,6 +85,8 @@ public class ScrollingFragment extends Fragment {
 
     private Integer userScore;
     private String zadacha_id;
+    private Integer solutionLimits;
+    private Integer hintLimits;
     public AlertDialog.Builder builder;
     private String MainMessage;
     private TextView myAppBarTitleTextView;
@@ -106,6 +108,7 @@ public class ScrollingFragment extends Fragment {
         setHasOptionsMenu(true);
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
         zadacha_main_body = "";
+//        solutionLimits="";
         zadacha_answer = "";
         zadacha_hint = "";
         zadacha_id = "";
@@ -125,8 +128,6 @@ public class ScrollingFragment extends Fragment {
     private void getFragmentBundles() {
 
     }
-
-
 
 
     @Nullable
@@ -426,6 +427,7 @@ public class ScrollingFragment extends Fragment {
                         }
                     });
 
+
         } else {
             builder.setView(team);
             tw.setText(MainMessage);
@@ -434,7 +436,13 @@ public class ScrollingFragment extends Fragment {
                     .setCancelable(true)
                     .setPositiveButton(R.string.alertDialogHintButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            hintLimits = sharedPreffsLoadSolutionLimits();
+                            if (hintLimits == 0) {
 
+                                return;
+                            }
+                            hintLimits = hintLimits - 1;
+                            sharedPreffsSaveSolutionLimits(hintLimits);
                             alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
                             Snackbar.make(getActivity().findViewById(android.R.id.content),
                                     "YESSSS",
@@ -444,6 +452,13 @@ public class ScrollingFragment extends Fragment {
                     .setNeutralButton(R.string.alertDialogREZULTATNeutralButton, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     //  Action for 'NO' Button
+                                    solutionLimits = sharedPreffsLoadSolutionLimits();
+                                    if (solutionLimits == 0) {
+
+                                        return;
+                                    }
+                                    solutionLimits = solutionLimits - 1;
+                                    sharedPreffsSaveSolutionLimits(solutionLimits);
                                     alertDiaShow(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
 
                                     Snackbar.make(getActivity().findViewById(android.R.id.content),
@@ -533,6 +548,28 @@ public class ScrollingFragment extends Fragment {
         sharedPreferencesManager.saveData("zadacha_score", Integer.valueOf(zadacha_score));
     }
 
+    private void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        sharedPreferencesManager.saveData("solution_limits", solutionLimits);
+    }
+
+    private Integer sharedPreffsLoadSolutionLimits() {
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        Integer solutionLimits = sharedPreferencesManager.getDataFromSharedPreferences("solution_limits");
+        return solutionLimits;
+    }
+
+    private void sharedPreffsSaveHintLimits(Integer hintLimits) {
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        sharedPreferencesManager.saveData("solution_limits", hintLimits);
+    }
+
+    private Integer sharedPreffsLoadHintLimits() {
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        Integer hintLimits = sharedPreferencesManager.getDataFromSharedPreferences("hint_limits");
+        return hintLimits;
+    }
+
     private void firebaseSaveUserScore(Integer zadacha_score) {
         String str2 = Integer.toString(zadacha_score);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -554,6 +591,7 @@ public class ScrollingFragment extends Fragment {
         Integer zadacha_score = sharedPreferencesManager.getDataFromSharedPreferences("zadacha_score");
         return zadacha_score;
     }
+
 
     @Override
     public void onDestroyView() {

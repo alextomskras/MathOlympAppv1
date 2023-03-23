@@ -122,6 +122,8 @@ public class ZadachaFragment extends Fragment {
 
 //        MyArrayList.readArrayListFromFirebase();
         MyArrayList.loadArrayListFromFirebase();
+        sharedPreffsSaveSolutionLimits(3);
+        sharedPreffsSaveHintLimits(2);
     }
 
     @Override
@@ -140,6 +142,22 @@ public class ZadachaFragment extends Fragment {
 
     }
 
+    private void sharedPreffsSaveHintLimits(Integer hintLimits) {
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        sharedPreferencesManager.saveData("hint_limits", hintLimits);
+    }
+
+    private void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        sharedPreferencesManager.saveData("solution_limits", solutionLimits);
+    }
+
+
+    private Integer sharedPreffsLoadSolutionLimits() {
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        Integer solutionLimits = sharedPreferencesManager.getDataFromSharedPreferences("solution_limits");
+        return solutionLimits;
+    }
 
     private void updateActionBarTextViewScore(String score) {
         Integer userScore = sharedPreffsLoadUserScore();
