@@ -436,13 +436,13 @@ public class ScrollingFragment extends Fragment {
                     .setCancelable(true)
                     .setPositiveButton(R.string.alertDialogHintButton, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            hintLimits = sharedPreffsLoadSolutionLimits();
+                            hintLimits = sharedPreffsLoadHintLimits();
                             if (hintLimits == 0) {
 
                                 return;
                             }
                             hintLimits = hintLimits - 1;
-                            sharedPreffsSaveSolutionLimits(hintLimits);
+                            sharedPreffsSaveHintLimits(hintLimits);
                             alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
                             Snackbar.make(getActivity().findViewById(android.R.id.content),
                                     "YESSSS",
@@ -561,7 +561,7 @@ public class ScrollingFragment extends Fragment {
 
     private void sharedPreffsSaveHintLimits(Integer hintLimits) {
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        sharedPreferencesManager.saveData("solution_limits", hintLimits);
+        sharedPreferencesManager.saveData("hint_limits", hintLimits);
     }
 
     private Integer sharedPreffsLoadHintLimits() {
