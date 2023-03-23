@@ -57,6 +57,7 @@ public class ZadachaViewModel extends ViewModel {
                     zadachiList.add(zadachi);
                 }
                 zadachiLiveData.setValue(zadachiList);
+//                return null;
             }
 
             @Override

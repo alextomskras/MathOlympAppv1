@@ -443,6 +443,7 @@ public class ScrollingFragment extends Fragment {
                             }
                             hintLimits = hintLimits - 1;
                             sharedPreffsSaveHintLimits(hintLimits);
+                            firebaseSaveHintLimits(hintLimits);
                             alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
                             Snackbar.make(getActivity().findViewById(android.R.id.content),
                                     "YESSSS",
@@ -459,6 +460,7 @@ public class ScrollingFragment extends Fragment {
                                     }
                                     solutionLimits = solutionLimits - 1;
                                     sharedPreffsSaveSolutionLimits(solutionLimits);
+                                    firebaseSaveSolutionLimits(solutionLimits);
                                     alertDiaShow(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
 
                                     Snackbar.make(getActivity().findViewById(android.R.id.content),
@@ -581,6 +583,38 @@ public class ScrollingFragment extends Fragment {
         try {
             DatabaseReference scoreRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("userscore");
             scoreRef.setValue(str2);
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
+        }
+    }
+
+    private void firebaseSaveSolutionLimits(Integer solutionlimits) {
+        String str2 = Integer.toString(solutionlimits);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Log.e(TAG, "Error: current user is null");
+            return;
+        }
+        String uid = user.getUid();
+        try {
+            DatabaseReference solutionRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("solutionlimits");
+            solutionRef.setValue(str2);
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
+        }
+    }
+
+    private void firebaseSaveHintLimits(Integer hintlimits) {
+        String str2 = Integer.toString(hintlimits);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Log.e(TAG, "Error: current user is null");
+            return;
+        }
+        String uid = user.getUid();
+        try {
+            DatabaseReference hintRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("hintlimits");
+            hintRef.setValue(str2);
         } catch (Exception e) {
             Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
         }

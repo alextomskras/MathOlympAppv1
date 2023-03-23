@@ -49,6 +49,7 @@ public class ZadachaRepositoryImpl implements ZadachaRepository {
                     usersList.add(users);
                 }
                 usersLiveData.postValue(usersList);
+//                return null;
             }
 
             @Override
@@ -71,6 +72,7 @@ public class ZadachaRepositoryImpl implements ZadachaRepository {
                     zadachiList.add(zadachi);
                 }
                 zadachiLiveData.postValue(zadachiList);
+//                return null;
             }
 
             @Override

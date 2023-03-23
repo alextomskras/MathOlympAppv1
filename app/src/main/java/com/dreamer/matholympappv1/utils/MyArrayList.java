@@ -4,6 +4,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -19,6 +21,8 @@ import java.util.List;
 public class MyArrayList {
     private static final String TAG = "TAG";
     public static ArrayList<String> list;
+
+    public static Integer solutionsLimits;
 
     public MyArrayList() {
         this.list = new ArrayList<String>();
@@ -95,6 +99,7 @@ public class MyArrayList {
                 } catch (Exception e) {
                     Log.e(TAG, "Error reading ArrayList from Firebase: " + e.getMessage());
                 }
+//                return null;
             }
 
             @Override
@@ -131,6 +136,7 @@ public class MyArrayList {
                     list = myList;
 
                 }
+//                return null;
             }
 
             @Override
@@ -139,6 +145,146 @@ public class MyArrayList {
             }
         });
     }
+
+    public static Integer firebaseLoadSolutionLimits() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Log.e(TAG, "Error: current user is null");
+            ;
+        }
+        String uid = user.getUid();
+
+        DatabaseReference solutionRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("solutionlimits");
+        solutionRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String solutionlimits = (String) dataSnapshot.getValue();
+                    Log.d(TAG, "Solution limits: " + solutionlimits);
+                    // Use the value as needed
+                    solutionsLimits = Integer.valueOf(solutionlimits);
+
+                    Log.d(TAG, "Solution limits2: " + solutionsLimits);
+
+                } else {
+                    Log.d(TAG, "Solution limits not found");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w(TAG, "Failed to read value.", databaseError.toException());
+            }
+        });
+
+        return solutionsLimits;
+    }
+
+    public static void firebaseGetSolutionLimits(final OnSuccessListener<Integer> successListener, final OnFailureListener failureListener) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            failureListener.onFailure(new Exception("Error: current user is null"));
+            return;
+        }
+        String uid = user.getUid();
+
+        DatabaseReference solutionRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("solutionlimits");
+        solutionRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String solutionlimits1 = (String) dataSnapshot.getValue();
+                    Log.e(TAG, "Solution limits5: " + solutionlimits1);
+                    assert solutionlimits1 != null;
+                    successListener.onSuccess(Integer.valueOf(solutionlimits1));
+                } else {
+                    successListener.onSuccess(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                failureListener.onFailure(databaseError.toException());
+            }
+        });
+    }
+
+    public static void firebaseGetHintLimits(final OnSuccessListener<Integer> successListener, final OnFailureListener failureListener) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            failureListener.onFailure(new Exception("Error: current user is null"));
+            return;
+        }
+        String uid = user.getUid();
+
+        DatabaseReference hintRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("hintlimits");
+        hintRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String hintlimits1 = (String) dataSnapshot.getValue();
+                    Log.e(TAG, "Solution limits4: " + hintlimits1);
+                    assert hintlimits1 != null;
+                    successListener.onSuccess(Integer.valueOf(hintlimits1));
+                } else {
+                    successListener.onSuccess(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                failureListener.onFailure(databaseError.toException());
+            }
+        });
+    }
+
+    private void firebaseLoadUserSolutionLimits(Integer zadacha_score) {
+        String str2 = Integer.toString(zadacha_score);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Log.e(TAG, "Error: current user is null");
+            return;
+        }
+        String uid = user.getUid();
+        try {
+            DatabaseReference scoreRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("userscore");
+            scoreRef.setValue(str2);
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
+        }
+    }
+
+    private void firebaseLoadUserHintLimits(Integer zadacha_score) {
+        String str2 = Integer.toString(zadacha_score);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Log.e(TAG, "Error: current user is null");
+            return;
+        }
+        String uid = user.getUid();
+        try {
+            DatabaseReference scoreRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("userscore");
+            scoreRef.setValue(str2);
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
+        }
+    }
+//    private void firebaseLoadHintLimits(Integer hintlimits) {
+//        String str2 = Integer.toString(hintlimits);
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        if (user == null) {
+//            Log.e(TAG, "Error: current user is null");
+//            return;
+//        }
+//        String uid = user.getUid();
+//        try {
+//            DatabaseReference hintRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("hintlimits");
+//            hintRef.setValue(str2);
+//        } catch (Exception e) {
+//            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
+//        }
+//    }
 
 }
 

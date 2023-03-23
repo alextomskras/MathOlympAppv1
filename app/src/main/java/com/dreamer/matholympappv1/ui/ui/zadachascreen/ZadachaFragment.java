@@ -3,6 +3,7 @@ package com.dreamer.matholympappv1.ui.ui.zadachascreen;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
+import com.google.android.gms.tasks.OnFailureListener;
 
 import java.util.ArrayList;
 
@@ -33,8 +35,14 @@ import java.util.ArrayList;
 public class ZadachaFragment extends Fragment {
     NavController navController;
     private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String TAG = "TAG";
     private TextView myAppBarTitleTextView;
     private TextView myAppBarScoreTextView;
+
+    //        getSolutionLimitsFromFirebase();
+//        solutionlimits = MyArrayList.firebaseLoadSolutionLimits();
+    private Integer solutionslimits;
+    private Integer hintslimits;
     private int mColumnCount = 1;
     private RecyclerView recyclerView;
     private UserRecyclerViewAdapter userRecyclerViewAdapter;
@@ -52,7 +60,8 @@ public class ZadachaFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-
+        solutionslimits = 0;
+        hintslimits = 0;
         viewModel = new ViewModelProvider(this).get(ZadachaViewModel.class);
     }
 
@@ -122,8 +131,13 @@ public class ZadachaFragment extends Fragment {
 
 //        MyArrayList.readArrayListFromFirebase();
         MyArrayList.loadArrayListFromFirebase();
-        sharedPreffsSaveSolutionLimits(3);
-        sharedPreffsSaveHintLimits(2);
+        //get values of Solutions and Hints Limits from firebaseDB and save to sharedPreffs
+        getSolutionLimitsFromFirebase();
+        getHintLimitsFromFirebase();
+//        Log.e(TAG, "MyArrayList.firebaseLoadSolutionLimits(): " + solutionslimits);
+//        Log.e(TAG, "MyArrayList.firebaseLoadSolutionLimits2(): " + hintslimits);
+
+
     }
 
     @Override
@@ -178,5 +192,42 @@ public class ZadachaFragment extends Fragment {
         Activity MainActivity = getActivity();
         assert MainActivity != null;
         navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+    }
+
+
+    public void getSolutionLimitsFromFirebase() {
+        MyArrayList.firebaseGetSolutionLimits(solutionlimits -> {
+            // Do something with the solution limits value here
+            solutionslimits = solutionlimits;
+            Log.d(TAG, "Solution limits2: " + solutionlimits);
+            Log.d(TAG, "Solution limits21: " + solutionslimits);
+            sharedPreffsSaveSolutionLimits(solutionslimits);
+
+        }, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Handle the error here
+                Log.e(TAG, "Error getting solution limits from Firebase: " + e.getMessage());
+            }
+        });
+        Log.d(TAG, "Solution limits22: " + solutionslimits);
+
+    }
+
+
+    public void getHintLimitsFromFirebase() {
+        MyArrayList.firebaseGetHintLimits(hintlimits -> {
+            // Do something with the solution limits value here
+            hintslimits = hintlimits;
+            Log.d(TAG, "Solution limits3: " + hintlimits);
+            Log.d(TAG, "Solution limits31: " + hintslimits);
+            sharedPreffsSaveHintLimits(hintslimits);
+        }, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Handle the error here
+                Log.e(TAG, "Error getting solution limits from Firebase: " + e.getMessage());
+            }
+        });
     }
 }
