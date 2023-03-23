@@ -1,5 +1,7 @@
 package com.dreamer.matholympappv1.ui.ui.zadachascreen;
 
+import static com.dreamer.matholympappv1.utils.MyArrayList.firebaseGetSolutionLimits;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -134,6 +136,24 @@ public class ZadachaFragment extends Fragment {
         //get values of Solutions and Hints Limits from firebaseDB and save to sharedPreffs
         getSolutionLimitsFromFirebase();
         getHintLimitsFromFirebase();
+
+        //other metod for catch data from firebaseDB
+        getSolutionLimitsFromFirebase(new MyArrayList.SolutionLimitsCallback() {
+            @Override
+            public void onSuccess(Integer solutionlimits) {
+                // Do something with the solution limits value here
+                solutionslimits = solutionlimits;
+                Log.d(TAG, "Solution limits9: " + solutionlimits);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle the error here
+                Log.e(TAG, "Error getting solution limits from Firebase: " + e.getMessage());
+            }
+        });
+
+
 //        Log.e(TAG, "MyArrayList.firebaseLoadSolutionLimits(): " + solutionslimits);
 //        Log.e(TAG, "MyArrayList.firebaseLoadSolutionLimits2(): " + hintslimits);
 
@@ -196,7 +216,7 @@ public class ZadachaFragment extends Fragment {
 
 
     public void getSolutionLimitsFromFirebase() {
-        MyArrayList.firebaseGetSolutionLimits(solutionlimits -> {
+        firebaseGetSolutionLimits(solutionlimits -> {
             // Do something with the solution limits value here
             solutionslimits = solutionlimits;
             Log.d(TAG, "Solution limits2: " + solutionlimits);
@@ -214,6 +234,9 @@ public class ZadachaFragment extends Fragment {
 
     }
 
+    public void getSolutionLimitsFromFirebase(MyArrayList.SolutionLimitsCallback callback) {
+        MyArrayList.firebaseGetSolutionLimits(callback);
+    }
 
     public void getHintLimitsFromFirebase() {
         MyArrayList.firebaseGetHintLimits(hintlimits -> {

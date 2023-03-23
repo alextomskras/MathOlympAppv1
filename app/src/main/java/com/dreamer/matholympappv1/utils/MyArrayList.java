@@ -270,7 +270,38 @@ public class MyArrayList {
             Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
         }
     }
-//    private void firebaseLoadHintLimits(Integer hintlimits) {
+
+    public static void firebaseGetSolutionLimits(SolutionLimitsCallback callback) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Log.e(TAG, "Error: current user is null");
+            return;
+        }
+        String uid = user.getUid();
+
+        DatabaseReference solutionRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("solutionlimits");
+        solutionRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String solutionlimits = (String) dataSnapshot.getValue();
+                    Log.d(TAG, "Solution limits: " + solutionlimits);
+                    callback.onSuccess(Integer.valueOf(solutionlimits));
+                } else {
+                    Log.d(TAG, "Solution limits not found");
+                    callback.onFailure(new Exception("Solution limits not found"));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w(TAG, "Failed to read value.", databaseError.toException());
+                callback.onFailure(databaseError.toException());
+            }
+        });
+    }
+
+    //    private void firebaseLoadHintLimits(Integer hintlimits) {
 //        String str2 = Integer.toString(hintlimits);
 //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 //        if (user == null) {
@@ -285,6 +316,11 @@ public class MyArrayList {
 //            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
 //        }
 //    }
+    public interface SolutionLimitsCallback {
+        void onSuccess(Integer solutionlimits);
+
+        void onFailure(Exception e);
+    }
 
 }
 
