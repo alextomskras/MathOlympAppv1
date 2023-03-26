@@ -281,15 +281,7 @@ public class ScrollingFragment extends Fragment {
             sharedPreffsSaveUserScore(userScore);
             firebaseSaveUserScore(userScore);
 
-//            ArrayList<String> myList = new ArrayList<String>();
-//            String myString = zadacha_id;
-//            MyArrayListUtils.addStringToList(myList, myString);
-//            Log.e(TAG, "viewId: " + myList);
 
-//            ZadachaFragment.saveDataToSharedPreferences("username", "John");
-//            SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(getContext());
-//            sharedPreferencesManager.saveData("zadacha", Integer.valueOf(zadacha_id));
-//            sharedPreferencesManager.putArrayFromSharedPreferences("zadacha", 1);
         } else {
             alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), getString(R.string.alertDialogShowOSHIBKAMessageBodySet));
 
@@ -489,9 +481,22 @@ public class ScrollingFragment extends Fragment {
         builder.setInverseBackgroundForced(true);
 
         dialog.show();
+        solutionLimits = sharedPreffsLoadSolutionLimits();
+        if (solutionLimits == 0) {
+            Button buttonNeutral = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+            buttonNeutral.setTextColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+//            return;
+        }
+        hintLimits = sharedPreffsLoadHintLimits();
+        if (hintLimits == 0) {
+            Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            buttonPositive.setTextColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+//            return;
+        } else {
+            Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            buttonPositive.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
+        }
 
-        Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        buttonPositive.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
         Button buttonNegative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
         buttonNegative.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
 
