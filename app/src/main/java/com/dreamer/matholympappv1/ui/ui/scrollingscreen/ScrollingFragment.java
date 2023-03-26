@@ -96,8 +96,6 @@ public class ScrollingFragment extends Fragment {
     private String solutionImageUrl;
 
     public ScrollingFragment() {
-//        this.zadachiList = zadachiList;
-//        this.context = context;
 
 
     }
@@ -275,8 +273,7 @@ public class ScrollingFragment extends Fragment {
             //делаем операции со счетчиком юзера
             Integer userScore = sharedPreffsLoadUserScore();
             Log.e(TAG, "userScore: " + userScore);
-            Integer i = userScore + 10;
-            userScore = i;
+            userScore = userScore + 10;
             Log.e(TAG, "userScore: " + userScore);
             sharedPreffsSaveUserScore(userScore);
             firebaseSaveUserScore(userScore);
@@ -298,20 +295,9 @@ public class ScrollingFragment extends Fragment {
 
     private void updateActionBarTextViewScore(String score) {
         myAppBarScoreTextView.setText("");
-//        Integer userScore = sharedPreffsLoadUserScore();
-//        if (userScore != 0) {
-//            myAppBarScoreTextView.setText(score + userScore);
-//
-//        }
     }
 
     private void alertDiaShow(String Title, String MainMessage) {
-//        AllertdialogLayoutBinding binding = AllertdialogLayoutBinding.inflate(getLayoutInflater());
-//        View team = binding.getRoot();
-//
-//        TextView tw = binding.allertMesage1;
-//        TextView tw1 = binding.allertMesage2;
-//        ImageView iv1 = binding.imageOtvet1;
 
         builder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyTheme);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -562,8 +548,7 @@ public class ScrollingFragment extends Fragment {
 
     private Integer sharedPreffsLoadSolutionLimits() {
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        Integer solutionLimits = sharedPreferencesManager.getDataFromSharedPreferences("solution_limits");
-        return solutionLimits;
+        return sharedPreferencesManager.getDataFromSharedPreferences("solution_limits");
     }
 
     private void sharedPreffsSaveHintLimits(Integer hintLimits) {
@@ -573,8 +558,7 @@ public class ScrollingFragment extends Fragment {
 
     private Integer sharedPreffsLoadHintLimits() {
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        Integer hintLimits = sharedPreferencesManager.getDataFromSharedPreferences("hint_limits");
-        return hintLimits;
+        return sharedPreferencesManager.getDataFromSharedPreferences("hint_limits");
     }
 
     private void firebaseSaveUserScore(Integer zadacha_score) {
@@ -627,8 +611,7 @@ public class ScrollingFragment extends Fragment {
 
     private Integer sharedPreffsLoadUserScore() {
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        Integer zadacha_score = sharedPreferencesManager.getDataFromSharedPreferences("zadacha_score");
-        return zadacha_score;
+        return sharedPreferencesManager.getDataFromSharedPreferences("zadacha_score");
     }
 
 
