@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,8 +37,6 @@ import com.dreamer.matholympappv1.data.model.model.Zadachi;
 import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -241,17 +237,13 @@ public class ScrollingFragment extends Fragment {
         };
 
         edtxtAnswer.addTextChangedListener(afterTextChangedListener);
-        edtxtAnswer.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        edtxtAnswer.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                String textEnter = edtxtAnswer.getText().toString();
+                checkAnswer(textEnter, myList);
 
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    String textEnter = edtxtAnswer.getText().toString();
-                    checkAnswer(textEnter, myList);
-
-                }
-                return false;
             }
+            return false;
         });
 
 
@@ -327,26 +319,22 @@ public class ScrollingFragment extends Fragment {
                     .setCancelable(true)
 
 
-                    .setPositiveButton(R.string.alertDialogUSPEHPositiveButton, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+                    .setPositiveButton(R.string.alertDialogUSPEHPositiveButton, (dialog, id) -> {
 
-                            dialog.cancel();
-                            navController.navigateUp();
-                            Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                    "YESSSS", Snackbar.LENGTH_LONG).show();
-                        }
+                        dialog.cancel();
+                        navController.navigateUp();
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                "YESSSS", Snackbar.LENGTH_LONG).show();
                     })
 
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-                    .setNegativeButton(R.string.alertDialogUSPEHNegativeButton, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //  Action for 'NO' Button
+                    .setNegativeButton(R.string.alertDialogUSPEHNegativeButton, (dialog, id) -> {
+                        //  Action for 'NO' Button
 
-                            dialog.cancel();
-                            Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                    "NOOOOOO", Snackbar.LENGTH_LONG).show();
-                        }
+                        dialog.cancel();
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                "NOOOOOO", Snackbar.LENGTH_LONG).show();
                     });
         } else if (!Title.equals("") && Title.equals(HINT_TITLE)) {
             builder.setView(team);
@@ -355,24 +343,16 @@ public class ScrollingFragment extends Fragment {
             builder
 
                     .setCancelable(true)
-                    .setPositiveButton(R.string.alertDialogHintPositiveButton, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-
-                            dialog.cancel();
-
-                        }
-                    })
+                    .setPositiveButton(R.string.alertDialogHintPositiveButton, (dialog, id) -> dialog.cancel())
 
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-                    .setNegativeButton(R.string.allertDialogNegativeButton, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //  Action for 'NO' Button
+                    .setNegativeButton(R.string.allertDialogNegativeButton, (dialog, id) -> {
+                        //  Action for 'NO' Button
 
-                            dialog.cancel();
-                            navController.navigateUp();
+                        dialog.cancel();
+                        navController.navigateUp();
 
-                        }
                     });
 
         } else if (!Title.equals("") && Title.equals(SOLUTION_TITLE)) {
@@ -385,24 +365,16 @@ public class ScrollingFragment extends Fragment {
 
 
                     .setCancelable(true)
-                    .setPositiveButton(R.string.alertDialogPositiveButtonSolution, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-
-                            dialog.cancel();
-
-                        }
-                    })
+                    .setPositiveButton(R.string.alertDialogPositiveButtonSolution, (dialog, id) -> dialog.cancel())
 
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-                    .setNegativeButton(R.string.allertDialogNegativeButton, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //  Action for 'NO' Button
+                    .setNegativeButton(R.string.allertDialogNegativeButton, (dialog, id) -> {
+                        //  Action for 'NO' Button
 
-                            dialog.cancel();
-                            navController.navigateUp();
+                        dialog.cancel();
+                        navController.navigateUp();
 
-                        }
                     });
 
 
@@ -412,51 +384,45 @@ public class ScrollingFragment extends Fragment {
             builder
 
                     .setCancelable(true)
-                    .setPositiveButton(R.string.alertDialogHintButton, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            hintLimits = sharedPreffsLoadHintLimits();
-                            if (hintLimits == 0) {
+                    .setPositiveButton(R.string.alertDialogHintButton, (dialog, id) -> {
+                        hintLimits = sharedPreffsLoadHintLimits();
+                        if (hintLimits == 0) {
 
-                                return;
-                            }
-                            hintLimits = hintLimits - 1;
-                            sharedPreffsSaveHintLimits(hintLimits);
-                            firebaseSaveHintLimits(hintLimits);
-                            alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
-                            Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                    "YESSSS",
-                                    Snackbar.LENGTH_LONG).show();
+                            return;
                         }
+                        hintLimits = hintLimits - 1;
+                        sharedPreffsSaveHintLimits(hintLimits);
+                        firebaseSaveHintLimits(hintLimits);
+                        alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                "YESSSS",
+                                Snackbar.LENGTH_LONG).show();
                     })
-                    .setNeutralButton(R.string.alertDialogREZULTATNeutralButton, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    //  Action for 'NO' Button
-                                    solutionLimits = sharedPreffsLoadSolutionLimits();
-                                    if (solutionLimits == 0) {
+                    .setNeutralButton(R.string.alertDialogREZULTATNeutralButton, (dialog, id) -> {
+                                //  Action for 'NO' Button
+                                solutionLimits = sharedPreffsLoadSolutionLimits();
+                                if (solutionLimits == 0) {
 
-                                        return;
-                                    }
-                                    solutionLimits = solutionLimits - 1;
-                                    sharedPreffsSaveSolutionLimits(solutionLimits);
-                                    firebaseSaveSolutionLimits(solutionLimits);
-                                    alertDiaShow(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
-
-                                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                            "EXITTT", Snackbar.LENGTH_LONG).show();
+                                    return;
                                 }
+                                solutionLimits = solutionLimits - 1;
+                                sharedPreffsSaveSolutionLimits(solutionLimits);
+                                firebaseSaveSolutionLimits(solutionLimits);
+                                alertDiaShow(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
+
+                                Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                        "EXITTT", Snackbar.LENGTH_LONG).show();
                             }
                     )
 
                     .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-                    .setNegativeButton(R.string.alertDialogRezultatNegativeButton, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //  Action for 'NO' Button
+                    .setNegativeButton(R.string.alertDialogRezultatNegativeButton, (dialog, id) -> {
+                        //  Action for 'NO' Button
 
-                            dialog.cancel();
-                            navController.navigateUp();
-                            Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                    "NOOOOOO", Snackbar.LENGTH_LONG).show();
-                        }
+                        dialog.cancel();
+                        navController.navigateUp();
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                "NOOOOOO", Snackbar.LENGTH_LONG).show();
                     });
 
         }
@@ -509,24 +475,17 @@ public class ScrollingFragment extends Fragment {
         String imagePatch = searchimagesPath + "/" + imageLoad;
 
 
-        storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-
-            @Override
-            public void onSuccess(Uri uri) {
-                // Download directly from StorageReference using Glide
+        storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(uri -> {
+            // Download directly from StorageReference using Glide
 // (See MyAppGlideModule for Loader registration)
-                Glide.with(getContext())
-                        .load(uri)
-                        .into(iv1);
+            Glide.with(getContext())
+                    .load(uri)
+                    .into(iv1);
 
-                // Got the download URL for 'users/me/profile.png'
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.d(TAG, "____DATE= " + "storageRef");
-                // Handle any errors
-            }
+            // Got the download URL for 'users/me/profile.png'
+        }).addOnFailureListener(exception -> {
+            Log.d(TAG, "____DATE= " + "storageRef");
+            // Handle any errors
         });
     }
 
@@ -538,7 +497,7 @@ public class ScrollingFragment extends Fragment {
 
     private void sharedPreffsSaveUserScore(Integer zadacha_score) {
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        sharedPreferencesManager.saveData("zadacha_score", Integer.valueOf(zadacha_score));
+        sharedPreferencesManager.saveData("zadacha_score", zadacha_score);
     }
 
     private void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
