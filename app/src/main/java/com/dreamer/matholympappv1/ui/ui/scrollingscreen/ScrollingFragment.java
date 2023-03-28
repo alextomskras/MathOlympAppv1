@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,7 +22,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -51,9 +49,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class ScrollingFragment extends Fragment {
+public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf {
 
     private ActionBarUpdater actionBarUpdater;
+
+    private ActionBarSetupHelper actionBarSetupHelper;
     static final String ARG_ZADACHA_ID = "MyArgZadacha_id";
     static final String ARG_ZADACHA_LIST_FILES_FIRESTORE = "MyArgZadacha_listFilesFirestore";
     static final String ARG_ZADACHA_LIST_SOLUTION_FILES_FIRESTORE = "MyArgZadacha_listSolutionFilesFirestore";
@@ -99,6 +99,15 @@ public class ScrollingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        actionBarSetupHelper = new ActionBarSetupHelper((AppCompatActivity) getActivity());
+        variableSetup();
+
+        intNavcontroller();
+
+    }
+
+
+    private void variableSetup() {
         setHasOptionsMenu(true);
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
         zadacha_main_body = "";
@@ -114,9 +123,6 @@ public class ScrollingFragment extends Fragment {
         solutionImageUrl = "gs://matholymp1.appspot.com/solutionimages/";
         listFilesFirestore = new ArrayList<>();
         listSolutionFilesFirestore = new ArrayList<>();
-
-        intNavcontroller();
-
     }
 
     private void getFragmentBundles() {
@@ -130,8 +136,8 @@ public class ScrollingFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         getBundleArguments();
-
-        ActionBarSetup(inflater);
+        actionBarSetupHelper.setupActionBar(inflater, getString(R.string.appbar_title_scroll_fragm), getString(R.string.appbar_score));
+//        ActionBarSetup(inflater);
         binding = FragmentScrollingBinding.inflate(inflater, container, false);
         setupFirebaseStorage();
 
@@ -141,30 +147,30 @@ public class ScrollingFragment extends Fragment {
 
     }
 
-    private void ActionBarSetup(@NonNull LayoutInflater inflater) {
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-// Inflate the custom view
-        View customView = inflater.inflate(R.layout.actionbar, null);
-        // Set the text on the ActionBar
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(true);
-            actionBar.setDisplayShowCustomEnabled(false);
-            // Add the custom layout to the ActionBar
-            ActionBar.LayoutParams layout = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.MATCH_PARENT);
-            layout.gravity = Gravity.END;
-//            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP);
-
-            myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
-            myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
-            // Create an instance of ActionBarUpdater
-            actionBarUpdater = new ActionBarUpdater(myAppBarTitleTextView, myAppBarScoreTextView);
-            actionBarUpdater.updateTitle(getString(R.string.appbar_title_scroll_fragm));
-            actionBarUpdater.updateScore(getString(R.string.appbar_score));
-
-
-            actionBar.setCustomView(customView);
-        }
-    }
+    //    private void ActionBarSetup(@NonNull LayoutInflater inflater) {
+//        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+//// Inflate the custom view
+//        View customView = inflater.inflate(R.layout.actionbar, null);
+//        // Set the text on the ActionBar
+//        if (actionBar != null) {
+//            actionBar.setDisplayShowTitleEnabled(true);
+//            actionBar.setDisplayShowCustomEnabled(false);
+//            // Add the custom layout to the ActionBar
+//            ActionBar.LayoutParams layout = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.MATCH_PARENT);
+//            layout.gravity = Gravity.END;
+////            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP);
+//
+//            myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
+//            myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
+//            // Create an instance of ActionBarUpdater
+//            actionBarUpdater = new ActionBarUpdater(myAppBarTitleTextView, myAppBarScoreTextView);
+//            actionBarUpdater.updateTitle(getString(R.string.appbar_title_scroll_fragm));
+//            actionBarUpdater.updateScore(getString(R.string.appbar_score));
+//
+//
+//            actionBar.setCustomView(customView);
+//        }
+//    }
 
 
     private void getBundleArguments() {
