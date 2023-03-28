@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
 
 public class ScrollingFragment extends Fragment {
 
-
+    private ActionBarUpdater actionBarUpdater;
     static final String ARG_ZADACHA_ID = "MyArgZadacha_id";
     static final String ARG_ZADACHA_LIST_FILES_FIRESTORE = "MyArgZadacha_listFilesFirestore";
     static final String ARG_ZADACHA_LIST_SOLUTION_FILES_FIRESTORE = "MyArgZadacha_listSolutionFilesFirestore";
@@ -131,6 +131,17 @@ public class ScrollingFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         getBundleArguments();
 
+        ActionBarSetup(inflater);
+        binding = FragmentScrollingBinding.inflate(inflater, container, false);
+        setupFirebaseStorage();
+
+
+        return binding.getRoot();
+
+
+    }
+
+    private void ActionBarSetup(@NonNull LayoutInflater inflater) {
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 // Inflate the custom view
         View customView = inflater.inflate(R.layout.actionbar, null);
@@ -145,19 +156,14 @@ public class ScrollingFragment extends Fragment {
 
             myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
             myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
-            updateActionBarTextViewTitle(getString(R.string.appbar_title_scroll_fragm));
-            updateActionBarTextViewScore(getString(R.string.appbar_score));
+            // Create an instance of ActionBarUpdater
+            actionBarUpdater = new ActionBarUpdater(myAppBarTitleTextView, myAppBarScoreTextView);
+            actionBarUpdater.updateTitle(getString(R.string.appbar_title_scroll_fragm));
+            actionBarUpdater.updateScore(getString(R.string.appbar_score));
 
 
             actionBar.setCustomView(customView);
         }
-        binding = FragmentScrollingBinding.inflate(inflater, container, false);
-        setupFirebaseStorage();
-
-
-        return binding.getRoot();
-
-
     }
 
 
@@ -211,10 +217,9 @@ public class ScrollingFragment extends Fragment {
         hintTextView.setVisibility(View.GONE);
         solutionTextView.setVisibility(View.GONE);
 
-//        Log.e(TAG, "iconImageViewOnClick at position9 " + edtxtAnswer);
         btnVerify.setOnClickListener(view1 -> {
             String textEnter = edtxtAnswer.getText().toString();
-            checkAnswer(textEnter.toString(), myList);
+            checkAnswer(textEnter, myList);
 
         });
 
@@ -252,7 +257,7 @@ public class ScrollingFragment extends Fragment {
     private void checkAnswer(String answer, ArrayList myArrayList) {
 
 
-        String etTexttitle = answer.toString();
+        String etTexttitle = answer;
 //        Log.d(TAG, "viewId: " + etTexttitle);
         if (!etTexttitle.equals("") && etTexttitle.equals(zadacha_answer)) {
 
@@ -292,12 +297,13 @@ public class ScrollingFragment extends Fragment {
     private void alertDiaShow(String Title, String MainMessage) {
 
         builder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyTheme);
+
         LayoutInflater inflater = this.getLayoutInflater();
         View team = inflater.inflate(R.layout.allertdialog_layout, null);
 
-        TextView tw = (TextView) team.findViewById(R.id.allertMesage1);
-        TextView tw1 = (TextView) team.findViewById(R.id.allertMesage2);// id of your imageView element
-        ImageView iv1 = (ImageView) team.findViewById(R.id.imageOtvet1);
+        TextView tw = team.findViewById(R.id.allertMesage1);
+        TextView tw1 = team.findViewById(R.id.allertMesage2);// id of your imageView element
+        ImageView iv1 = team.findViewById(R.id.imageOtvet1);
         tw1.setVisibility(View.GONE);
         builder.setView(team);
 

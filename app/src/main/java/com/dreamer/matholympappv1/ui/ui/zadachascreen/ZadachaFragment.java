@@ -154,10 +154,6 @@ public class ZadachaFragment extends Fragment {
         });
 
 
-//        Log.e(TAG, "MyArrayList.firebaseLoadSolutionLimits(): " + solutionslimits);
-//        Log.e(TAG, "MyArrayList.firebaseLoadSolutionLimits2(): " + hintslimits);
-
-
     }
 
     @Override
