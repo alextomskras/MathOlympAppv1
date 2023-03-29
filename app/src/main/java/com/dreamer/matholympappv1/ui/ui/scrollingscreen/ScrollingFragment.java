@@ -38,10 +38,6 @@ import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -52,7 +48,7 @@ import java.util.regex.Pattern;
 public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf {
 
     private ActionBarUpdater actionBarUpdater;
-
+    public List listFilesFirestore;
     private ActionBarSetupHelper actionBarSetupHelper;
     static final String ARG_ZADACHA_ID = "MyArgZadacha_id";
     static final String ARG_ZADACHA_LIST_FILES_FIRESTORE = "MyArgZadacha_listFilesFirestore";
@@ -68,13 +64,13 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     FragmentScrollingBinding binding;
     private List<Zadachi> zadachiList;
     FirebaseStorage storageReference = FirebaseStorage.getInstance();
-    private List listFilesFirestore;
+    public List listSolutionFilesFirestore;
     private Context context;
 
     private String zadacha_main_body;
     private String zadacha_answer;
     private String zadacha_hint;
-    private List listSolutionFilesFirestore;
+    public FirebaseImageLoader firebaseImageLoader;
     private String zadacha_solution;
     public ArrayList<String> myList;
     public SharedPreffUtils sharedPreferencesManager;
@@ -90,6 +86,9 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private String searchimagesPath;
     private String answerImageUrl;
     private String solutionImageUrl;
+    private FirebaseUserScoreManager firebaseUserScoreManager;
+    private String searchImagesPath;
+    private ImageView iv1;
 
     public ScrollingFragment() {
 
@@ -99,7 +98,10 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         actionBarSetupHelper = new ActionBarSetupHelper((AppCompatActivity) getActivity());
+        firebaseUserScoreManager = new FirebaseUserScoreManager();
+
         variableSetup();
 
         intNavcontroller();
@@ -137,7 +139,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
                              @Nullable Bundle savedInstanceState) {
         getBundleArguments();
         actionBarSetupHelper.setupActionBar(inflater, getString(R.string.appbar_title_scroll_fragm), getString(R.string.appbar_score));
-//        ActionBarSetup(inflater);
         binding = FragmentScrollingBinding.inflate(inflater, container, false);
         setupFirebaseStorage();
 
@@ -146,31 +147,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
 
     }
-
-    //    private void ActionBarSetup(@NonNull LayoutInflater inflater) {
-//        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-//// Inflate the custom view
-//        View customView = inflater.inflate(R.layout.actionbar, null);
-//        // Set the text on the ActionBar
-//        if (actionBar != null) {
-//            actionBar.setDisplayShowTitleEnabled(true);
-//            actionBar.setDisplayShowCustomEnabled(false);
-//            // Add the custom layout to the ActionBar
-//            ActionBar.LayoutParams layout = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.MATCH_PARENT);
-//            layout.gravity = Gravity.END;
-////            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP);
-//
-//            myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
-//            myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
-//            // Create an instance of ActionBarUpdater
-//            actionBarUpdater = new ActionBarUpdater(myAppBarTitleTextView, myAppBarScoreTextView);
-//            actionBarUpdater.updateTitle(getString(R.string.appbar_title_scroll_fragm));
-//            actionBarUpdater.updateScore(getString(R.string.appbar_score));
-//
-//
-//            actionBar.setCustomView(customView);
-//        }
-//    }
 
 
     private void getBundleArguments() {
@@ -192,11 +168,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         StorageReference storageRef = storageReference.getReference();
     }
 
-    public void ScrollingFragmentZdachiList(List<Zadachi> zadachiList, Context context) {
-        this.zadachiList = zadachiList;
-        this.context = context;
 
-    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -204,7 +176,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
         ArrayList<String> myList = new ArrayList<String>();
 
-//        MyArrayList myArrayList = new MyArrayList();
         //Ищем все что есть на макете
         NavController navController;
         final TextView zadachaTextView = binding.tvScrollMainText;
@@ -264,7 +235,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
 
         String etTexttitle = answer;
-//        Log.d(TAG, "viewId: " + etTexttitle);
         if (!etTexttitle.equals("") && etTexttitle.equals(zadacha_answer)) {
 
 
@@ -275,11 +245,9 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
             //делаем операции со счетчиком юзера
             Integer userScore = sharedPreffsLoadUserScore();
-            Log.e(TAG, "userScore: " + userScore);
             userScore = userScore + 10;
-            Log.e(TAG, "userScore: " + userScore);
             sharedPreffsSaveUserScore(userScore);
-            firebaseSaveUserScore(userScore);
+            firebaseUserScoreManager.saveUserScore(userScore);
 
 
         } else {
@@ -289,18 +257,9 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         }
     }
 
-    // Update the text of the TextView in the ActionBar
-    private void updateActionBarTextViewTitle(String title) {
-        myAppBarTitleTextView.setText(title);
-
-    }
-
-
-    private void updateActionBarTextViewScore(String score) {
-        myAppBarScoreTextView.setText("");
-    }
 
     private void alertDiaShow(String Title, String MainMessage) {
+
 
         builder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyTheme);
 
@@ -310,6 +269,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         TextView tw = team.findViewById(R.id.allertMesage1);
         TextView tw1 = team.findViewById(R.id.allertMesage2);// id of your imageView element
         ImageView iv1 = team.findViewById(R.id.imageOtvet1);
+
         tw1.setVisibility(View.GONE);
         builder.setView(team);
 
@@ -321,7 +281,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             builder.setView(team);
             tw.setText(MainMessage);
             searchimagesPath = "answersimages";
-
             setFirebaseImage(searchimagesPath, iv1);
 
 
@@ -372,6 +331,8 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             tw.setText(MainMessage);
 
             searchimagesPath = "solutionimages";
+
+
             setFirebaseImage(searchimagesPath, iv1);
             builder
 
@@ -393,49 +354,48 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         } else {
             builder.setView(team);
             tw.setText(MainMessage);
-            builder
+            builder.setCancelable(true);
+            builder.setPositiveButton(R.string.alertDialogHintButton, (dialog, id) -> {
+                hintLimits = sharedPreffsLoadHintLimits();
+                if (hintLimits == 0) {
 
-                    .setCancelable(true)
-                    .setPositiveButton(R.string.alertDialogHintButton, (dialog, id) -> {
-                        hintLimits = sharedPreffsLoadHintLimits();
-                        if (hintLimits == 0) {
+                    return;
+                }
+                hintLimits = hintLimits - 1;
+                sharedPreffsSaveHintLimits(hintLimits);
+//                        FirebaseUserScoreManager.
+                firebaseUserScoreManager.firebaseSaveHintLimits(hintLimits);
+                alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
+                Snackbar.make(getActivity().findViewById(android.R.id.content),
+                        "YESSSS",
+                        Snackbar.LENGTH_LONG).show();
+            });
+            builder.setNeutralButton(R.string.alertDialogREZULTATNeutralButton, (dialog, id) -> {
+                        //  Action for 'NO' Button
+                        solutionLimits = sharedPreffsLoadSolutionLimits();
+                        if (solutionLimits == 0) {
 
                             return;
                         }
-                        hintLimits = hintLimits - 1;
-                        sharedPreffsSaveHintLimits(hintLimits);
-                        firebaseSaveHintLimits(hintLimits);
-                        alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
+                        solutionLimits = solutionLimits - 1;
+                        sharedPreffsSaveSolutionLimits(solutionLimits);
+
+                        firebaseUserScoreManager.firebaseSaveSolutionLimits(solutionLimits);
+                        alertDiaShow(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
+
                         Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                "YESSSS",
-                                Snackbar.LENGTH_LONG).show();
-                    })
-                    .setNeutralButton(R.string.alertDialogREZULTATNeutralButton, (dialog, id) -> {
-                                //  Action for 'NO' Button
-                                solutionLimits = sharedPreffsLoadSolutionLimits();
-                                if (solutionLimits == 0) {
+                                "EXITTT", Snackbar.LENGTH_LONG).show();
+                    }
+            );
+            builder.setIcon(R.drawable.ic_baseline_bubble_chart_24);
+            builder.setNegativeButton(R.string.alertDialogRezultatNegativeButton, (dialog, id) -> {
+                //  Action for 'NO' Button
 
-                                    return;
-                                }
-                                solutionLimits = solutionLimits - 1;
-                                sharedPreffsSaveSolutionLimits(solutionLimits);
-                                firebaseSaveSolutionLimits(solutionLimits);
-                                alertDiaShow(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
-
-                                Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                        "EXITTT", Snackbar.LENGTH_LONG).show();
-                            }
-                    )
-
-                    .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-                    .setNegativeButton(R.string.alertDialogRezultatNegativeButton, (dialog, id) -> {
-                        //  Action for 'NO' Button
-
-                        dialog.cancel();
-                        navController.navigateUp();
-                        Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                "NOOOOOO", Snackbar.LENGTH_LONG).show();
-                    });
+                dialog.cancel();
+                navController.navigateUp();
+                Snackbar.make(getActivity().findViewById(android.R.id.content),
+                        "NOOOOOO", Snackbar.LENGTH_LONG).show();
+            });
 
         }
 
@@ -501,6 +461,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         });
     }
 
+
     private void intNavcontroller() {
         Activity MainActivity = getActivity();
         assert MainActivity != null;
@@ -532,53 +493,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         return sharedPreferencesManager.getDataFromSharedPreferences("hint_limits");
     }
 
-    private void firebaseSaveUserScore(Integer zadacha_score) {
-        String str2 = Integer.toString(zadacha_score);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Log.e(TAG, "Error: current user is null");
-            return;
-        }
-        String uid = user.getUid();
-        try {
-            DatabaseReference scoreRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("userscore");
-            scoreRef.setValue(str2);
-        } catch (Exception e) {
-            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
-        }
-    }
-
-    private void firebaseSaveSolutionLimits(Integer solutionlimits) {
-        String str2 = Integer.toString(solutionlimits);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Log.e(TAG, "Error: current user is null");
-            return;
-        }
-        String uid = user.getUid();
-        try {
-            DatabaseReference solutionRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("solutionlimits");
-            solutionRef.setValue(str2);
-        } catch (Exception e) {
-            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
-        }
-    }
-
-    private void firebaseSaveHintLimits(Integer hintlimits) {
-        String str2 = Integer.toString(hintlimits);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Log.e(TAG, "Error: current user is null");
-            return;
-        }
-        String uid = user.getUid();
-        try {
-            DatabaseReference hintRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("hintlimits");
-            hintRef.setValue(str2);
-        } catch (Exception e) {
-            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
-        }
-    }
 
     private Integer sharedPreffsLoadUserScore() {
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
