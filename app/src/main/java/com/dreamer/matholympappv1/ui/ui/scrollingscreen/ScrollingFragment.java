@@ -471,6 +471,16 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     }
 
 
+//    private void setFirebaseImage(String searchimagesPath, ImageView iv1) {
+//        List<String> locallistFiles = searchimagesPath.equals(SEARCH_ANSWER_IMAGES) ? listFilesFirestore : listSolutionFilesFirestore;
+//        String imageName = locallistFiles.get(Integer.parseInt(zadacha_id) - 1).toString().split(Pattern.quote("/"))[4];
+//        String imagePatch = searchimagesPath + "/" + imageName;
+//        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(imagePatch);
+//        Glide.with(getContext())
+//                .load(storageRef)
+//                .into(iv1);
+//    }
+
     private void intNavcontroller() {
         Activity MainActivity = getActivity();
         assert MainActivity != null;
