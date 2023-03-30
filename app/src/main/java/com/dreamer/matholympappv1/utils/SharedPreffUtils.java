@@ -19,19 +19,51 @@ import android.content.SharedPreferences;
 //    }
 //}
 public class SharedPreffUtils {
-    private final SharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences = null;
 
     public SharedPreffUtils(Context context) {
         sharedPreferences = context.getSharedPreferences("MySharedPreferences", Context.MODE_PRIVATE);
     }
 
-    public void saveData(String key, Integer value) {
+    public static void sharedPreffsSaveUserScore(Integer zadacha_score) {
+//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(context);
+        saveData("zadacha_score", zadacha_score);
+    }
+
+    public static void saveData(String key, Integer value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(key, value);
         editor.apply();
     }
 
-    public int getDataFromSharedPreferences(String key) {
+    public static void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
+//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        saveData("solution_limits", solutionLimits);
+    }
+
+    public static Integer sharedPreffsLoadSolutionLimits() {
+//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        return getDataFromSharedPreferences("solution_limits");
+    }
+
+    public static void sharedPreffsSaveHintLimits(Integer hintLimits) {
+//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        saveData("hint_limits", hintLimits);
+    }
+
+    public static Integer sharedPreffsLoadHintLimits() {
+//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        return getDataFromSharedPreferences("hint_limits");
+    }
+
+
+    public static Integer sharedPreffsLoadUserScore() {
+//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        return getDataFromSharedPreferences("zadacha_score");
+    }
+
+
+    public static int getDataFromSharedPreferences(String key) {
 //        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MySharedPreferences", Context.MODE_PRIVATE);
         return sharedPreferences.getInt(key, 0);
     }

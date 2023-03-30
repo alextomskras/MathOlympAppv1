@@ -10,6 +10,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class FirebaseUserScoreManager {
+
+
     public static void saveUserScore(Integer zadacha_score) {
         String str2 = Integer.toString(zadacha_score);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -57,4 +59,6 @@ public class FirebaseUserScoreManager {
             Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
         }
     }
+
+
 }
