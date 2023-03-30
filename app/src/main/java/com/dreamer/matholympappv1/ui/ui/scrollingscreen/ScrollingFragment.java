@@ -435,6 +435,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
     }
 
+
     private void setFirebaseImage(String searchimagesPath, ImageView iv1) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         List locallistFiles;
@@ -444,42 +445,34 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             locallistFiles = listSolutionFilesFirestore;
         }
 
-
         StorageReference spaceRef = storageRef.child("answersimages/answer" + zadacha_id);
         spaceRef.getName();
         spaceRef.getMetadata();
 
+        try {
+            Object splitString = locallistFiles.get(Integer.parseInt(zadacha_id) - 1).toString();
+            String[] parts = ((String) splitString).split(Pattern.quote("/"));
+            String imageLoad = parts[4];
+            String imagePatch = searchimagesPath + "/" + imageLoad;
 
-        Object splitString = locallistFiles.get(Integer.parseInt(zadacha_id) - 1).toString();
-        String[] parts = ((String) splitString).split(Pattern.quote("/"));
-        String imageLoad = parts[4];
-        String imagePatch = searchimagesPath + "/" + imageLoad;
+            storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(uri -> {
+                // Download directly from StorageReference using Glide
+                // (See MyAppGlideModule for Loader registration)
+                Glide.with(getContext())
+                        .load(uri)
+                        .into(iv1);
 
-
-        storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(uri -> {
-            // Download directly from StorageReference using Glide
-// (See MyAppGlideModule for Loader registration)
-            Glide.with(getContext())
-                    .load(uri)
-                    .into(iv1);
-
-            // Got the download URL for 'users/me/profile.png'
-        }).addOnFailureListener(exception -> {
-            Log.d(TAG, "____DATE= " + "storageRef");
-            // Handle any errors
-        });
+                // Got the download URL for 'users/me/profile.png'
+            }).addOnFailureListener(exception -> {
+                Log.d(TAG, "____DATE= " + "storageRef");
+                // Handle any errors
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting image URL: " + e.getMessage());
+        }
     }
 
 
-//    private void setFirebaseImage(String searchimagesPath, ImageView iv1) {
-//        List<String> locallistFiles = searchimagesPath.equals(SEARCH_ANSWER_IMAGES) ? listFilesFirestore : listSolutionFilesFirestore;
-//        String imageName = locallistFiles.get(Integer.parseInt(zadacha_id) - 1).toString().split(Pattern.quote("/"))[4];
-//        String imagePatch = searchimagesPath + "/" + imageName;
-//        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(imagePatch);
-//        Glide.with(getContext())
-//                .load(storageRef)
-//                .into(iv1);
-//    }
 
     private void intNavcontroller() {
         Activity MainActivity = getActivity();
