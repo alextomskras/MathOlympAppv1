@@ -293,7 +293,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 //        final String USPEH_TITLE = getString(R.string.alertDialogUSPEHTitleCheck);
         final String USPEH_TITLE = "USPEH";
 //        final String HINT_TITLE = getString(R.string.alertDialogTitleHintCheck);
-        final String HINT_TITLE = "TITLE";
+        final String HINT_TITLE = "HINT";
 //        final String SOLUTION_TITLE = getString(R.string.alertDialogTitleSolution);
         final String SOLUTION_TITLE = "Solution";
 
