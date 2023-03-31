@@ -245,32 +245,60 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
     }
 
+//    private void checkAnswer(String answer, ArrayList myArrayList) {
+//
+//
+//        String etTexttitle = answer;
+//        if (!etTexttitle.equals("") && etTexttitle.equals(zadacha_answer)) {
+//
+//
+//            alertDiaShow(getString(R.string.alertDialogShowUSPEHTitle), getString(R.string.alertDialogShowUSPEHMessageBodySet));
+//            // Add a string to the list
+//
+//            MyArrayList.addString(zadacha_id);
+//
+//            //делаем операции со счетчиком юзера
+//            Integer userScore = sharedPreffsLoadUserScore();
+//            userScore = userScore + 10;
+//            SharedPreffUtils.sharedPreffsSaveUserScore(userScore);
+//            FirebaseUserScoreManager.saveUserScore(userScore);
+//
+//
+//        } else {
+//            alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), getString(R.string.alertDialogShowOSHIBKAMessageBodySet));
+//
+//
+//        }
+//    }
+
     private void checkAnswer(String answer, ArrayList myArrayList) {
 
-
-        String etTexttitle = answer;
-        if (!etTexttitle.equals("") && etTexttitle.equals(zadacha_answer)) {
-
-
+        if (answer.isEmpty()) {
+            return;
+        }
+/// не будет реагировать на пустые строчки - без вввода
+        if (answer.equals(zadacha_answer)) {
             alertDiaShow(getString(R.string.alertDialogShowUSPEHTitle), getString(R.string.alertDialogShowUSPEHMessageBodySet));
             // Add a string to the list
-
             MyArrayList.addString(zadacha_id);
 
-            //делаем операции со счетчиком юзера
-            Integer userScore = sharedPreffsLoadUserScore();
-            userScore = userScore + 10;
+            // Update the user score
+            int userScore = sharedPreffsLoadUserScore() + 10;
             SharedPreffUtils.sharedPreffsSaveUserScore(userScore);
             FirebaseUserScoreManager.saveUserScore(userScore);
-
-
         } else {
             alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), getString(R.string.alertDialogShowOSHIBKAMessageBodySet));
-
-
         }
     }
 
+
+//    private LayoutInflater inflater;
+//    private View team;
+//
+//    private void initAlertDialogViews() {
+//        inflater = getLayoutInflater();
+//        team = inflater.inflate(R.layout.allertdialog_layout, null);
+//    }
 
     private void alertDiaShow(String Title, String MainMessage) {
         if (builder == null) {
