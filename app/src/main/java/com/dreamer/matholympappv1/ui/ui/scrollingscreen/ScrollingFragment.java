@@ -245,31 +245,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
     }
 
-//    private void checkAnswer(String answer, ArrayList myArrayList) {
-//
-//
-//        String etTexttitle = answer;
-//        if (!etTexttitle.equals("") && etTexttitle.equals(zadacha_answer)) {
-//
-//
-//            alertDiaShow(getString(R.string.alertDialogShowUSPEHTitle), getString(R.string.alertDialogShowUSPEHMessageBodySet));
-//            // Add a string to the list
-//
-//            MyArrayList.addString(zadacha_id);
-//
-//            //делаем операции со счетчиком юзера
-//            Integer userScore = sharedPreffsLoadUserScore();
-//            userScore = userScore + 10;
-//            SharedPreffUtils.sharedPreffsSaveUserScore(userScore);
-//            FirebaseUserScoreManager.saveUserScore(userScore);
-//
-//
-//        } else {
-//            alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), getString(R.string.alertDialogShowOSHIBKAMessageBodySet));
-//
-//
-//        }
-//    }
+
 
     private void checkAnswer(String answer, ArrayList myArrayList) {
 
@@ -292,21 +268,12 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     }
 
 
-//    private LayoutInflater inflater;
-//    private View team;
-//
-//    private void initAlertDialogViews() {
-//        inflater = getLayoutInflater();
-//        team = inflater.inflate(R.layout.allertdialog_layout, null);
-//    }
-
     private void alertDiaShow(String Title, String MainMessage) {
         if (builder == null) {
             builder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyTheme);
         }
 
-
-//        builder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyTheme);
+        builder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyTheme);
 
         LayoutInflater inflater = this.getLayoutInflater();
         View team = inflater.inflate(R.layout.allertdialog_layout, null);
@@ -318,123 +285,10 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         tw1.setVisibility(View.GONE);
         builder.setView(team);
 
-//        final String USPEH_TITLE = getString(R.string.alertDialogUSPEHTitleCheck);
         final String USPEH_TITLE = "USPEH";
-//        final String HINT_TITLE = getString(R.string.alertDialogTitleHintCheck);
         final String HINT_TITLE = "HINT";
-//        final String SOLUTION_TITLE = getString(R.string.alertDialogTitleSolution);
         final String SOLUTION_TITLE = "Solution";
 
-//        if (!Title.equals("") && Title.equals(USPEH_TITLE)) {
-//            builder.setView(team);
-//            tw.setText(MainMessage);
-//            setFirebaseImage(SEARCH_ANSWER_IMAGES, iv1);
-//            builder
-//                    .setCancelable(true)
-//                    .setPositiveButton(R.string.alertDialogUSPEHPositiveButton, (dialog, id) -> {
-//
-//                        dialog.cancel();
-//                        navController.navigateUp();
-//                        Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                                "YESSSS", Snackbar.LENGTH_LONG).show();
-//                    })
-//
-//
-//                    .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-//                    .setNegativeButton(R.string.alertDialogUSPEHNegativeButton, (dialog, id) -> {
-//                        //  Action for 'NO' Button
-//
-//                        dialog.cancel();
-//                        Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                                "NOOOOOO", Snackbar.LENGTH_LONG).show();
-//                    });
-//        } else if (!Title.equals("") && Title.equals(HINT_TITLE)) {
-//            builder.setView(team);
-//            tw.setText(MainMessage);
-//
-//            builder
-//
-//                    .setCancelable(true)
-//                    .setPositiveButton(R.string.alertDialogHintPositiveButton, (dialog, id) -> dialog.cancel())
-//
-//
-//                    .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-//                    .setNegativeButton(R.string.allertDialogNegativeButton, (dialog, id) -> {
-//                        //  Action for 'NO' Button
-//
-//                        dialog.cancel();
-//                        navController.navigateUp();
-//
-//                    });
-//
-//        } else if (!Title.equals("") && Title.equals(SOLUTION_TITLE)) {
-//            builder.setView(team);
-//            tw.setText(MainMessage);
-//            setFirebaseImage(SEARCH_SOLUTION_IMAGES, iv1);
-//            builder
-//
-//
-//                    .setCancelable(true)
-//                    .setPositiveButton(R.string.alertDialogPositiveButtonSolution, (dialog, id) -> dialog.cancel())
-//
-//
-//                    .setIcon(R.drawable.ic_baseline_bubble_chart_24)
-//                    .setNegativeButton(R.string.allertDialogNegativeButton, (dialog, id) -> {
-//                        //  Action for 'NO' Button
-//
-//                        dialog.cancel();
-//                        navController.navigateUp();
-//
-//                    });
-//
-//
-//        } else {
-//            builder.setView(team);
-//            tw.setText(MainMessage);
-//            builder.setCancelable(true);
-//            builder.setPositiveButton(R.string.alertDialogHintButton, (dialog, id) -> {
-//                hintLimits = sharedPreffsLoadHintLimits();
-//                if (hintLimits == 0) {
-//
-//                    return;
-//                }
-//                hintLimits = hintLimits - 1;
-//                sharedPreffsSaveHintLimits(hintLimits);
-////                        FirebaseUserScoreManager.
-//                FirebaseUserScoreManager.firebaseSaveHintLimits(hintLimits);
-//                alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
-//                Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                        "YESSSS",
-//                        Snackbar.LENGTH_LONG).show();
-//            });
-//            builder.setNeutralButton(R.string.alertDialogREZULTATNeutralButton, (dialog, id) -> {
-//                        //  Action for 'NO' Button
-//                        solutionLimits = sharedPreffsLoadSolutionLimits();
-//                        if (solutionLimits == 0) {
-//
-//                            return;
-//                        }
-//                        solutionLimits = solutionLimits - 1;
-//                        sharedPreffsSaveSolutionLimits(solutionLimits);
-//
-//                FirebaseUserScoreManager.firebaseSaveSolutionLimits(solutionLimits);
-//                alertDiaShow(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
-//
-//                        Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                                "EXITTT", Snackbar.LENGTH_LONG).show();
-//                    }
-//            );
-//            builder.setIcon(R.drawable.ic_baseline_bubble_chart_24);
-//            builder.setNegativeButton(R.string.alertDialogRezultatNegativeButton, (dialog, id) -> {
-//                //  Action for 'NO' Button
-//
-//                dialog.cancel();
-//                navController.navigateUp();
-//                Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                        "NOOOOOO", Snackbar.LENGTH_LONG).show();
-//            });
-//
-//        }
 
         switch (Title) {
             case USPEH_TITLE:
@@ -529,52 +383,9 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         setButtonColors(dialog);
 
 
-//        final AlertDialog dialog = builder.create();
-//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        builder.setInverseBackgroundForced(true);
-//
-//        dialog.show();
-//        solutionLimits = sharedPreffsLoadSolutionLimits();
-//        if (solutionLimits == 0) {
-//            Button buttonNeutral = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
-//            buttonNeutral.setTextColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
-////            return;
-//        }
-//        hintLimits = sharedPreffsLoadHintLimits();
-//        if (hintLimits == 0) {
-//            Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-//            buttonPositive.setTextColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
-////            return;
-//        } else {
-//            Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-//            buttonPositive.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
-//        }
-//
-//        Button buttonNegative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-//        buttonNegative.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
 
     }
 
-//    private void setButtonColors(AlertDialog dialog) {
-//        solutionLimits = sharedPreffsLoadSolutionLimits();
-//        hintLimits = sharedPreffsLoadHintLimits();
-//
-//        if (solutionLimits == 0) {
-//            Button buttonNeutral = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
-//            buttonNeutral.setTextColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
-//        }
-//
-//        if (hintLimits == 0) {
-//            Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-//            buttonPositive.setTextColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
-//        } else {
-//            Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-//            buttonPositive.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
-//        }
-//
-//        Button buttonNegative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-//        buttonNegative.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
-//    }
 
     private void setButtonColors(AlertDialog dialog) {
         solutionLimits = sharedPreffsLoadSolutionLimits();
@@ -589,207 +400,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         buttonNegative.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
     }
 
-///////////////////////////////////////////////////////////////////////////////
-//private void alertDiaShow(String Title, String MainMessage) {
-//    private TextView alertMessage1TextView;
-//    private TextView alertMessage2TextView;
-//    private ImageView alertImageView;
-//    private MaterialAlertDialogBuilder alertDialogBuilder;
-//
-//    private void showAlert(String title, String mainMessage) {
-//        if (alertDialogBuilder == null) {
-//            alertDialogBuilder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyTheme);
-//        }
-//
-//        if (alertMessage1TextView == null || alertMessage2TextView == null || alertImageView == null) {
-//            LayoutInflater inflater = LayoutInflater.from(getActivity());
-//            View view = inflater.inflate(R.layout.allertdialog_layout, null);
-//            alertMessage1TextView = view.findViewById(R.id.allertMesage1);
-//            alertMessage2TextView = view.findViewById(R.id.allertMesage2);
-//            alertImageView = view.findViewById(R.id.imageOtvet1);
-//            alertDialogBuilder.setView(view);
-//        }
-//
-//        switch (title) {
-//            case "":
-//                showDefaultAlert(mainMessage);
-//                break;
-//            case getString(R.string.alertDialogUSPEHTitleCheck):
-//                showSuccessAlert(mainMessage);
-//                break;
-//            case getString(R.string.alertDialogTitleHintCheck):
-//                showHintAlert(mainMessage);
-//                break;
-//            case getString(R.string.alertDialogTitleSolution):
-//                showSolutionAlert(mainMessage);
-//                break;
-//            default:
-//                showDefaultAlert(mainMessage);
-//                break;
-//        }
-//
-//        AlertDialog dialog = alertDialogBuilder.create();
-//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        alertDialogBuilder.setInverseBackgroundForced(true);
-//
-//        dialog.show();
-//        updateAlertButtonsState(dialog);
-//    }
-//
-//    private void showDefaultAlert(String message) {
-//        alertMessage1TextView.setText(message);
-//        alertImageView.setVisibility(View.GONE);
-//        alertDialogBuilder.setCancelable(true);
-//
-//        alertDialogBuilder.setPositiveButton(R.string.alertDialogHintButton, (dialog, which) -> {
-//            int hintLimits = sharedPreffsLoadHintLimits();
-//            if (hintLimits == 0) {
-//                return;
-//            }
-//
-//            hintLimits--;
-//            sharedPreffsSaveHintLimits(hintLimits);
-//            FirebaseUserScoreManager.firebaseSaveHintLimits(hintLimits);
-//            showAlert(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
-//            Snackbar.make(getActivity().findViewById(android.R.id.content), "YESSSS", Snackbar.LENGTH_LONG).show();
-//        });
-//
-//        alertDialogBuilder.setNeutralButton(R.string.alertDialogREZULTATNeutralButton, (dialog, which) -> {
-//            int solutionLimits = sharedPreffsLoadSolutionLimits();
-//            if (solutionLimits == 0) {
-//                return;
-//            }
-//
-//            solutionLimits--;
-//            sharedPreffsSaveSolutionLimits(solutionLimits);
-//            FirebaseUserScoreManager.firebaseSaveSolutionLimits(solutionLimits);
-//            showAlert(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
-//            Snackbar.make(getActivity().findViewById(android.R.id.content), "EXITTT", Snackbar.LENGTH_LONG).show();
-//        });
-//
-//        alertDialogBuilder.setNegativeButton(R.string.alertDialogRezultatNegativeButton, (dialog, which) -> {
-//            dialog.cancel();
-//            navController.navigateUp();
-//
-//            private void showSuccessAlert(String message) {
-//                alertMessage1TextView.setText(R.string.alertDialogShowUSPEHTitle);
-//                alertMessage2TextView.setText(message);
-//                alertImageView.setVisibility(View.VISIBLE);
-//                alertImageView.setImageResource(R.drawable.ic_baseline_bubble_chart_24);
-//                alertDialogBuilder.setCancelable(false);
-//
-//                alertDialogBuilder.setPositiveButton(R.string.alertDialogOKButton, (dialog, which) -> {
-//                    dialog.dismiss();
-//                    navController.navigateUp();
-//                });
-//            }
-//
-//            private void showHintAlert(String message) {
-//                alertMessage1TextView.setText(R.string.alertDialogHintCheckTitle);
-//                alertMessage2TextView.setText(message);
-//                alertImageView.setVisibility(View.VISIBLE);
-//                alertImageView.setImageResource(R.drawable.ic_baseline_error_outline_24);
-//                alertDialogBuilder.setCancelable(false);
-//
-//                alertDialogBuilder.setPositiveButton(R.string.alertDialogHintButton, (dialog, which) -> {
-//                    int hintLimits = sharedPreffsLoadHintLimits();
-//                    if (hintLimits == 0) {
-//                        return;
-//                    }
-//
-//                    hintLimits--;
-//                    sharedPreffsSaveHintLimits(hintLimits);
-//                    FirebaseUserScoreManager.firebaseSaveHintLimits(hintLimits);
-//                    showAlert(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
-//                    Snackbar.make(getActivity().findViewById(android.R.id.content), "YESSSS", Snackbar.LENGTH_LONG).show();
-//                });
-//
-//                alertDialogBuilder.setNegativeButton(R.string.alertDialogCancelButton, (dialog, which) -> dialog.cancel());
-//            }
-//
-//            private void showSolutionAlert(String message) {
-//                alertMessage1TextView.setText(R.string.alertDialogTitleSolution);
-//                alertMessage2TextView.setText(message);
-//                alertImageView.setVisibility(View.VISIBLE);
-//                alertImageView.setImageResource(R.drawable.ic_baseline_error_outline_24);
-//                alertDialogBuilder.setCancelable(false);
-//
-//                alertDialogBuilder.setPositiveButton(R.string.alertDialogREZULTATPositiveButton, (dialog, which) -> {
-//                    int solutionLimits = sharedPreffsLoadSolutionLimits();
-//                    if (solutionLimits == 0) {
-//                        return;
-//                    }
-//
-//                    solutionLimits--;
-//                    sharedPreffsSaveSolutionLimits(solutionLimits);
-//                    FirebaseUserScoreManager.firebaseSaveSolutionLimits(solutionLimits);
-//                    showAlert(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
-//                    Snackbar.make(getActivity().findViewById(android.R.id.content), "EXITTT", Snackbar.LENGTH_LONG).show();
-//                });
-//
-//                alertDialogBuilder.setNegativeButton(R.string.alertDialogRezultatNegativeButton, (dialog, which) -> dialog.cancel());
-//            }
 
-
-////////////////////////////////////////////////////////////////////////////////////
-
-//    private void alertDiaShow(String Title, String MainMessage) {
-//        builder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyTheme);
-//        LayoutInflater inflater = this.getLayoutInflater();
-//        View team = inflater.inflate(R.layout.allertdialog_layout, null);
-//        TextView tw = team.findViewById(R.id.allertMesage1);
-//        TextView tw1 = team.findViewById(R.id.allertMesage2);// id of your imageView element
-//        ImageView iv1 = team.findViewById(R.id.imageOtvet1);
-//        tw1.setVisibility(View.GONE);
-//        tw.setText(MainMessage);
-//        builder.setView(team);
-//        builder.setCancelable(true);
-//        builder.setIcon(R.drawable.ic_baseline_bubble_chart_24);
-//
-//        switch (Title) {
-//            case "":
-//                builder.setPositiveButton(R.string.alertDialogHintButton, (dialog, id) -> {
-//                    int hintLimits = sharedPreffsLoadHintLimits();
-//                    if (hintLimits == 0) {
-//                        return;
-//                    }
-//                    hintLimits--;
-//                    sharedPreffsSaveHintLimits(hintLimits);
-//                    FirebaseUserScoreManager.firebaseSaveHintLimits(hintLimits);
-//                    alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
-//                    Snackbar.make(getActivity().findViewById(android.R.id.content), "YESSSS", Snackbar.LENGTH_LONG).show();
-//                });
-//                builder.setNeutralButton(R.string.alertDialogREZULTATNeutralButton, (dialog, id) -> {
-//                    int solutionLimits = sharedPreffsLoadSolutionLimits();
-//                    if (solutionLimits == 0) {
-//                        return;
-//                    }
-//                    solutionLimits--;
-//                    sharedPreffsSaveSolutionLimits(solutionLimits);
-//                    FirebaseUserScoreManager.firebaseSaveSolutionLimits(solutionLimits);
-//                    alertDiaShow(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
-//                    Snackbar.make(getActivity().findViewById(android.R.id.content), "EXITTT", Snackbar.LENGTH_LONG).show();
-//                });
-//                builder.setNegativeButton(R.string.alertDialogRezultatNegativeButton, (dialog, id) -> {
-//                    dialog.cancel();
-//                    navController.navigateUp();
-//                    Snackbar.make(getActivity().findViewById(android.R.id.content), "NOOOOOO", Snackbar.LENGTH_LONG).show();
-//                });
-//                break;
-////            case getString(R.string.alertDialogUSPEHTitleCheck):
-//            case "USPEH":
-//                setFirebaseImage(SEARCH_ANSWER_IMAGES, iv1);
-//                builder.setPositiveButton(R.string.alertDialogUSPEHPositiveButton, (dialog, id) -> {
-//                    dialog.cancel();
-//                    navController.navigateUp();
-//                    Snackbar.make(getActivity().findViewById(android.R.id.content), "YESSSS", Snackbar.LENGTH_LONG).show();
-//                });
-//                builder.setNegativeButton(R.string.alertDialogUSPEHNegativeButton, (dialog, id) -> {
-//                    dialog.cancel();
-//                    Snackbar.make(getActivity().findViewById(android.R.id.content), "NOOOOOO", Snackbar.LENGTH_LONG).show();
-//                });
-//        }
-//    }
 
 
     private void setFirebaseImage(String searchimagesPath, ImageView iv1) {
