@@ -2,12 +2,15 @@ package com.dreamer.matholympappv1.ui.ui.scrollingscreen;
 
 import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.ScrollingFragment.SEARCH_ANSWER_IMAGES;
 import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.ScrollingFragment.TAG;
+import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadHintLimits;
+import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadSolutionLimits;
 import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadUserScore;
 
 import android.content.Context;
 import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -30,6 +33,25 @@ public class ScrollingFragmentViewModel extends ViewModel {
     private MutableLiveData<String> zadachaAnswer = new MutableLiveData<>();
     private MutableLiveData<String> zadachaHint = new MutableLiveData<>();
     private MutableLiveData<String> zadachaSolution = new MutableLiveData<>();
+
+    private MutableLiveData<Integer> neutralButtonColor = new MutableLiveData<>();
+    private MutableLiveData<Integer> positiveButtonColor = new MutableLiveData<>();
+    private MutableLiveData<Integer> negativeButtonColor = new MutableLiveData<>();
+    private int solutionLimits;
+    private int hintLimits;
+    private boolean isDialogShown;
+
+    public LiveData<Integer> getNeutralButtonColor() {
+        return neutralButtonColor;
+    }
+
+    public LiveData<Integer> getPositiveButtonColor() {
+        return positiveButtonColor;
+    }
+
+    public LiveData<Integer> getNegativeButtonColor() {
+        return negativeButtonColor;
+    }
 
     public ScrollingFragmentViewModel() {
 
@@ -128,5 +150,20 @@ public class ScrollingFragmentViewModel extends ViewModel {
         }
     }
 
+    public void setButtonColors(boolean isDialogShown, Context context) {
+        this.solutionLimits = solutionLimits;
+        this.hintLimits = hintLimits;
+        this.isDialogShown = isDialogShown;
+        this.context = context;
+        solutionLimits = sharedPreffsLoadSolutionLimits();
+        hintLimits = sharedPreffsLoadHintLimits();
+        int neutralColor = ContextCompat.getColor(context, solutionLimits == 0 ? android.R.color.darker_gray : android.R.color.holo_green_light);
+        int positiveColor = ContextCompat.getColor(context, hintLimits == 0 ? android.R.color.darker_gray : android.R.color.holo_green_dark);
+        int negativeColor = ContextCompat.getColor(context, android.R.color.holo_red_dark);
 
+        // Use MutableLiveData to update the button colors in the UI
+        neutralButtonColor.setValue(isDialogShown ? neutralColor : neutralColor & 0x55FFFFFF);
+        positiveButtonColor.setValue(isDialogShown ? positiveColor : positiveColor & 0x55FFFFFF);
+        negativeButtonColor.setValue(negativeColor);
+    }
 }

@@ -386,8 +386,21 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         builder.setInverseBackgroundForced(true);
 
         dialog.show();
-        setButtonColors(dialog);
+//       viewModel.setButtonColors(dialog);
 
+        viewModel.getNeutralButtonColor().observe(getViewLifecycleOwner(), color -> {
+            dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(color);
+        });
+
+        viewModel.getPositiveButtonColor().observe(getViewLifecycleOwner(), color -> {
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(color);
+        });
+
+        viewModel.getNegativeButtonColor().observe(getViewLifecycleOwner(), color -> {
+            dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(color);
+        });
+
+        viewModel.setButtonColors(true, getContext());
 
 
     }
