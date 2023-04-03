@@ -33,6 +33,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -104,6 +105,8 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private String searchImagesPath;
     private ImageView iv1;
 
+    private ScrollingFragmentViewModel viewModel;
+
     public ScrollingFragment() {
 
 
@@ -116,6 +119,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         actionBarSetupHelper = new ActionBarSetupHelper((AppCompatActivity) getActivity());
         firebaseUserScoreManager = new FirebaseUserScoreManager();
         sharedPreffUtils = new SharedPreffUtils(requireContext());
+        viewModel = new ViewModelProvider(this).get(ScrollingFragmentViewModel.class);
 
         variableSetup();
 
@@ -151,10 +155,12 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        getBundleArguments();
+
         actionBarSetupHelper.setupActionBar(inflater, getString(R.string.appbar_title_scroll_fragm), getString(R.string.appbar_score));
         binding = FragmentScrollingBinding.inflate(inflater, container, false);
         setupFirebaseStorage();
+
+        getBundleArguments();
 
 
         return binding.getRoot();
@@ -294,7 +300,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             case USPEH_TITLE:
                 builder.setView(team);
                 tw.setText(MainMessage);
-                setFirebaseImage(SEARCH_ANSWER_IMAGES, iv1);
+                viewModel.setFirebaseImage(SEARCH_ANSWER_IMAGES, iv1, listFilesFirestore, listSolutionFilesFirestore, zadacha_id, getContext());
                 builder
                         .setCancelable(true)
                         .setPositiveButton(R.string.alertDialogUSPEHPositiveButton, (dialog, id) -> {
@@ -325,7 +331,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             case SOLUTION_TITLE:
                 builder.setView(team);
                 tw.setText(MainMessage);
-                setFirebaseImage(SEARCH_SOLUTION_IMAGES, iv1);
+                viewModel.setFirebaseImage(SEARCH_SOLUTION_IMAGES, iv1, listFilesFirestore, listSolutionFilesFirestore, zadacha_id, getContext());
                 builder
                         .setCancelable(true)
                         .setPositiveButton(R.string.alertDialogPositiveButtonSolution, (dialog, id) -> dialog.cancel())
