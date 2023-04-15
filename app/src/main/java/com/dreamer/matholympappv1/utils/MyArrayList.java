@@ -317,7 +317,7 @@ public class MyArrayList {
 //        }
 //    }
     public interface SolutionLimitsCallback {
-        void onSuccess(Integer solutionlimits);
+        int onSuccess(Integer solutionlimits);
 
         void onFailure(Exception e);
     }

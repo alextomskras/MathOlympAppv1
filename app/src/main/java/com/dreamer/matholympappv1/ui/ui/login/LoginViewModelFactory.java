@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.dreamer.matholympappv1.data.data.LoginDataSource;
-import com.dreamer.matholympappv1.data.data.LoginRepository;
+import com.dreamer.matholympappv1.ui.ui.data.LoginDataSource;
+import com.dreamer.matholympappv1.ui.ui.data.LoginRepository;
 
 /**
  * ViewModel provider factory to instantiate RegisterViewModel.

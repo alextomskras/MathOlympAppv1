@@ -1,6 +1,6 @@
-package com.dreamer.matholympappv1.data.data;
+package com.dreamer.matholympappv1.ui.ui.data;
 
-import com.dreamer.matholympappv1.data.model.model.LoggedInUser;
+import com.dreamer.matholympappv1.ui.ui.data.model.LoggedInUser;
 
 import java.io.IOException;
 

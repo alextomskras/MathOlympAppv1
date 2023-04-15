@@ -8,9 +8,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class FirebaseUserScoreManager {
-
+    static final String BASE_IMAGE_URL = "gs://matholymp1.appspot.com";
 
     public static void saveUserScore(Integer zadacha_score) {
         String str2 = Integer.toString(zadacha_score);
@@ -58,6 +60,11 @@ public class FirebaseUserScoreManager {
         } catch (Exception e) {
             Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
         }
+    }
+
+    public static void setupFirebaseStorage() {
+        FirebaseStorage storageReference = FirebaseStorage.getInstance(BASE_IMAGE_URL);
+        StorageReference storageRef = storageReference.getReference();
     }
 
 

@@ -1,4 +1,4 @@
-package com.dreamer.matholympappv1.data.model.model;
+package com.dreamer.matholympappv1.ui.ui.data.model;
 
 /**
  * Data class that captures user information for logged in users retrieved from RegisterRepository

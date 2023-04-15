@@ -1,4 +1,4 @@
-package com.dreamer.matholympappv1.data.data;
+package com.dreamer.matholympappv1.ui.ui.data;
 
 /**
  * A generic class that holds a result success w/ data or an error exception.

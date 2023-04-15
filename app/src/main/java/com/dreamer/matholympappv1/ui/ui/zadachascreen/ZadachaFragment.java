@@ -1,5 +1,7 @@
 package com.dreamer.matholympappv1.ui.ui.zadachascreen;
 
+import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.FirebaseUserScoreManager.firebaseSaveHintLimits;
+import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.FirebaseUserScoreManager.firebaseSaveSolutionLimits;
 import static com.dreamer.matholympappv1.utils.MyArrayList.firebaseGetSolutionLimits;
 
 import android.app.Activity;
@@ -27,7 +29,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
+import com.dreamer.matholympappv1.utils.StringIntegerConverter;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -36,6 +41,7 @@ import java.util.ArrayList;
  */
 public class ZadachaFragment extends Fragment {
     NavController navController;
+    private FirebaseAuth mAuth;
     private static final String ARG_COLUMN_COUNT = "column-count";
     private static final String TAG = "TAG";
     private TextView myAppBarTitleTextView;
@@ -56,14 +62,32 @@ public class ZadachaFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
+// Get arguments passed from previous fragment
+        Bundle args = getArguments();
+        if (args != null) {
+            String username = args.getString("username");
+            String password = args.getString("password");
+            String solutionlimits = args.getString("solutionlimits", "1");
+            String hintlimits = args.getString("hintlimits", "3");
 
+            // Do something with username and password
+            updateUiWithUser(username, password);
+
+            int solutionlimitsnum = StringIntegerConverter.stringToInt(solutionlimits); // num will be 123
+            int hintlimitsnum = StringIntegerConverter.stringToInt(hintlimits); // num will be 123
+
+            firebaseSaveSolutionLimits(solutionlimitsnum);
+            firebaseSaveHintLimits(hintlimitsnum);
+
+        }
 
         intNavcontroller();
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
         solutionslimits = 0;
-        hintslimits = 0;
+        hintslimits = 1;
         viewModel = new ViewModelProvider(this).get(ZadachaViewModel.class);
     }
 
@@ -140,10 +164,17 @@ public class ZadachaFragment extends Fragment {
         //other metod for catch data from firebaseDB
         getSolutionLimitsFromFirebase(new MyArrayList.SolutionLimitsCallback() {
             @Override
-            public void onSuccess(Integer solutionlimits) {
-                // Do something with the solution limits value here
-                solutionslimits = solutionlimits;
-                Log.d(TAG, "Solution limits9: " + solutionlimits);
+            public int onSuccess(Integer solutionlimits) {
+                if (solutionlimits != null) {
+                    // Do something with the solution limits value here
+                    solutionslimits = solutionlimits;
+                    Log.d(TAG, "Solution limits9: " + solutionlimits);
+                } else {
+                    // Handle the null value here
+                    return
+                            Log.e(TAG, "Solution limits value is null.");
+                }
+                return solutionslimits;
             }
 
             @Override
@@ -178,8 +209,13 @@ public class ZadachaFragment extends Fragment {
     }
 
     private void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
+        if (solutionLimits == null) {
+            solutionLimits = 0;
+            return;
+        }
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
         sharedPreferencesManager.saveData("solution_limits", solutionLimits);
+
     }
 
 
@@ -236,11 +272,16 @@ public class ZadachaFragment extends Fragment {
 
     public void getHintLimitsFromFirebase() {
         MyArrayList.firebaseGetHintLimits(hintlimits -> {
-            // Do something with the solution limits value here
-            hintslimits = hintlimits;
-            Log.d(TAG, "Solution limits3: " + hintlimits);
-            Log.d(TAG, "Solution limits31: " + hintslimits);
-            sharedPreffsSaveHintLimits(hintslimits);
+            if (hintlimits != null) {
+                // Do something with the solution limits value here
+                hintslimits = hintlimits;
+                Log.d(TAG, "Solution limits3: " + hintlimits);
+                Log.d(TAG, "Solution limits31: " + hintslimits);
+                sharedPreffsSaveHintLimits(hintslimits);
+            } else {
+                // Handle the null value here
+                Log.e(TAG, "Hint limits value is null");
+            }
         }, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -248,5 +289,39 @@ public class ZadachaFragment extends Fragment {
                 Log.e(TAG, "Error getting solution limits from Firebase: " + e.getMessage());
             }
         });
+    }
+
+    private void updateUiWithUser(String username, String password) {
+        String username1 = username;
+        String password1 = password;
+//        String welcome = getString(R.string.welcome) + model.getDisplayName() + model.getPassword();
+//        Log.d(TAG, "User ID1welcome: " + welcome);
+//        mAuth.signInWithEmailAndPassword(model.getDisplayName(), model.getPassword()).addOnCompleteListener((Activity) getContext(),
+        mAuth.signInWithEmailAndPassword(username1, password1).addOnCompleteListener((Activity) getContext(),
+                task -> {
+                    if (task.isSuccessful()) {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                task.getResult().getUser().getEmail(), Snackbar.LENGTH_LONG).show();
+//                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                        Fragment mFrag = new ZadachaFragment();
+//                        ft.replace(R.id.zadachaFragment, mFrag);
+//                        ft.commit();
+//                        Bundle args = new Bundle();
+//                        args.putString("username", username);
+//                        args.putString("password", password);
+//                        navController.clearBackStack(R.id.loginFragment);
+//                        navController.navigate(R.id.action_loginFragment_to_zadachaFragment, args);
+                    } else {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                task.getException().getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+                    }
+
+                });
+        // TODO : initiate successful logged in experience
+        if (getContext() != null && getContext().getApplicationContext() != null) {
+//            Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+
+
+        }
     }
 }

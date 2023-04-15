@@ -15,7 +15,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,13 +30,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.bumptech.glide.Glide;
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Zadachi;
 import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
@@ -47,11 +44,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf {
 
@@ -158,8 +153,8 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
         actionBarSetupHelper.setupActionBar(inflater, getString(R.string.appbar_title_scroll_fragm), getString(R.string.appbar_score));
         binding = FragmentScrollingBinding.inflate(inflater, container, false);
-        setupFirebaseStorage();
 
+        FirebaseUserScoreManager.setupFirebaseStorage();
         getBundleArguments();
 
 
@@ -183,10 +178,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         }
     }
 
-    private void setupFirebaseStorage() {
-        storageReference = FirebaseStorage.getInstance(BASE_IMAGE_URL);
-        StorageReference storageRef = storageReference.getReference();
-    }
 
 
 
@@ -254,23 +245,20 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
 
     private void checkAnswer(String answer, ArrayList myArrayList) {
-
-        if (answer.isEmpty()) {
+        if (answer.trim().isEmpty()) {
             return;
         }
 /// не будет реагировать на пустые строчки - без вввода
         if (answer.equals(zadacha_answer)) {
             alertDiaShow(getString(R.string.alertDialogShowUSPEHTitle), getString(R.string.alertDialogShowUSPEHMessageBodySet));
-            // Add a string to the list
             MyArrayList.addString(zadacha_id);
-
-            // Update the user score
             int userScore = sharedPreffsLoadUserScore() + 10;
             SharedPreffUtils.sharedPreffsSaveUserScore(userScore);
             FirebaseUserScoreManager.saveUserScore(userScore);
         } else {
             alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), getString(R.string.alertDialogShowOSHIBKAMessageBodySet));
         }
+
     }
 
 
@@ -406,58 +394,55 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     }
 
 
-    private void setButtonColors(AlertDialog dialog) {
-        solutionLimits = sharedPreffsLoadSolutionLimits();
-        hintLimits = sharedPreffsLoadHintLimits();
-
-        Button buttonNeutral = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
-        Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        Button buttonNegative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-
-        buttonNeutral.setTextColor(ContextCompat.getColor(getContext(), solutionLimits == 0 ? android.R.color.darker_gray : android.R.color.holo_green_light));
-        buttonPositive.setTextColor(ContextCompat.getColor(getContext(), hintLimits == 0 ? android.R.color.darker_gray : R.color.green));
-        buttonNegative.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
-    }
-
-
+//    private void setButtonColors(AlertDialog dialog) {
+//        solutionLimits = sharedPreffsLoadSolutionLimits();
+//        hintLimits = sharedPreffsLoadHintLimits();
+//
+//        Button buttonNeutral = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+//        Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+//        Button buttonNegative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+//
+//        buttonNeutral.setTextColor(ContextCompat.getColor(getContext(), solutionLimits == 0 ? android.R.color.darker_gray : android.R.color.holo_green_light));
+//        buttonPositive.setTextColor(ContextCompat.getColor(getContext(), hintLimits == 0 ? android.R.color.darker_gray : R.color.green));
+//        buttonNegative.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
+//    }
 
 
-    private void setFirebaseImage(String searchimagesPath, ImageView iv1) {
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        List locallistFiles;
-        if (searchimagesPath == SEARCH_ANSWER_IMAGES) {
-            locallistFiles = listFilesFirestore;
-        } else {
-            locallistFiles = listSolutionFilesFirestore;
-        }
-
-        StorageReference spaceRef = storageRef.child("answersimages/answer" + zadacha_id);
-        spaceRef.getName();
-        spaceRef.getMetadata();
-
-        try {
-            Object splitString = locallistFiles.get(Integer.parseInt(zadacha_id) - 1).toString();
-            String[] parts = ((String) splitString).split(Pattern.quote("/"));
-            String imageLoad = parts[4];
-            String imagePatch = searchimagesPath + "/" + imageLoad;
-
-            storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(uri -> {
-                // Download directly from StorageReference using Glide
-                // (See MyAppGlideModule for Loader registration)
-                Glide.with(getContext())
-                        .load(uri)
-                        .into(iv1);
-
-                // Got the download URL for 'users/me/profile.png'
-            }).addOnFailureListener(exception -> {
-                Log.d(TAG, "____DATE= " + "storageRef");
-                // Handle any errors
-            });
-        } catch (Exception e) {
-            Log.e(TAG, "Error getting image URL: " + e.getMessage());
-        }
-    }
-
+//    private void setFirebaseImage(String searchimagesPath, ImageView iv1) {
+//        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+//        List locallistFiles;
+//        if (searchimagesPath == SEARCH_ANSWER_IMAGES) {
+//            locallistFiles = listFilesFirestore;
+//        } else {
+//            locallistFiles = listSolutionFilesFirestore;
+//        }
+//
+//        StorageReference spaceRef = storageRef.child("answersimages/answer" + zadacha_id);
+//        spaceRef.getName();
+//        spaceRef.getMetadata();
+//
+//        try {
+//            Object splitString = locallistFiles.get(Integer.parseInt(zadacha_id) - 1).toString();
+//            String[] parts = ((String) splitString).split(Pattern.quote("/"));
+//            String imageLoad = parts[4];
+//            String imagePatch = searchimagesPath + "/" + imageLoad;
+//
+//            storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(uri -> {
+//                // Download directly from StorageReference using Glide
+//                // (See MyAppGlideModule for Loader registration)
+//                Glide.with(getContext())
+//                        .load(uri)
+//                        .into(iv1);
+//
+//                // Got the download URL for 'users/me/profile.png'
+//            }).addOnFailureListener(exception -> {
+//                Log.d(TAG, "____DATE= " + "storageRef");
+//                // Handle any errors
+//            });
+//        } catch (Exception e) {
+//            Log.e(TAG, "Error getting image URL: " + e.getMessage());
+//        }
+//    }
 
 
     private void intNavcontroller() {
