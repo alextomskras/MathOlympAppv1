@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
+import com.dreamer.matholympappv1.utils.FirebaseHelper;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 import com.dreamer.matholympappv1.utils.StringIntegerConverter;
@@ -160,7 +161,7 @@ public class ZadachaFragment extends Fragment {
         MyArrayList.loadArrayListFromFirebase();
         //get values of Solutions and Hints Limits from firebaseDB and save to sharedPreffs
         getSolutionLimitsFromFirebase();
-        getHintLimitsFromFirebase();
+        FirebaseHelper.getHintLimitsFromFirebase();
 
         //other metod for catch data from firebaseDB
         getSolutionLimitsFromFirebase(new MyArrayList.SolutionLimitsCallback() {
