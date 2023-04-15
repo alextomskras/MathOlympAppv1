@@ -30,8 +30,8 @@ import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 import com.dreamer.matholympappv1.utils.StringIntegerConverter;
+import com.dreamer.matholympappv1.utils.UserEmailLoginFirebase;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -72,7 +72,8 @@ public class ZadachaFragment extends Fragment {
             String hintlimits = args.getString("hintlimits", "3");
 
             // Do something with username and password
-            updateUiWithUser(username, password);
+            UserEmailLoginFirebase.updateUiWithUser(username, password, getActivity());
+//            updateUiWithUser(username, password);
 
             int solutionlimitsnum = StringIntegerConverter.stringToInt(solutionlimits); // num will be 123
             int hintlimitsnum = StringIntegerConverter.stringToInt(hintlimits); // num will be 123
@@ -86,8 +87,8 @@ public class ZadachaFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-        solutionslimits = 0;
-        hintslimits = 1;
+//        solutionslimits = 0;
+//        hintslimits = 1;
         viewModel = new ViewModelProvider(this).get(ZadachaViewModel.class);
     }
 
@@ -204,8 +205,10 @@ public class ZadachaFragment extends Fragment {
     }
 
     private void sharedPreffsSaveHintLimits(Integer hintLimits) {
-        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        sharedPreferencesManager.saveData("hint_limits", hintLimits);
+        if (hintLimits != 0) {
+            SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+            sharedPreferencesManager.saveData("hint_limits", hintLimits);
+        }
     }
 
     private void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
@@ -291,37 +294,4 @@ public class ZadachaFragment extends Fragment {
         });
     }
 
-    private void updateUiWithUser(String username, String password) {
-        String username1 = username;
-        String password1 = password;
-//        String welcome = getString(R.string.welcome) + model.getDisplayName() + model.getPassword();
-//        Log.d(TAG, "User ID1welcome: " + welcome);
-//        mAuth.signInWithEmailAndPassword(model.getDisplayName(), model.getPassword()).addOnCompleteListener((Activity) getContext(),
-        mAuth.signInWithEmailAndPassword(username1, password1).addOnCompleteListener((Activity) getContext(),
-                task -> {
-                    if (task.isSuccessful()) {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                task.getResult().getUser().getEmail(), Snackbar.LENGTH_LONG).show();
-//                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-//                        Fragment mFrag = new ZadachaFragment();
-//                        ft.replace(R.id.zadachaFragment, mFrag);
-//                        ft.commit();
-//                        Bundle args = new Bundle();
-//                        args.putString("username", username);
-//                        args.putString("password", password);
-//                        navController.clearBackStack(R.id.loginFragment);
-//                        navController.navigate(R.id.action_loginFragment_to_zadachaFragment, args);
-                    } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                task.getException().getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
-                    }
-
-                });
-        // TODO : initiate successful logged in experience
-        if (getContext() != null && getContext().getApplicationContext() != null) {
-//            Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-
-
-        }
-    }
 }
