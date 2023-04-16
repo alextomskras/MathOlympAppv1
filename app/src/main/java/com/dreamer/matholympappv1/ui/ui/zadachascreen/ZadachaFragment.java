@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -27,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
+import com.dreamer.matholympappv1.utils.ActionBarHelper;
 import com.dreamer.matholympappv1.utils.FirebaseHelper;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
@@ -97,26 +95,28 @@ public class ZadachaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-// Inflate the custom view
-        View customView = inflater.inflate(R.layout.actionbar, null);
-        // Set the text on the ActionBar
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(true);
-            actionBar.setDisplayShowCustomEnabled(true);
-            // Add the custom layout to the ActionBar
-            ActionBar.LayoutParams layout = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.MATCH_PARENT);
-            layout.gravity = Gravity.END;
-            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP);
-
-            myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
-            myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
-            updateActionBarTextViewTitle(getString(R.string.appbar_title_zadacha_fragm));
-            updateActionBarTextViewScore(getString(R.string.appbar_score));
-
-
-            actionBar.setCustomView(customView);
-        }
+        ActionBarHelper actionBarHelper = new ActionBarHelper(getActivity());
+        actionBarHelper.setupActionBar(getActivity(), getString(R.string.appbar_title_zadacha_fragm), getString(R.string.appbar_score));
+//        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+//// Inflate the custom view
+//        View customView = inflater.inflate(R.layout.actionbar, null);
+//        // Set the text on the ActionBar
+//        if (actionBar != null) {
+//            actionBar.setDisplayShowTitleEnabled(true);
+//            actionBar.setDisplayShowCustomEnabled(true);
+//            // Add the custom layout to the ActionBar
+//            ActionBar.LayoutParams layout = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.MATCH_PARENT);
+//            layout.gravity = Gravity.END;
+//            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP);
+//
+//            myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
+//            myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
+//            updateActionBarTextViewTitle(getString(R.string.appbar_title_zadacha_fragm));
+//            updateActionBarTextViewScore(getString(R.string.appbar_score));
+//
+//
+//            actionBar.setCustomView(customView);
+//        }
 
 
         userRecyclerViewAdapter = new UserRecyclerViewAdapter(new ArrayList<>(), getContext());
