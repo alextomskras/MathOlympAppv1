@@ -200,10 +200,10 @@ public class ZadachaFragment extends Fragment {
     }
 
     // Update the text of the TextView in the ActionBar
-    private void updateActionBarTextViewTitle(String title) {
-        myAppBarTitleTextView.setText(title);
-
-    }
+//    private void updateActionBarTextViewTitle(String title) {
+//        myAppBarTitleTextView.setText(title);
+//
+//    }
 
     private void sharedPreffsSaveHintLimits(Integer hintLimits) {
         if (hintLimits != 0) {
@@ -223,26 +223,26 @@ public class ZadachaFragment extends Fragment {
     }
 
 
-    private Integer sharedPreffsLoadSolutionLimits() {
-        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        Integer solutionLimits = sharedPreferencesManager.getDataFromSharedPreferences("solution_limits");
-        return solutionLimits;
-    }
+//    private Integer sharedPreffsLoadSolutionLimits() {
+//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+//        Integer solutionLimits = sharedPreferencesManager.getDataFromSharedPreferences("solution_limits");
+//        return solutionLimits;
+//    }
 
-    private void updateActionBarTextViewScore(String score) {
-        Integer userScore = sharedPreffsLoadUserScore();
-        if (userScore != 0) {
-            myAppBarScoreTextView.setText(score + userScore);
+//    private void updateActionBarTextViewScore(String score) {
+//        Integer userScore = sharedPreffsLoadUserScore();
+//        if (userScore != 0) {
+//            myAppBarScoreTextView.setText(score + userScore);
+//
+//        }
+//
+//    }
 
-        }
-
-    }
-
-    private Integer sharedPreffsLoadUserScore() {
-        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        Integer zadacha_score = sharedPreferencesManager.getDataFromSharedPreferences("zadacha_score");
-        return zadacha_score;
-    }
+//    private Integer sharedPreffsLoadUserScore() {
+//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+//        Integer zadacha_score = sharedPreferencesManager.getDataFromSharedPreferences("zadacha_score");
+//        return zadacha_score;
+//    }
 
     private void intNavcontroller() {
         Activity MainActivity = getActivity();
@@ -274,25 +274,25 @@ public class ZadachaFragment extends Fragment {
         MyArrayList.firebaseGetSolutionLimits(callback);
     }
 
-    public void getHintLimitsFromFirebase() {
-        MyArrayList.firebaseGetHintLimits(hintlimits -> {
-            if (hintlimits != null) {
-                // Do something with the solution limits value here
-                hintslimits = hintlimits;
-                Log.d(TAG, "Solution limits3: " + hintlimits);
-                Log.d(TAG, "Solution limits31: " + hintslimits);
-                sharedPreffsSaveHintLimits(hintslimits);
-            } else {
-                // Handle the null value here
-                Log.e(TAG, "Hint limits value is null");
-            }
-        }, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                // Handle the error here
-                Log.e(TAG, "Error getting solution limits from Firebase: " + e.getMessage());
-            }
-        });
-    }
+//    public void getHintLimitsFromFirebase() {
+//        MyArrayList.firebaseGetHintLimits(hintlimits -> {
+//            if (hintlimits != null) {
+//                // Do something with the solution limits value here
+//                hintslimits = hintlimits;
+//                Log.d(TAG, "Solution limits3: " + hintlimits);
+//                Log.d(TAG, "Solution limits31: " + hintslimits);
+//                sharedPreffsSaveHintLimits(hintslimits);
+//            } else {
+//                // Handle the null value here
+//                Log.e(TAG, "Hint limits value is null");
+//            }
+//        }, new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                // Handle the error here
+//                Log.e(TAG, "Error getting solution limits from Firebase: " + e.getMessage());
+//            }
+//        });
+//    }
 
 }
