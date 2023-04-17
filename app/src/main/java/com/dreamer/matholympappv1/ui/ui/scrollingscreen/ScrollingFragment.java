@@ -39,11 +39,11 @@ import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Zadachi;
 import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
 import com.dreamer.matholympappv1.utils.MyArrayList;
+import com.dreamer.matholympappv1.utils.MyMenuInflater;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
@@ -453,8 +453,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     }
 
 
-
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -462,34 +460,37 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     }
 
 
-    public void onCreateOptionsMenu(Menu menu, @NonNull MenuInflater menuInflater) {
-
-        menuScroll = menu.add(R.string.scrollFrgMenuAddHintTitle);
-        menuScroll.setTitle(R.string.scrollFrgMenuTitle);
-        menuScroll.setTitleCondensed(getString(R.string.scrollFrgMenuCondesedTitle));
-        menuScroll.setOnMenuItemClickListener(v ->
-                {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-                            zadacha_hint, Snackbar.LENGTH_LONG).show();
-                    return true;
-                }
-        );
-        menuScroll = menu.add("exit");
-        menuScroll.setTitle("exit");
-        menuScroll.setTitleCondensed("exit");
-        menuScroll.setOnMenuItemClickListener(v ->
-                {
-                    FirebaseAuth.getInstance().signOut();
-                    navController.clearBackStack(R.id.scrollingfragment);
-                    navController.navigate(R.id.action_scrollingFragment2_to_loginFragment);
-//                    onDestroyView();
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        MyMenuInflater.inflateMenu(menu, requireContext(), navController, zadacha_hint);
+    }
+//    public void onCreateOptionsMenu(Menu menu, @NonNull MenuInflater menuInflater) {
+//
+//        menuScroll = menu.add(R.string.scrollFrgMenuAddHintTitle);
+//        menuScroll.setTitle(R.string.scrollFrgMenuTitle);
+//        menuScroll.setTitleCondensed(getString(R.string.scrollFrgMenuCondesedTitle));
+//        menuScroll.setOnMenuItemClickListener(v ->
+//                {
 //                    Snackbar.make(getActivity().findViewById(android.R.id.content),
 //                            zadacha_hint, Snackbar.LENGTH_LONG).show();
 //                    return true;
-                    return true;
-                }
-        );
-    }
+//                }
+//        );
+//        menuScroll = menu.add("exit");
+//        menuScroll.setTitle("exit");
+//        menuScroll.setTitleCondensed("exit");
+//        menuScroll.setOnMenuItemClickListener(v ->
+//                {
+//                    FirebaseAuth.getInstance().signOut();
+//                    navController.clearBackStack(R.id.scrollingfragment);
+//                    navController.navigate(R.id.action_scrollingFragment2_to_loginFragment);
+////                    onDestroyView();
+////                    Snackbar.make(getActivity().findViewById(android.R.id.content),
+////                            zadacha_hint, Snackbar.LENGTH_LONG).show();
+////                    return true;
+//                    return true;
+//                }
+//        );
+//    }
 
 //    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        super.onCreateOptionsMenu(menu, inflater);
