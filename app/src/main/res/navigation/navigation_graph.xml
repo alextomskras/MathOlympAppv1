@@ -30,7 +30,11 @@
         android:id="@+id/scrollingFragment2"
         android:name="com.dreamer.matholympappv1.ui.ui.scrollingscreen.ScrollingFragment"
         android:label="zadacha"
-        tools:layout="@layout/fragment_scrolling" />
+        tools:layout="@layout/fragment_scrolling">
+        <action
+            android:id="@+id/action_scrollingFragment2_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.dreamer.matholympappv1.ui.ui.register.ui.register.RegisterFragment"

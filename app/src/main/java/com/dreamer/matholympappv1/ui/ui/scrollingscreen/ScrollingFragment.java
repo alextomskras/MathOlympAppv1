@@ -43,6 +43,7 @@ import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
@@ -461,7 +462,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     }
 
 
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+    public void onCreateOptionsMenu(Menu menu, @NonNull MenuInflater menuInflater) {
 
         menuScroll = menu.add(R.string.scrollFrgMenuAddHintTitle);
         menuScroll.setTitle(R.string.scrollFrgMenuTitle);
@@ -473,5 +474,36 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
                     return true;
                 }
         );
+        menuScroll = menu.add("exit");
+        menuScroll.setTitle("exit");
+        menuScroll.setTitleCondensed("exit");
+        menuScroll.setOnMenuItemClickListener(v ->
+                {
+                    FirebaseAuth.getInstance().signOut();
+                    navController.clearBackStack(R.id.scrollingfragment);
+                    navController.navigate(R.id.action_scrollingFragment2_to_loginFragment);
+//                    onDestroyView();
+//                    Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                            zadacha_hint, Snackbar.LENGTH_LONG).show();
+//                    return true;
+                    return true;
+                }
+        );
     }
+
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        super.onCreateOptionsMenu(menu, inflater);
+//
+//        // Add the first menu item
+//        MenuItem item1 = menu.add(0, R.id.menu_item_1, 0, "Menu item 1");
+//        item1.setIcon(com.google.android.material.R.drawable.abc_ic_star_black_16dp);
+//        item1.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//
+//        // Add the second menu item
+//        MenuItem item2 = menu.add(0, R.id.menu_item_2, 0, "Menu item 2");
+//        item2.setIcon(com.google.android.material.R.drawable.abc_ic_star_black_36dp);
+//        item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//    }
+
+
 }
