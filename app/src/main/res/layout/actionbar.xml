@@ -22,7 +22,7 @@
         android:textStyle="bold"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:text="Score: 66" />
+        android:text="Score: " />
 </RelativeLayout>
 
 
