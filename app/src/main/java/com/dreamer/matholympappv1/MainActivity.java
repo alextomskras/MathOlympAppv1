@@ -30,12 +30,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        if (getResources().getBoolean(R.bool.is_dark_theme_enabled)) {
+            setTheme(R.style.AppTheme_Dark);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
         setContentView(R.layout.activity_main);
+
 //    sharedPreffsSaveSolutionLimits(3);
 // Create a new instance of MyArrayList
-    MyArrayList myArrayList = new MyArrayList();
+        MyArrayList myArrayList = new MyArrayList();
 
-    ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 //    private Object getSystemService(String connectivityService) {
 //        return null;
 //    }

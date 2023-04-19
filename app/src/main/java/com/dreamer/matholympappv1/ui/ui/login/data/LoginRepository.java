@@ -1,6 +1,6 @@
-package com.dreamer.matholympappv1.ui.ui.data;
+package com.dreamer.matholympappv1.ui.ui.login.data;
 
-import com.dreamer.matholympappv1.ui.ui.data.model.LoggedInUser;
+import com.dreamer.matholympappv1.ui.ui.login.data.model.LoggedInUser;
 
 /**
  * Class that requests authentication and user information from the remote data source and

@@ -10,8 +10,10 @@
     <color name="red">#FB0303</color>
     <color name="green">#30FB03</color>
 
+    <color name="lime_200">#E6EE9C</color>
     <color name="lime_500">#CDDC39</color>
     <color name="lime_700">#AFB42B</color>
+    <color name="blue_gray_200">#90CAF9</color>
     <color name="blue_gray_500">#607D8B</color>
     <color name="blue_gray_700">#455A64</color>
 

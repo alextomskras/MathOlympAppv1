@@ -1,6 +1,71 @@
+<!--<resources xmlns:tools="http://schemas.android.com/tools">-->
+<!--    &lt;!&ndash; Base application theme. &ndash;&gt;-->
+<!--    <style name="Theme.MathOlympAppv1" parent="Theme.MaterialComponents.DayNight.DarkActionBar">-->
+<!--        &lt;!&ndash; Primary brand color. &ndash;&gt;-->
+<!--        <item name="colorPrimary">@color/purple_500</item>-->
+<!--        <item name="colorPrimaryVariant">@color/purple_700</item>-->
+<!--        <item name="colorOnPrimary">@color/white</item>-->
+<!--        &lt;!&ndash; Secondary brand color. &ndash;&gt;-->
+<!--        <item name="colorSecondary">@color/teal_200</item>-->
+<!--        <item name="colorSecondaryVariant">@color/teal_700</item>-->
+<!--        <item name="colorOnSecondary">@color/black</item>-->
+<!--        &lt;!&ndash;        &lt;!&ndash; Status bar color. &ndash;&gt;&ndash;&gt;-->
+<!--        &lt;!&ndash;        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>&ndash;&gt;-->
+<!--        &lt;!&ndash;        &lt;!&ndash; Customize your theme here. &ndash;&gt;&ndash;&gt;-->
+<!--        &lt;!&ndash; Status bar color. &ndash;&gt;-->
+<!--        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>-->
+<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+
+<!--        <item name="textInputStyle">@style/GlobalTextInputStyle</item>-->
+<!--        <item name="materialButtonStyle">@style/GlobalButtonStyle</item>-->
+<!--    </style>-->
+
+<!--    &lt;!&ndash;    <style name="SplashActivity" parent="Theme.MaterialComponents.Light.NoActionBar">&ndash;&gt;-->
+<!--    &lt;!&ndash;        <item name="android:windowBackground">@drawable/splash</item>&ndash;&gt;-->
+<!--    &lt;!&ndash;        <item name="android:windowTranslucentStatus">true</item>&ndash;&gt;-->
+<!--    &lt;!&ndash;        <item name="android:windowTranslucentNavigation">true</item>&ndash;&gt;-->
+<!--    &lt;!&ndash;    </style>&ndash;&gt;-->
+
+<!--    <style name="GlobalTextInputStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
+<!--        <item name="android:minWidth">@dimen/big_width</item>-->
+<!--    </style>-->
+
+<!--    <style name="GlobalButtonStyle" parent="Widget.MaterialComponents.Button">-->
+<!--        <item name="android:textAllCaps">false</item>-->
+<!--    </style>-->
+
+<!--    &lt;!&ndash;-->
+<!--        The default theme for activities. This does not have any configuration about the splash-->
+<!--        screen.-->
+<!--    &ndash;&gt;-->
+<!--    <style name="Theme.App" parent="Theme.MathOlympAppv1">-->
+<!--        <item name="colorPrimary">@color/lime_500</item>-->
+<!--        <item name="colorPrimaryVariant">@color/lime_700</item>-->
+<!--        <item name="colorOnPrimary">@android:color/black</item>-->
+<!--        <item name="colorSecondary">@color/blue_gray_500</item>-->
+<!--        <item name="colorSecondaryVariant">@color/blue_gray_700</item>-->
+<!--        <item name="colorOnSecondary">@android:color/black</item>-->
+<!--        <item name="android:statusBarColor">@android:color/transparent</item>-->
+<!--        <item name="android:navigationBarColor">@android:color/transparent</item>-->
+<!--    </style>-->
+
+<!--    &lt;!&ndash;-->
+<!--        The splash screen theme without any customization.-->
+<!--        On API level 31 and above, this shows the app icon on the splash screen.-->
+<!--        On API level 30 and below, this shows a default icon from the library.-->
+<!--        See "Theme.App.SplashScreen.Animated" below for the backward-compatible splash screen.-->
+<!--    &ndash;&gt;-->
+
+<!--    &lt;!&ndash;-->
+<!--        The splash screen theme with animated icon in the splash screen.-->
+<!--        "Theme.SplashScreen.IconBackground" is an alternative theme that shows the background color-->
+<!--        behind the icon.-->
+<!--    &ndash;&gt;-->
+<!--</resources>-->
+
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.MathOlympAppv1" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.MathOlympAppv1" parent="Theme.MaterialComponents.DayNight">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -9,35 +74,14 @@
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!--        &lt;!&ndash; Status bar color. &ndash;&gt;-->
-        <!--        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>-->
-        <!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-
         <item name="textInputStyle">@style/GlobalTextInputStyle</item>
         <item name="materialButtonStyle">@style/GlobalButtonStyle</item>
     </style>
 
-    <!--    <style name="SplashActivity" parent="Theme.MaterialComponents.Light.NoActionBar">-->
-    <!--        <item name="android:windowBackground">@drawable/splash</item>-->
-    <!--        <item name="android:windowTranslucentStatus">true</item>-->
-    <!--        <item name="android:windowTranslucentNavigation">true</item>-->
-    <!--    </style>-->
-
-    <style name="GlobalTextInputStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="android:minWidth">@dimen/big_width</item>
-    </style>
-
-    <style name="GlobalButtonStyle" parent="Widget.MaterialComponents.Button">
-        <item name="android:textAllCaps">false</item>
-    </style>
-
-    <!--
-        The default theme for activities. This does not have any configuration about the splash
-        screen.
-    -->
+    <!-- Default theme for activities in the app. -->
     <style name="Theme.App" parent="Theme.MathOlympAppv1">
         <item name="colorPrimary">@color/lime_500</item>
         <item name="colorPrimaryVariant">@color/lime_700</item>
@@ -49,16 +93,12 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
-    <!--
-        The splash screen theme without any customization.
-        On API level 31 and above, this shows the app icon on the splash screen.
-        On API level 30 and below, this shows a default icon from the library.
-        See "Theme.App.SplashScreen.Animated" below for the backward-compatible splash screen.
-    -->
+    <!-- Global styles for input fields and buttons. -->
+    <style name="GlobalTextInputStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:minWidth">@dimen/big_width</item>
+    </style>
 
-    <!--
-        The splash screen theme with animated icon in the splash screen.
-        "Theme.SplashScreen.IconBackground" is an alternative theme that shows the background color
-        behind the icon.
-    -->
+    <style name="GlobalButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:textAllCaps">false</item>
+    </style>
 </resources>
