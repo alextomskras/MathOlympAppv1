@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_zadachaFragment_to_scrollingFragment2"
             app:destination="@id/scrollingFragment2" />
+        <action
+            android:id="@+id/action_zadachaFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/scrollingFragment2"
@@ -34,6 +37,9 @@
         <action
             android:id="@+id/action_scrollingFragment2_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_scrollingFragment2_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -44,4 +50,8 @@
             android:id="@+id/action_registerFragment_to_loginFragment2"
             app:destination="@id/loginFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.dreamer.matholympappv1.ui.ui.settings.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>
