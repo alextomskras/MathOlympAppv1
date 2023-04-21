@@ -1,12 +1,16 @@
 package com.dreamer.matholympappv1;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +20,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavHost;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
+import androidx.preference.PreferenceManager;
 
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,14 +34,20 @@ public class MainActivity extends AppCompatActivity {
     //    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isDarkThemeEnabled = preferences.getBoolean("dark_theme_enabled", false);
+//        setTheme(isDarkThemeEnabled ? R.style.AppTheme_Dark : R.style.AppTheme);
+        setTheme(isDarkThemeEnabled);
+        Log.e(TAG, "isDarkThemeEnabled= " + isDarkThemeEnabled);
+        Toast.makeText(this, "R.style.AppTheme_Dark" + isDarkThemeEnabled, Toast.LENGTH_SHORT).show();
         super.onCreate(savedInstanceState);
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        if (getResources().getBoolean(R.bool.is_dark_theme_enabled)) {
-            setTheme(R.style.AppTheme_Dark);
-        } else {
-            setTheme(R.style.AppTheme);
-        }
+//        if (getResources().getBoolean(R.bool.is_dark_theme_enabled)) {
+//            setTheme(R.style.AppTheme_Dark);
+//        } else {
+//            setTheme(R.style.AppTheme);
+//        }
         setContentView(R.layout.activity_main);
 
 //    sharedPreffsSaveSolutionLimits(3);
@@ -113,6 +124,14 @@ public class MainActivity extends AppCompatActivity {
                 // Permission denied, handle the situation
                 Toast.makeText(this, "No permission", Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    public void setTheme(boolean isDarkThemeEnabled) {
+        if (isDarkThemeEnabled) {
+            setTheme(R.style.AppTheme_Dark);
+        } else {
+            setTheme(R.style.AppTheme);
         }
     }
     //    @Override

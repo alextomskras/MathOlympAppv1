@@ -31,5 +31,15 @@ public class MyMenuInflater {
             navController.navigate(R.id.action_scrollingFragment2_to_loginFragment);
             return true;
         });
+
+        menuScroll = menu.add("settings");
+        menuScroll.setTitle("settings");
+        menuScroll.setTitleCondensed("settings");
+        menuScroll.setOnMenuItemClickListener(v -> {
+//            FirebaseAuth.getInstance().signOut();
+//            navController.clearBackStack(R.id.scrollingfragment);
+            navController.navigate(R.id.action_scrollingFragment2_to_settingsFragment);
+            return true;
+        });
     }
 }
