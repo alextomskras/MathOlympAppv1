@@ -1,5 +1,6 @@
 package com.dreamer.matholympappv1.ui.ui.settings;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -50,6 +51,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             getActivity().getTheme();
             String mTheme = getActivity().getTheme().toString();
             Toast.makeText(getContext(), "R.style.AppTheme_Dark = " + mTheme, Toast.LENGTH_SHORT).show();
+            // Получить интент текущей активности
+            Intent intent = getActivity().getIntent();
+
+// Добавить флаг FLAG_ACTIVITY_NO_ANIMATION, чтобы избежать анимации при перезапуске активности
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+// Закрыть текущую активность
+            getActivity().finish();
+
+// Перезапустить активность с помощью интента
+            getActivity().startActivity(intent);
 
         }
     }

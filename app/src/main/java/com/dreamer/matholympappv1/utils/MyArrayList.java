@@ -51,6 +51,8 @@ public class MyArrayList {
         String uid = user.getUid();
         try {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
+            //init FirebaseDB
+
             DatabaseReference complitedtasksRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("completed_tasks");
 
 // Convert the list to a HashMap
@@ -118,6 +120,8 @@ public class MyArrayList {
         String uid = user.getUid();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //init FirebaseDB
+
         DatabaseReference complitedtasksRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("completed_tasks");
 
         complitedtasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -188,6 +192,7 @@ public class MyArrayList {
             return;
         }
         String uid = user.getUid();
+        //init FirebaseDB
 
         DatabaseReference solutionRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("solutionlimits");
         solutionRef.addValueEventListener(new ValueEventListener() {
@@ -217,6 +222,7 @@ public class MyArrayList {
             return;
         }
         String uid = user.getUid();
+        //init FirebaseDB
 
         DatabaseReference hintRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("hintlimits");
         hintRef.addValueEventListener(new ValueEventListener() {
@@ -278,6 +284,7 @@ public class MyArrayList {
             return;
         }
         String uid = user.getUid();
+        //init FirebaseDB
 
         DatabaseReference solutionRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("solutionlimits");
         solutionRef.addValueEventListener(new ValueEventListener() {

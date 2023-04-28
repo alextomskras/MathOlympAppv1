@@ -23,7 +23,6 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
 import com.dreamer.matholympappv1.utils.MyArrayList;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     //    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //init FirebaseDB
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isDarkThemeEnabled = preferences.getBoolean("dark_theme_enabled", false);
 //        setTheme(isDarkThemeEnabled ? R.style.AppTheme_Dark : R.style.AppTheme);
@@ -41,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
         Log.e(TAG, "isDarkThemeEnabled= " + isDarkThemeEnabled);
         Toast.makeText(this, "R.style.AppTheme_Dark" + isDarkThemeEnabled, Toast.LENGTH_SHORT).show();
         super.onCreate(savedInstanceState);
+
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 //        if (getResources().getBoolean(R.bool.is_dark_theme_enabled)) {
@@ -94,8 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
     NavigationUI.setupActionBarWithNavController(this, navController);
 
-    //init FirebaseDB
-    FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction()
 ////                    .replace(R.id.login_fragment, MainFragment.newInstance())
