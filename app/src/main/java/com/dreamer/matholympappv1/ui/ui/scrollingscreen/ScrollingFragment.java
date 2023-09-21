@@ -253,6 +253,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         if (answer.equals(zadacha_answer)) {
             alertDiaShow(getString(R.string.alertDialogShowUSPEHTitle), getString(R.string.alertDialogShowUSPEHMessageBodySet));
             MyArrayList.addString(zadacha_id);
+            //берет данные из шаредпреффс что может быть не совсем хорошо и выдавать не актуальные данные после зачистки программы на девайсе
             int userScore = sharedPreffsLoadUserScore() + 10;
             SharedPreffUtils.sharedPreffsSaveUserScore(userScore);
             FirebaseUserScoreManager.saveUserScore(userScore);
@@ -283,9 +284,10 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         final String USPEH_TITLE = "USPEH";
         final String HINT_TITLE = "HINT";
         final String SOLUTION_TITLE = "Solution";
-
+        int iconResource = R.drawable.ic_baseline_bubble_chart_24;
 
         switch (Title) {
+
             case USPEH_TITLE:
                 builder.setView(team);
                 tw.setText(MainMessage);
@@ -298,7 +300,8 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
                             Snackbar.make(getActivity().findViewById(android.R.id.content),
                                     "YESSSS", Snackbar.LENGTH_LONG).show();
                         })
-                        .setIcon(R.drawable.ic_baseline_bubble_chart_24)
+//                        .setIcon(R.drawable.ic_baseline_bubble_chart_24)
+                        .setIcon(iconResource)
                         .setNegativeButton(R.string.alertDialogUSPEHNegativeButton, (dialog, id) -> {
                             dialog.cancel();
                             Snackbar.make(getActivity().findViewById(android.R.id.content),
@@ -311,7 +314,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
                 builder
                         .setCancelable(true)
                         .setPositiveButton(R.string.alertDialogHintPositiveButton, (dialog, id) -> dialog.cancel())
-                        .setIcon(R.drawable.ic_baseline_bubble_chart_24)
+                        .setIcon(iconResource)
                         .setNegativeButton(R.string.allertDialogNegativeButton, (dialog, id) -> {
                             dialog.cancel();
                             navController.navigateUp();
@@ -324,7 +327,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
                 builder
                         .setCancelable(true)
                         .setPositiveButton(R.string.alertDialogPositiveButtonSolution, (dialog, id) -> dialog.cancel())
-                        .setIcon(R.drawable.ic_baseline_bubble_chart_24)
+                        .setIcon(iconResource)
                         .setNegativeButton(R.string.allertDialogNegativeButton, (dialog, id) -> {
                             dialog.cancel();
                             navController.navigateUp();
@@ -359,7 +362,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
                     Snackbar.make(getActivity().findViewById(android.R.id.content),
                             "EXITTT", Snackbar.LENGTH_LONG).show();
                 });
-                builder.setIcon(R.drawable.ic_baseline_bubble_chart_24);
+                builder.setIcon(iconResource);
                 builder.setNegativeButton(R.string.alertDialogRezultatNegativeButton, (dialog, id) -> {
                     dialog.cancel();
                     navController.navigateUp();

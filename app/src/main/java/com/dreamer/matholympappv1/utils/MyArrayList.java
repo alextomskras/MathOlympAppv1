@@ -30,7 +30,7 @@ public class MyArrayList {
 
     public static void addString(String value) {
         list.add(value);
-        saveArrayToFirebase(list);
+        saveArrayCompletedTasksToFirebase(list);
     }
 
     public static ArrayList<String> getList() {
@@ -42,7 +42,7 @@ public class MyArrayList {
     }
 
 
-    private static void saveArrayToFirebase(ArrayList<String> list) {
+    private static void saveArrayCompletedTasksToFirebase(ArrayList<String> list) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Log.e(TAG, "Error: current user is null");

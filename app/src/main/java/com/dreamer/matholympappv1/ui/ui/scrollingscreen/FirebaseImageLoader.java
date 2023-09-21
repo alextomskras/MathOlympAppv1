@@ -16,7 +16,7 @@ public class FirebaseImageLoader {
     private final ImageView imageView;
     private final String zadachaId;
     private final StorageReference storageRef;
-    private ScrollingFragment scrollingFragment = new ScrollingFragment();
+    private final ScrollingFragment scrollingFragment = new ScrollingFragment();
     private List<String> localListFiles;
 
     public FirebaseImageLoader(String searchImagesPath, ImageView imageView, List<String> localListFiles, String zadachaId) {
@@ -39,7 +39,7 @@ public class FirebaseImageLoader {
         spaceRef.getName();
         spaceRef.getMetadata();
 
-        Object splitString = localListFiles.get(Integer.parseInt(zadachaId) - 1).toString();
+        Object splitString = localListFiles.get(Integer.parseInt(zadachaId) - 1);
         String[] parts = ((String) splitString).split(Pattern.quote("/"));
         String imageLoad = parts[4];
         String imagePatch = searchImagesPath + "/" + imageLoad;
