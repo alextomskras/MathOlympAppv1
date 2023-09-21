@@ -42,7 +42,7 @@ public class FirebaseUserScoreManager {
             DatabaseReference hintRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("hintlimits");
             hintRef.setValue(str2);
         } catch (Exception e) {
-            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
+            Log.e(TAG, "Error saving user hintlimits to Firebase: " + e.getMessage());
         }
     }
 
@@ -58,7 +58,7 @@ public class FirebaseUserScoreManager {
             DatabaseReference solutionRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("solutionlimits");
             solutionRef.setValue(str2);
         } catch (Exception e) {
-            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
+            Log.e(TAG, "Error saving user solutionlimits to Firebase: " + e.getMessage());
         }
     }
 

@@ -65,7 +65,7 @@ public class MyArrayList {
                 complitedtasksRef.setValue(hashMap);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error saving user score to Firebase: " + e.getMessage());
+            Log.e(TAG, "Error saving user completed_tasks to Firebase: " + e.getMessage());
         }
     }
 
@@ -145,7 +145,7 @@ public class MyArrayList {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.w(TAG, "Failed to read value.", databaseError.toException());
+                Log.w(TAG, "Failed to read completed_tasks value.", databaseError.toException());
             }
         });
     }
