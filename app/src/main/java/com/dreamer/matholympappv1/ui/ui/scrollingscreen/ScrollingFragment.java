@@ -277,6 +277,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         TextView tw = team.findViewById(R.id.allertMesage1);
         TextView tw1 = team.findViewById(R.id.allertMesage2);// id of your imageView element
         ImageView iv1 = team.findViewById(R.id.imageOtvet1);
+        ImageView iv2 = team.findViewById(R.id.imageTopofDialog);
 
         tw1.setVisibility(View.GONE);
         builder.setView(team);
@@ -285,6 +286,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         final String HINT_TITLE = "HINT";
         final String SOLUTION_TITLE = "Solution";
         int iconResource = R.drawable.ic_baseline_bubble_chart_24;
+        iv2.setBackgroundResource(iconResource);
 
         switch (Title) {
 
