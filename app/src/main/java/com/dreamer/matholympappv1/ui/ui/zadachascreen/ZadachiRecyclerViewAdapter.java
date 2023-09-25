@@ -130,6 +130,7 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        boolean isStruckThrough;
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item, parent, false);
         return new ViewHolder(view);
     }
@@ -166,17 +167,37 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
             String number = s;
             Log.e(TAG, "____testHideZadachi2= " + number);
             if (number != null) {
+                int num = Integer.parseInt(number);
                 String str = String.valueOf(position + 1); // using String.valueOf()
                 Log.e(TAG, "____testHideZadachi4= " + str);
                 String str2 = Integer.toString(position + 1); // using Integer.toString()
                 Log.e(TAG, "____testHideZadachi3= " + str2);
-                if (str2.equals(number)) {
+
+
+                if (list.contains(String.valueOf(position + 1))) {
+                    holder.isStruckThrough = true;
+                } else {
+                    holder.isStruckThrough = false;
+                }
+//                holder.isStruckThrough = num >= (position + 1);
+//                if (str2.equals(number)) {
+                if (holder.isStruckThrough) {
 //                    holder.name.setBackgroundColor(Color.RED);
                     //делаем зачеркнутый текст у пройденных задач
                     holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     holder.name.setTextColor(Color.GRAY);
 
 //                    Log.e(TAG, "____testHideZadachi5= " + holder.name.getPaintFlags());
+                } else {
+                    holder.name.setPaintFlags(holder.name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    holder.name.setTextColor(Color.BLACK);
+//                if (holder.isStruckThrough) {
+//                    holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+//                    holder.name.setTextColor(Color.GRAY);
+//                } else {
+//                    holder.name.setPaintFlags(holder.name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+//                    holder.name.setTextColor(/* Set your desired non-strikethrough text color here */);
+//                }
                 }
             }
         }
@@ -290,6 +311,7 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        public boolean isStruckThrough;
         private View view;
         //        private CircleImageView circleImageView;
         private TextView name;

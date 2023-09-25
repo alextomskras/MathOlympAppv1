@@ -50,7 +50,7 @@ public class MyArrayList {
         }
         String uid = user.getUid();
         try {
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
+//            FirebaseDatabase database = FirebaseDatabase.getInstance();
             //init FirebaseDB
 
             DatabaseReference complitedtasksRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("completed_tasks");

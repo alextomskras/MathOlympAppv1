@@ -214,7 +214,6 @@ public class ZadachaFragment extends Fragment {
 
     private void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
         if (solutionLimits == null) {
-            solutionLimits = 0;
             return;
         }
         SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
