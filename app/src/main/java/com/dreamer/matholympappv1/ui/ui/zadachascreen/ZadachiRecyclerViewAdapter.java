@@ -80,6 +80,10 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
     }
 
     private void listAllFilesDirestore(String spotOfSearchImages) {
+        if (storageReference == null || spotOfSearchImages == null) {
+            return; // Проверяем на null, прежде чем продолжить
+        }
+
         storageReference = FirebaseStorage.getInstance("gs://matholymp1.appspot.com");
 //        StorageReference listRef = storageReference.getReference().child("answersimages");
         StorageReference listRef = storageReference.getReference().child(this.spotOfSearchImages);
@@ -137,6 +141,10 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        if (zadachiList == null || position < 0 || position >= zadachiList.size()) {
+            return; // Выходим из метода, если список задач пустой или позиция некорректна
+        }
+
 //        ArrayList<Integer> testHideZadachi;
 //        testHideZadachi = new ArrayList<>();
 //        testHideZadachi.add(0);
@@ -293,8 +301,13 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 
     @Override
     public int getItemCount() {
-        Log.e(TAG, "iconImageViewOnClick at position8 " + zadachiList.size());
-        return zadachiList.size();
+        if (zadachiList != null) {
+            Log.e(TAG, "iconImageViewOnClick at position8 " + zadachiList.size());
+            return zadachiList.size();
+        }
+        return 0;
+//        Log.e(TAG, "iconImageViewOnClick at position8 " + zadachiList.size());
+//        return zadachiList.size();
     }
 
     private void intNavcontroller() {
