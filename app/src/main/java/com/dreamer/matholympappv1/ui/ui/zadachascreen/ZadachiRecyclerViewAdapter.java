@@ -1,3 +1,432 @@
+//package com.dreamer.matholympappv1.ui.ui.zadachascreen;
+//
+//import android.annotation.SuppressLint;
+//import android.app.Activity;
+//import android.content.Context;
+//import android.graphics.Color;
+//import android.graphics.Paint;
+//import android.os.Bundle;
+//import android.util.Log;
+//import android.view.LayoutInflater;
+//import android.view.View;
+//import android.view.ViewGroup;
+//import android.widget.ProgressBar;
+//import android.widget.TextView;
+//
+//import androidx.annotation.NonNull;
+//import androidx.navigation.NavController;
+//import androidx.navigation.Navigation;
+//import androidx.recyclerview.widget.RecyclerView;
+//
+//import com.dreamer.matholympappv1.MainActivity;
+//import com.dreamer.matholympappv1.R;
+//import com.dreamer.matholympappv1.data.model.model.Zadachi;
+//import com.google.firebase.storage.FirebaseStorage;
+//import com.google.firebase.storage.ListResult;
+//import com.google.firebase.storage.StorageReference;
+//
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//// Адаптер для отображения списка задач в RecyclerView
+//public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecyclerViewAdapter.ViewHolder> {
+//
+//    // Тег для логирования
+//    static final String TAG = "ZadachiRecyclerView";
+//
+//    // Навигационный контроллер и активность для навигации
+//    NavController navController;
+//    MainActivity mainActivity;
+//
+//    // Ссылка на Firebase Storage для работы с файлами
+//    FirebaseStorage storageReference = FirebaseStorage.getInstance();
+//
+//    // Список задач для отображения
+//    private List<Zadachi> zadachiList;
+//
+//    // Размер списка задач для скрытия
+//    public int testHideZadachiSize;
+//
+//    // Список файлов из Firebase Storage
+//    private List<String> listFilesFirestore = new ArrayList<>();
+//
+//    // Список файлов решений из Firebase Storage
+//    private List<String> listSolutionFilesFirestore = new ArrayList<>();
+//
+//    // Контекст приложения
+//    private Context context;
+//
+//    // Место поиска изображений (ответов или решений)
+//    private String spotOfSearchImages;
+//
+//    // Конструктор адаптера
+//    public ZadachiRecyclerViewAdapter(List<Zadachi> zadachiList, Context context) {
+//        this.zadachiList = zadachiList;
+//        this.context = context;
+//        spotOfSearchImages = "answersimages";
+//        listAllFilesDirestore(spotOfSearchImages);
+//        spotOfSearchImages = "solutionimages";
+//        listAllFilesDirestore(spotOfSearchImages);
+//        intNavcontroller();
+//    }
+//
+//    // Метод для получения списка файлов из Firebase Storage
+//    private void listAllFilesDirestore(String spotOfSearchImages) {
+//        if (storageReference == null || spotOfSearchImages == null) {
+//            return; // Проверяем на null, прежде чем продолжить
+//        }
+//
+//        storageReference = FirebaseStorage.getInstance("gs://matholymp1.appspot.com");
+//        StorageReference listRef = storageReference.getReference().child(spotOfSearchImages);
+//
+//        listRef.listAll()
+//                .addOnSuccessListener(listResult -> {
+//                    for (StorageReference item : listResult.getItems()) {
+//                        // Добавляем имена файлов в соответствующий список
+//                        if (spotOfSearchImages.equals("answersimages")) {
+//                            listFilesFirestore.add(item.getName());
+//                        } else {
+//                            listSolutionFilesFirestore.add(item.getName());
+//                        }
+//                    }
+//                })
+//                .addOnFailureListener(e -> {
+//                    // Обработка ошибки
+//                    Log.e(TAG, "Error listing files from Firebase Storage: " + e.getMessage());
+//                });
+//    }
+//
+//    // Создание нового ViewHolder для элемента RecyclerView
+//    @NonNull
+//    @Override
+//    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item, parent, false);
+//        return new ViewHolder(view);
+//    }
+//
+//    // Привязка данных к элементу ViewHolder
+//    @Override
+//    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+//        if (zadachiList == null || position < 0 || position >= zadachiList.size()) {
+//            return; // Выходим из метода, если список задач пустой или позиция некорректна
+//        }
+//
+//        // Устанавливаем текст названия задачи
+//        holder.name.setText(zadachiList.get(position).getZadachi_list_name());
+//
+//        // Получаем ID задачи и другие данные для передачи через навигацию
+//        final String user_id = zadachiList.get(position).Zadachi_id;
+//        final String zadacha_main_body = zadachiList.get(position).getZadachi_main_body();
+//        final String zadacha_answer = zadachiList.get(position).getZadachi_Answer();
+//        final String zadacha_hint = zadachiList.get(position).getZadachi_Hint();
+//        final String zadacha_solution = zadachiList.get(position).getZadachi_solution();
+//
+//        // Обработчик нажатия на элемент RecyclerView
+//        holder.view.setOnClickListener(v -> {
+//            // Проверяем, зачеркнут ли текст задачи
+//            if (holder.name.getCurrentTextColor() == Color.GRAY) {
+//                // Если текст зачеркнут, то ничего не делаем
+//                return;
+//            } else {
+//                // Иначе передаем данные через Bundle и переходим к следующему фрагменту
+//                Bundle bundle = new Bundle();
+//                bundle.putString("MyArgZadacha_id", user_id);
+//                bundle.putStringArrayList("MyArgZadacha_listFilesFirestore", (ArrayList<String>) listFilesFirestore);
+//                bundle.putStringArrayList("MyArgZadacha_listSolutionFilesFirestore", (ArrayList<String>) listSolutionFilesFirestore);
+//                bundle.putString("MyArgZadacha_main_body", zadacha_main_body);
+//                bundle.putString("MyArgZadacha_answer", zadacha_answer);
+//                bundle.putString("MyArgZadacha_hint", zadacha_hint);
+//                bundle.putString("MyArgZadacha_solution", zadacha_solution);
+//
+//                Activity MainActivity = (Activity) context;
+//                navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+//                navController.navigate(R.id.action_zadachaFragment_to_scrollingFragment2, bundle);
+//            }
+//        });
+//    }
+//
+//    public void setZadachiList(List<Zadachi> zadachiList) {
+//        this.zadachiList = zadachiList;
+//        notifyDataSetChanged();
+//    }
+//
+//    // Получение количества элементов в RecyclerView
+//    @Override
+//    public int getItemCount() {
+//        return zadachiList != null ? zadachiList.size() : 0;
+//    }
+//
+//    // Инициализация NavController
+//    private void intNavcontroller() {
+//        Activity MainActivity = (Activity) context;
+//        navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+//    }
+//
+//    // ViewHolder для элементов RecyclerView
+//    public class ViewHolder extends RecyclerView.ViewHolder {
+//        private View view;
+//        private TextView name;
+//
+//        public ViewHolder(View itemView) {
+//            super(itemView);
+//            view = itemView;
+//            name = view.findViewById(R.id.content);
+//        }
+//    }
+//}
+//
+//
+
+
+//package com.dreamer.matholympappv1.ui.ui.zadachascreen;
+//
+//import static com.google.android.material.internal.ContextUtils.getActivity;
+//
+//import android.annotation.SuppressLint;
+//import android.app.Activity;
+//import android.content.Context;
+//import android.graphics.Color;
+//import android.graphics.Paint;
+//import android.os.Bundle;
+//import android.util.Log;
+//import android.view.LayoutInflater;
+//import android.view.View;
+//import android.view.ViewGroup;
+//import android.widget.ProgressBar;
+//import android.widget.TextView;
+//
+//import androidx.annotation.NonNull;
+//import androidx.navigation.NavController;
+//import androidx.navigation.Navigation;
+//import androidx.recyclerview.widget.RecyclerView;
+//
+//import com.dreamer.matholympappv1.MainActivity;
+//import com.dreamer.matholympappv1.R;
+//import com.dreamer.matholympappv1.data.model.model.Zadachi;
+//import com.dreamer.matholympappv1.utils.MyArrayList;
+//import com.google.android.gms.tasks.OnFailureListener;
+//import com.google.android.gms.tasks.OnSuccessListener;
+//import com.google.firebase.storage.FirebaseStorage;
+//import com.google.firebase.storage.ListResult;
+//import com.google.firebase.storage.StorageReference;
+//
+//import java.util.ArrayList;
+//import java.util.List;
+//import java.util.Objects;
+//
+//// Адаптер для RecyclerView, отображающий список задач
+//public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecyclerViewAdapter.ViewHolder> {
+//
+//    // Тег для логирования
+//    static final String TAG = "TAG";
+//
+//    // NavController и MainActivity для навигации
+//    NavController navController;
+//    MainActivity mainActivity;
+//
+//    // Ссылка на Firebase Storage для загрузки файлов
+//    FirebaseStorage storageReference = FirebaseStorage.getInstance();
+//
+//    // Список задач для отображения в RecyclerView
+//    private List<Zadachi> zadachiList;
+//
+//    // Размер списка задач для скрытия
+//    public int testHideZadachiSize;
+//
+//    // Список файлов из Firebase Storage
+//    private List listFilesFirestore;
+//
+//    // Список файлов решений из Firebase Storage
+//    private List listSolutionFilesFirestore;
+//
+//    // Контекст приложения
+//    private Context context;
+//
+//    // Место поиска изображений (ответов или решений)
+//    private String spotOfSearchImages;
+//
+//    // Конструктор адаптера
+//    public ZadachiRecyclerViewAdapter(List<Zadachi> zadachiList, Context context) {
+//        listFilesFirestore = new ArrayList<>();
+//        listSolutionFilesFirestore = new ArrayList<>();
+//
+//        createArray();
+//
+//        this.zadachiList = zadachiList;
+//        this.context = context;
+//        spotOfSearchImages = "answersimages";
+//        listAllFilesDirestore(spotOfSearchImages);
+//        spotOfSearchImages = "solutionimages";
+//        listAllFilesDirestore(spotOfSearchImages);
+//        intNavcontroller();
+//    }
+//
+//    // Метод для создания массива
+//    private void createArray() {
+//        ArrayList<Integer> testHideZadachi;
+//        testHideZadachi = new ArrayList<>();
+//        testHideZadachi.add(1);
+//        testHideZadachi.add(2);
+//        testHideZadachi.add(4);
+//        testHideZadachiSize = testHideZadachi.size();
+//        Log.e(TAG, "____testHideZadachiSize= " + testHideZadachiSize);
+//    }
+//
+//    // Метод для получения списка всех файлов в Firebase Storage
+//    private void listAllFilesDirestore(String spotOfSearchImages) {
+//        if (storageReference == null || spotOfSearchImages == null) {
+//            return; // Проверяем на null, прежде чем продолжить
+//        }
+//
+//        storageReference = FirebaseStorage.getInstance("gs://matholymp1.appspot.com");
+//        StorageReference listRef = storageReference.getReference().child(this.spotOfSearchImages);
+//
+//        listRef.listAll()
+//                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+//                    @Override
+//                    public void onSuccess(ListResult listResult) {
+//                        for (StorageReference prefix : listResult.getPrefixes()) {
+//                            // Все префиксы внутри listRef.
+//                            // Можно вызывать listAll() рекурсивно для них.
+//
+//                            Log.d(TAG, "____DATEprefix= " + prefix);
+//                        }
+//
+//                        for (StorageReference item : listResult.getItems()) {
+//                            // Все элементы внутри listRef.
+//                            Log.e(TAG, "____DATEitem= " + item);
+//                            if (Objects.equals(spotOfSearchImages, "answersimages")) {
+//                                listFilesFirestore.add(item);
+//                                Log.e(TAG, "____DATEitem= " + listFilesFirestore);
+//                                int listSize = listFilesFirestore.size();
+//                                Log.e(TAG, "____DATEitem2= " + listSize);
+//                            } else {
+//                                listSolutionFilesFirestore.add(item);
+//                                Log.e(TAG, "____DATEitem= " + listSolutionFilesFirestore);
+//                                int listSize = listSolutionFilesFirestore.size();
+//                                Log.e(TAG, "____DATEitem2= " + listSize);
+//                            }
+//                        }
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        // Произошла ошибка
+//                    }
+//                });
+//        if (listFilesFirestore.size() != 0) {
+//            Object stringFileName = listFilesFirestore.get(1);
+//            Log.e(TAG, "____DATEitem1= " + stringFileName);
+//        }
+//
+//    }
+//
+//    // Создание нового ViewHolder для элемента RecyclerView
+//    @Override
+//    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item, parent, false);
+//        return new ViewHolder(view);
+//    }
+//
+//    // Привязка данных к элементу ViewHolder
+//    @Override
+//    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+//        if (zadachiList == null || position < 0 || position >= zadachiList.size()) {
+//            return; // Выходим из метода, если список задач пустой или позиция некорректна
+//        }
+//
+//        holder.name.setText(zadachiList.get(position).getZadachi_list_name());
+//
+//        final String user_id = zadachiList.get(position).Zadachi_id;
+//        final String zadacha_main_body = zadachiList.get(position).getZadachi_main_body();
+//        final String zadacha_answer = zadachiList.get(position).getZadachi_Answer();
+//        final String zadacha_hint = zadachiList.get(position).getZadachi_Hint();
+//        final String zadacha_solution = zadachiList.get(position).getZadachi_solution();
+//        holder.view.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (holder.name.getCurrentTextColor() == Color.GRAY) {
+//                    // Флаг зачеркнутого текста установлен
+//                    // Делаем что-то...
+//                    Log.e(TAG, "____testHideZadachi5= " + "Color.GRAY");
+//                    return;
+//                } else {
+//                    // Флаг зачеркнутого текста не установлен
+//                    // Делаем что-то ещё...
+//                    Log.e(TAG, "____testHideZadachi6= " + "No-Color.GRAY");
+//                }
+//                Bundle bundle = new Bundle();
+//                bundle.putString("MyArgZadacha_id", user_id);
+//                bundle.putStringArrayList("MyArgZadacha_listFilesFirestore", (ArrayList<String>) listFilesFirestore);
+//                bundle.putStringArrayList("MyArgZadacha_listSolutionFilesFirestore", (ArrayList<String>) listSolutionFilesFirestore);
+//                bundle.putString("MyArgZadacha_main_body", zadacha_main_body);
+//                bundle.putString("MyArgZadacha_answer", zadacha_answer);
+//                bundle.putString("MyArgZadacha_hint", zadacha_hint);
+//                bundle.putString("MyArgZadacha_solution", zadacha_solution);
+//
+//                @SuppressLint("RestrictedApi") Activity MainActivity = getActivity(context);
+//                assert MainActivity != null;
+//                navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+//                navController.navigate(R.id.action_zadachaFragment_to_scrollingFragment2, bundle);
+//            }
+//        });
+//    }
+//
+//    // Получение количества элементов в RecyclerView
+//    @Override
+//    public int getItemCount() {
+//        if (zadachiList != null) {
+//            return zadachiList.size();
+//        }
+//        return 0;
+//    }
+//
+//    // Инициализация NavController
+//    private void intNavcontroller() {
+//        @SuppressLint("RestrictedApi") Activity MainActivity = getActivity(context);
+//        assert MainActivity != null;
+//        navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+//    }
+//
+//    // Установка нового списка задач
+//    public void setZadachiList(List<Zadachi> zadachiList) {
+//        this.zadachiList = zadachiList;
+//        notifyDataSetChanged();
+//    }
+//
+//    // ViewHolder для элементов RecyclerView
+//    public class ViewHolder extends RecyclerView.ViewHolder {
+//        public boolean isStruckThrough;
+//        private View view;
+//        private TextView name;
+//        private ProgressBar progressBar;
+//
+//        public ViewHolder(View itemView) {
+//            super(itemView);
+//            view = itemView;
+//            name = (TextView) view.findViewById(R.id.content);
+//            progressBar = (ProgressBar) view.findViewById(androidx.appcompat.R.id.progress_circular);
+//        }
+//    }
+//}
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 package com.dreamer.matholympappv1.ui.ui.zadachascreen;
 
 import static com.google.android.material.internal.ContextUtils.getActivity;
