@@ -463,6 +463,144 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+//public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecyclerViewAdapter.ViewHolder> {
+//
+//    static final String TAG = "TAG";
+//    NavController navController;
+//    FirebaseStorage storageReference = FirebaseStorage.getInstance();
+//    private List<Zadachi> zadachiList;
+//    private List<String> listFilesFirestore;
+//    private List<String> listSolutionFilesFirestore;
+//    private Context context;
+//
+//    public ZadachiRecyclerViewAdapter(List<Zadachi> zadachiList, Context context) {
+//        this.zadachiList = zadachiList;
+//        this.context = context;
+//        listFilesFirestore = new ArrayList<>();
+//        listSolutionFilesFirestore = new ArrayList<>();
+//        listAllFilesFirestore("answersimages");
+//        listAllFilesFirestore("solutionimages");
+//        initNavController();
+//    }
+//
+//    private void listAllFilesFirestore(String spotOfSearchImages) {
+//        if (storageReference == null || spotOfSearchImages == null) {
+//            return;
+//        }
+//
+//        storageReference = FirebaseStorage.getInstance("gs://matholymp1.appspot.com");
+//        StorageReference listRef = storageReference.getReference().child(spotOfSearchImages);
+//
+//        listRef.listAll()
+//                .addOnSuccessListener(listResult -> {
+//                    for (StorageReference item : listResult.getItems()) {
+//                        if (Objects.equals(spotOfSearchImages, "answersimages")) {
+//                            listFilesFirestore.add(item.getName());
+//                        } else {
+//                            listSolutionFilesFirestore.add(item.getName());
+//                        }
+//                    }
+//                    notifyDataSetChanged();
+//                })
+//                .addOnFailureListener(e -> {
+//                    Log.e(TAG, "Error fetching files from Firestore: " + e.getMessage());
+//                });
+//    }
+//
+//    @NonNull
+//    @Override
+//    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item, parent, false);
+//        return new ViewHolder(view);
+//    }
+//
+//    @Override
+//    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+//        if (zadachiList == null || position < 0 || position >= zadachiList.size()) {
+//            return;
+//        }
+//
+//        if (listFilesFirestore.isEmpty()) {
+//            holder.progressBar.setVisibility(View.VISIBLE);
+//        } else {
+//            holder.progressBar.setVisibility(View.GONE);
+//        }
+//
+//        holder.name.setText(zadachiList.get(position).getZadachi_list_name());
+//
+//        ArrayList<String> list = MyArrayList.getList();
+//        for (String s : list) {
+//            if (s != null) {
+//                int num = Integer.parseInt(s);
+//                if (list.contains(String.valueOf(position + 1))) {
+//                    holder.isStruckThrough = true;
+//                } else {
+//                    holder.isStruckThrough = false;
+//                }
+//                if (holder.isStruckThrough) {
+//                    holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+//                    holder.name.setTextColor(Color.GRAY);
+//                } else {
+//                    holder.name.setPaintFlags(holder.name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+//                    holder.name.setTextColor(Color.BLACK);
+//                }
+//            }
+//        }
+//
+//        final String user_id = zadachiList.get(position).Zadachi_id;
+//        final String zadacha_main_body = zadachiList.get(position).getZadachi_main_body();
+//        final String zadacha_answer = zadachiList.get(position).getZadachi_Answer();
+//        final String zadacha_hint = zadachiList.get(position).getZadachi_Hint();
+//        final String zadacha_solution = zadachiList.get(position).getZadachi_solution();
+//        holder.view.setOnClickListener(v -> {
+//            if (holder.name.getCurrentTextColor() == Color.GRAY) {
+//                return;
+//            } else {
+//                Bundle bundle = new Bundle();
+//                bundle.putString("MyArgZadacha_id", user_id);
+//                bundle.putStringArrayList("MyArgZadacha_listFilesFirestore", new ArrayList<>(listFilesFirestore));
+//                bundle.putStringArrayList("MyArgZadacha_listSolutionFilesFirestore", new ArrayList<>(listSolutionFilesFirestore));
+//                bundle.putString("MyArgZadacha_main_body", zadacha_main_body);
+//                bundle.putString("MyArgZadacha_answer", zadacha_answer);
+//                bundle.putString("MyArgZadacha_hint", zadacha_hint);
+//                bundle.putString("MyArgZadacha_solution", zadacha_solution);
+//
+//                Activity MainActivity = (Activity) context;
+//                navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+//                navController.navigate(R.id.action_zadachaFragment_to_scrollingFragment2, bundle);
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public int getItemCount() {
+//        return zadachiList != null ? zadachiList.size() : 0;
+//    }
+//
+//    private void initNavController() {
+//        Activity MainActivity = (Activity) context;
+//        navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
+//    }
+//
+//    public void setZadachiList(List<Zadachi> zadachiList) {
+//        this.zadachiList = zadachiList;
+//        notifyDataSetChanged();
+//    }
+//
+//    public class ViewHolder extends RecyclerView.ViewHolder {
+//        public boolean isStruckThrough;
+//        private View view;
+//        private TextView name;
+//        private ProgressBar progressBar;
+//
+//        public ViewHolder(View itemView) {
+//            super(itemView);
+//            view = itemView;
+//            name = itemView.findViewById(R.id.content);
+//            progressBar = itemView.findViewById(androidx.appcompat.R.id.progress_circular);
+//        }
+//    }
+//}
 
 public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecyclerViewAdapter.ViewHolder> {
 
@@ -474,26 +612,34 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
     private List<Zadachi> zadachiList;
 
     public int testHideZadachiSize;
-    private List listFilesFirestore;
+    private List<String> listFilesFirestore;
     public ArrayList testHideZadachi;
-    private List listSolutionFilesFirestore;
+    private List<String> listSolutionFilesFirestore;
     private Context context;
     private String spotOfSearchImages;
 
 
     public ZadachiRecyclerViewAdapter(List<Zadachi> zadachiList, Context context) {
-        listFilesFirestore = new ArrayList<>();
-        listSolutionFilesFirestore = new ArrayList<>();
+//        listFilesFirestore = new ArrayList<>();
+//        listSolutionFilesFirestore = new ArrayList<>();
 
-        createArray();
+//        createArray();
 
 //        testHideZadachi = Collections.singletonList(new int[]{1, 3, 4});
         this.zadachiList = zadachiList;
         this.context = context;
+        listFilesFirestore = new ArrayList<>();
+        listSolutionFilesFirestore = new ArrayList<>();
         spotOfSearchImages = "answersimages";
-        listAllFilesDirestore(spotOfSearchImages);
+//        listAllFilesDirestore(spotOfSearchImages);
+        listAllFilesDirestore("answersimages");
         spotOfSearchImages = "solutionimages";
-        listAllFilesDirestore(spotOfSearchImages);
+//        listAllFilesDirestore(spotOfSearchImages);
+        listAllFilesDirestore("solutionimages");
+//        listFilesFirestore = new ArrayList<>();
+//        listSolutionFilesFirestore = new ArrayList<>();
+//        listAllFilesFirestore("answersimages");
+//        listAllFilesFirestore("solutionimages");
         intNavcontroller();
     }
 
@@ -533,12 +679,12 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
                             Log.e(TAG, "____DATEitem= " + item);
                             if (Objects.equals(spotOfSearchImages, "answersimages")) {
 
-                                listFilesFirestore.add(item);
+                                listFilesFirestore.add(String.valueOf(item));
                                 Log.e(TAG, "____DATEitem= " + listFilesFirestore);
                                 int listSize = listFilesFirestore.size();
                                 Log.e(TAG, "____DATEitem2= " + listSize);
                             } else {
-                                listSolutionFilesFirestore.add(item);
+                                listSolutionFilesFirestore.add(String.valueOf(item));
                                 Log.e(TAG, "____DATEitem= " + listSolutionFilesFirestore);
                                 int listSize = listSolutionFilesFirestore.size();
                                 Log.e(TAG, "____DATEitem2= " + listSize);
@@ -546,7 +692,9 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 
 
                         }
+                        notifyDataSetChanged();
                     }
+
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -558,6 +706,7 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
             Object stringFileName = listFilesFirestore.get(1);
             Log.e(TAG, "____DATEitem1= " + stringFileName);
         }
+
 
     }
 
@@ -573,7 +722,11 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
         if (zadachiList == null || position < 0 || position >= zadachiList.size()) {
             return; // Выходим из метода, если список задач пустой или позиция некорректна
         }
-
+        if (listSolutionFilesFirestore.isEmpty()) {
+            holder.progressBar.setVisibility(View.VISIBLE);
+        } else {
+            holder.progressBar.setVisibility(View.GONE);
+        }
 //        ArrayList<Integer> testHideZadachi;
 //        testHideZadachi = new ArrayList<>();
 //        testHideZadachi.add(0);
@@ -581,6 +734,7 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 //        testHideZadachi.add(3);
 //        testHideZadachiSize = testHideZadachi.size();
 //        Log.e(TAG, "____testHideZadachiSize= " + testHideZadachiSize);
+
 
         holder.name.setText(zadachiList.get(position).getZadachi_list_name());
 
@@ -726,6 +880,13 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 //               context.startActivity(intent);
             }
         });
+
+        ProgressBar progressBar = holder.progressBar;
+        if (listFilesFirestore.isEmpty()) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -768,6 +929,7 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
             id = (TextView) view.findViewById(R.id.item_number);
             name = (TextView) view.findViewById(R.id.content);
             progressBar = (ProgressBar) view.findViewById(androidx.appcompat.R.id.progress_circular);
+
         }
     }
 
