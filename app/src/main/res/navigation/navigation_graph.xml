@@ -10,12 +10,13 @@
         android:name="com.dreamer.matholympappv1.ui.ui.login.LoginFragment"
         android:label="login"
         tools:layout="@layout/fragment_login">
-        <action
-            android:id="@+id/action_loginFragment_to_zadachaFragment"
-            app:destination="@id/zadachaFragment" />
+
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_RAZDELFragment"
+            app:destination="@id/RAZDELFragment" />
     </fragment>
     <fragment
         android:id="@+id/zadachaFragment"
@@ -54,4 +55,13 @@
         android:id="@+id/settingsFragment"
         android:name="com.dreamer.matholympappv1.ui.ui.settings.SettingsFragment"
         android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/RAZDELFragment"
+        android:name="com.dreamer.matholympappv1.ui.ui.razdel.RAZDELFragment"
+        android:label="fragment_razdel_list"
+        tools:layout="@layout/fragment_razdel_list">
+        <action
+            android:id="@+id/action_RAZDELFragment_to_zadachaFragment"
+            app:destination="@id/zadachaFragment" />
+    </fragment>
 </navigation>

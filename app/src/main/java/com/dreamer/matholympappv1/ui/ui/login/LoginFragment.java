@@ -85,7 +85,8 @@ public class LoginFragment extends Fragment {
 //        if (mAuth.getCurrentUser() == null) {
 
             navController.clearBackStack(R.id.loginFragment);
-            navController.navigate(R.id.action_loginFragment_to_zadachaFragment);
+//            navController.navigate(R.id.action_loginFragment_to_zadachaFragment);
+            navController.navigate(R.id.action_loginFragment_to_RAZDELFragment);
             return;
         }
 //        else {
@@ -246,7 +247,8 @@ public class LoginFragment extends Fragment {
                         args.putString("solutionlimits", "1");
                         args.putString("hintlimits", "3");
                         navController.clearBackStack(R.id.loginFragment);
-                        navController.navigate(R.id.action_loginFragment_to_zadachaFragment, args);
+//                        navController.navigate(R.id.action_loginFragment_to_zadachaFragment, args);
+                        navController.navigate(R.id.action_loginFragment_to_RAZDELFragment, args);
                     } else {
                         Snackbar.make(getActivity().findViewById(android.R.id.content),
                                 task.getException().getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
