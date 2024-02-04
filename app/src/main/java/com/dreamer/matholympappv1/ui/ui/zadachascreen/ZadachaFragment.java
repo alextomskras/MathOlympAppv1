@@ -52,7 +52,7 @@ public class ZadachaFragment extends Fragment {
     private Integer hintslimits;
     private int mColumnCount = 1;
     private RecyclerView recyclerView;
-    private UserRecyclerViewAdapter userRecyclerViewAdapter;
+//    private UserRecyclerViewAdapter userRecyclerViewAdapter;
     private ZadachiRecyclerViewAdapter zadachiRecyclerViewAdapter;
 
     private ZadachaViewModel viewModel;
@@ -119,7 +119,7 @@ public class ZadachaFragment extends Fragment {
 //        }
 
 
-        userRecyclerViewAdapter = new UserRecyclerViewAdapter(new ArrayList<>(), getContext());
+//        userRecyclerViewAdapter = new UserRecyclerViewAdapter(new ArrayList<>(), getContext());
         zadachiRecyclerViewAdapter = new ZadachiRecyclerViewAdapter(new ArrayList<>(), getContext());
 
         // Set the adapter
@@ -136,8 +136,8 @@ public class ZadachaFragment extends Fragment {
         }
         // Observe user list from view model and update adapter
         viewModel.getUsersLiveData().observe(getViewLifecycleOwner(), users -> {
-            userRecyclerViewAdapter.setUsersList(users);
-            userRecyclerViewAdapter.notifyDataSetChanged();
+//            userRecyclerViewAdapter.setUsersList(users);
+//            userRecyclerViewAdapter.notifyDataSetChanged();
         });
         // Observe zadachi list from view model and update adapter
         viewModel.getZadachiLiveData().observe(getViewLifecycleOwner(), zadachi -> {

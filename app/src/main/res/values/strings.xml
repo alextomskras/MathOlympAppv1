@@ -59,4 +59,5 @@
     <string name="appbar_score">Score: </string>
     <string name="appbar_title_scroll_fragm">Uslovie zadachi</string>
     <string name="appbar_title_zadacha_fragm">Spisok zadach</string>
+    <string name="appbar_title_razdel_fragm">Razdely zadaniy</string>
 </resources>

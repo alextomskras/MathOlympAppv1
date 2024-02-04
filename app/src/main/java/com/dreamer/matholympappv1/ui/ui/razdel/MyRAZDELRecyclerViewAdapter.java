@@ -49,8 +49,8 @@ public class MyRAZDELRecyclerViewAdapter extends RecyclerView.Adapter<MyRAZDELRe
 
         public ViewHolder(FragmentRazdelBinding binding) {
             super(binding.getRoot());
-            mIdView = binding.itemNumber;
-            mContentView = binding.content;
+            mIdView = binding.razdelContent;
+            mContentView = binding.razdelItemNumber;
         }
 
         @Override
