@@ -15,13 +15,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Razdel;
-import com.dreamer.matholympappv1.utils.ActionBarHelper;
 import com.dreamer.matholympappv1.utils.StringIntegerConverter;
 import com.dreamer.matholympappv1.utils.UserEmailLoginFirebase;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,6 +44,9 @@ public class RAZDELFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
+
+    public String Username;
+    public String Password;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -82,7 +83,8 @@ public class RAZDELFragment extends Fragment {
             String password = args.getString("password");
             String solutionlimits = args.getString("solutionlimits", "1");
             String hintlimits = args.getString("hintlimits", "3");
-
+            Username = username;
+            Password = password;
             // Do something with username and password
             UserEmailLoginFirebase.updateUiWithUser(username, password, getActivity());
 //            updateUiWithUser(username, password);
@@ -115,8 +117,8 @@ public class RAZDELFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_razdel_list, container, false);
 
-        ActionBarHelper actionBarHelper = new ActionBarHelper(getActivity());
-        actionBarHelper.setupActionBar(getActivity(), getString(R.string.appbar_title_razdel_fragm), "1");
+//        ActionBarHelper actionBarHelper = new ActionBarHelper(getActivity());
+//        actionBarHelper.setupActionBar(getActivity(), getString(R.string.appbar_title_razdel_fragm), "1");
 
         recyclerView = root.findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -131,10 +133,14 @@ public class RAZDELFragment extends Fragment {
                         // Обработка нажатия на элемент списка
                         Bundle bundle = new Bundle();
                         bundle.putString("razdelName", razdel.getRazdelname());
+                        bundle.putString("username", Username);
+                        bundle.putString("password", Password);
+                        bundle.putString("solutionlimits", "3");
+                        bundle.putString("hintlimits", "3");
 
                         // Переход к другому фрагменту с передачей данных через навигационный граф
-                        NavHostFragment.findNavController(RAZDELFragment.this)
-                                .navigate(R.id.action_RAZDELFragment_to_zadachaFragment, bundle);
+//                        NavHostFragment.findNavController(RAZDELFragment.this)
+                        navController.navigate(R.id.action_RAZDELFragment_to_zadachaFragment, bundle);
                     }
                 });
                 recyclerView.setAdapter(adapter);

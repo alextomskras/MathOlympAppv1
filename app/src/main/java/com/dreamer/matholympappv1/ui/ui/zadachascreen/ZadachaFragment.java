@@ -65,6 +65,7 @@ public class ZadachaFragment extends Fragment {
 // Get arguments passed from previous fragment
         Bundle args = getArguments();
         if (args != null) {
+            String razdelname = args.getString("razdelName");
             String username = args.getString("username");
             String password = args.getString("password");
             String solutionlimits = args.getString("solutionlimits", "1");

@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_loginFragment_to_RAZDELFragment"
             app:destination="@id/RAZDELFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_zadachaFragment"
+            app:destination="@id/zadachaFragment" />
     </fragment>
     <fragment
         android:id="@+id/zadachaFragment"
@@ -58,7 +61,7 @@
     <fragment
         android:id="@+id/RAZDELFragment"
         android:name="com.dreamer.matholympappv1.ui.ui.razdel.RAZDELFragment"
-        android:label="fragment_razdel_list"
+        android:label="razdel"
         tools:layout="@layout/fragment_razdel_list">
         <action
             android:id="@+id/action_RAZDELFragment_to_zadachaFragment"
