@@ -643,16 +643,16 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
         intNavcontroller();
     }
 
-    private void createArray() {
-
-        ArrayList<Integer> testHideZadachi;
-        testHideZadachi = new ArrayList<>();
-        testHideZadachi.add(1);
-        testHideZadachi.add(2);
-        testHideZadachi.add(4);
-        testHideZadachiSize = testHideZadachi.size();
-        Log.e(TAG, "____testHideZadachiSize= " + testHideZadachiSize);
-    }
+//    private void createArray() {
+//
+//        ArrayList<Integer> testHideZadachi;
+//        testHideZadachi = new ArrayList<>();
+//        testHideZadachi.add(1);
+//        testHideZadachi.add(2);
+//        testHideZadachi.add(4);
+//        testHideZadachiSize = testHideZadachi.size();
+//        Log.e(TAG, "____testHideZadachiSize= " + testHideZadachiSize);
+//    }
 
     private void listAllFilesDirestore(String spotOfSearchImages) {
         if (storageReference == null || spotOfSearchImages == null) {
