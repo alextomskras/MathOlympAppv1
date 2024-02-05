@@ -5,6 +5,7 @@ import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.FirebaseUserScore
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,8 +134,11 @@ public class RAZDELFragment extends Fragment {
                         // Обработка нажатия на элемент списка
                         Bundle bundle = new Bundle();
                         bundle.putString("razdelName", razdel.getRazdelname());
-                        bundle.putString("username", Username);
-                        bundle.putString("password", Password);
+                        Log.d(TAG, "razdelName:" + razdel.getRazdelname());
+                        bundle.putString("username", "11@11.com");
+                        Log.d(TAG, "username:" + bundle);
+                        bundle.putString("password", "123456");
+                        Log.d(TAG, "password:" + bundle);
                         bundle.putString("solutionlimits", "3");
                         bundle.putString("hintlimits", "3");
 
