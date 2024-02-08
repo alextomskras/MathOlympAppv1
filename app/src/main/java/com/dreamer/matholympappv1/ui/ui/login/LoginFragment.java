@@ -79,7 +79,7 @@ public class LoginFragment extends Fragment {
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
-        // todo Initialize Firebase Auth
+
 //        mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
 //        if (mAuth.getCurrentUser() == null) {
@@ -255,7 +255,7 @@ public class LoginFragment extends Fragment {
                     }
 
                 });
-        // TODO : initiate successful logged in experience
+
         if (getContext() != null && getContext().getApplicationContext() != null) {
 //            Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
 

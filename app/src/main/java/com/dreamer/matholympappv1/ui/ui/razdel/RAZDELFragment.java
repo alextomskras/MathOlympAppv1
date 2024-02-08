@@ -7,10 +7,13 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,9 +24,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Razdel;
+import com.dreamer.matholympappv1.utils.MyMenuInflater;
 import com.dreamer.matholympappv1.utils.StringIntegerConverter;
 import com.dreamer.matholympappv1.utils.UserEmailLoginFirebase;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -33,7 +44,6 @@ import java.util.List;
 public class RAZDELFragment extends Fragment {
     private static final String TAG = "TAG";
     NavController navController;
-    private FirebaseAuth mAuth;
     private TextView myAppBarTitleTextView;
     private TextView myAppBarScoreTextView;
     private RecyclerView recyclerView;
@@ -41,13 +51,17 @@ public class RAZDELFragment extends Fragment {
     private MyRAZDELRecyclerViewAdapter MyRAZDELRecyclerViewAdapter;
 
     private RazdelViewModel viewModel;
-    // TODO: Customize parameter argument names
+
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
+
     private int mColumnCount = 1;
 
     public String Username;
     public String Password;
+
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mUsersRef;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -75,7 +89,7 @@ public class RAZDELFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
+
 
 
         Bundle args = getArguments();
@@ -84,8 +98,8 @@ public class RAZDELFragment extends Fragment {
             String password = args.getString("password");
             String solutionlimits = args.getString("solutionlimits", "1");
             String hintlimits = args.getString("hintlimits", "3");
-            Username = username;
-            Password = password;
+//            Username = username;
+//            Password = password;
             // Do something with username and password
             UserEmailLoginFirebase.updateUiWithUser(username, password, getActivity());
 //            updateUiWithUser(username, password);
@@ -117,6 +131,9 @@ public class RAZDELFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_razdel_list, container, false);
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
+        mUsersRef = mDatabase.getReference("Users"); // Ссылка на таблицу Users
 
 //        ActionBarHelper actionBarHelper = new ActionBarHelper(getActivity());
 //        actionBarHelper.setupActionBar(getActivity(), getString(R.string.appbar_title_razdel_fragm), "1");
@@ -135,9 +152,9 @@ public class RAZDELFragment extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putString("razdelName", razdel.getRazdelname());
                         Log.d(TAG, "razdelName:" + razdel.getRazdelname());
-                        bundle.putString("username", "11@11.com");
+                        bundle.putString("username", Username);
                         Log.d(TAG, "username:" + bundle);
-                        bundle.putString("password", "123456");
+                        bundle.putString("password", "12345");
                         Log.d(TAG, "password:" + bundle);
                         bundle.putString("solutionlimits", "3");
                         bundle.putString("hintlimits", "3");
@@ -154,6 +171,62 @@ public class RAZDELFragment extends Fragment {
         return root;
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            // Пользователь уже залогинен
+            loadUsername(currentUser.getUid());
+        } else {
+            // Пользователь не залогинен
+            // Реализуйте здесь логику для обработки случая, когда пользователь не залогинен
+        }
+    }
+
+    private void loadUsername(String userId) {
+        mUsersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String username = dataSnapshot.child("username").getValue(String.class);
+                    if (username != null) {
+                        Username = username;
+//                        mUsernameTextView.setText(username);
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                "Username:" + Username, Snackbar.LENGTH_LONG).show();
+                    } else {
+//                        mUsernameTextView.setText("Username not found");
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+                                "Username not found", Snackbar.LENGTH_LONG).show();
+                    }
+                } else {
+//                    mUsernameTextView.setText("User not found");
+                    Snackbar.make(getActivity().findViewById(android.R.id.content),
+                            "User not found", Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                mUsernameTextView.setText("Failed to load username");
+                Snackbar.make(getActivity().findViewById(android.R.id.content),
+                        "Failed to load username", Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        MyMenuInflater.RazdelinflateMenu(menu, requireContext(), navController);
+    }
+
+    public void onDestroyView() {
+        super.onDestroyView();
+//        binding = null;
+    }
 //        View view = inflater.inflate(R.layout.fragment_razdel_list, container, false);
 //
 //        // Set the adapter
