@@ -183,6 +183,8 @@ public class RAZDELFragment extends Fragment {
         } else {
             // Пользователь не залогинен
             // Реализуйте здесь логику для обработки случая, когда пользователь не залогинен
+            navController.clearBackStack(R.id.RAZDELFragment);
+            navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
         }
     }
 
@@ -220,13 +222,13 @@ public class RAZDELFragment extends Fragment {
 
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-        super.onCreateOptionsMenu(menu, menuInflater);
-        menuInflater.inflate(R.menu.R, menu); // Замените your_menu_resource на реальный идентификатор вашего меню
+
         MyMenuInflater.RazdelinflateMenu(menu, requireContext(), navController);
     }
 
     public void onDestroyView() {
         super.onDestroyView();
+        viewModel.getRazdelsLiveData().removeObservers(getViewLifecycleOwner());
 //        binding = null;
     }
 //        View view = inflater.inflate(R.layout.fragment_razdel_list, container, false);

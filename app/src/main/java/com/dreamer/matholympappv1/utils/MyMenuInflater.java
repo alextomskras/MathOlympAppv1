@@ -45,15 +45,15 @@ public class MyMenuInflater {
 
 
     public static void RazdelinflateMenu(Menu menu, Context context, NavController navController) {
-        MenuItem menuScroll = menu.add(R.string.scrollFrgMenuAddHintTitle);
-        menuScroll.setTitle(R.string.scrollFrgMenuTitle);
-        menuScroll.setTitleCondensed(context.getString(R.string.scrollFrgMenuCondesedTitle));
+//        MenuItem menuScroll = menu.add(R.string.scrollFrgMenuAddHintTitle);
+//        menuScroll.setTitle(R.string.scrollFrgMenuTitle);
+//        menuScroll.setTitleCondensed(context.getString(R.string.scrollFrgMenuCondesedTitle));
 //        menuScroll.setOnMenuItemClickListener(v -> {
 //            Snackbar.make(((Activity) context).findViewById(android.R.id.content), zadacha_hint, Snackbar.LENGTH_LONG).show();
 //            return true;
 //        });
 
-        menuScroll = menu.add("exit");
+        MenuItem menuScroll = menu.add("exit");
         menuScroll.setTitle("exit");
         menuScroll.setTitleCondensed("exit");
         menuScroll.setOnMenuItemClickListener(v -> {
