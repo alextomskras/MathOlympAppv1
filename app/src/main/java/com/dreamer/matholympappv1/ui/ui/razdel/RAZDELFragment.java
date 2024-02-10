@@ -90,7 +90,7 @@ public class RAZDELFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        setHasOptionsMenu(true); // Важная строка для того, чтобы вызывать
 
         Bundle args = getArguments();
         if (args != null) {
@@ -220,6 +220,8 @@ public class RAZDELFragment extends Fragment {
 
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater);
+        menuInflater.inflate(R.menu.R, menu); // Замените your_menu_resource на реальный идентификатор вашего меню
         MyMenuInflater.RazdelinflateMenu(menu, requireContext(), navController);
     }
 
