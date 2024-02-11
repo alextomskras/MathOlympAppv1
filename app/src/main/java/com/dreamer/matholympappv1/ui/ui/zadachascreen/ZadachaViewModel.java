@@ -23,6 +23,7 @@ public class ZadachaViewModel extends ViewModel {
     private DatabaseReference databaseReference;
     private MutableLiveData<List<Users>> usersLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Zadachi>> zadachiLiveData = new MutableLiveData<>();
+    private MutableLiveData<String> subRazdel = new MutableLiveData<>();
 
     public void loadUsers() {
 //        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -45,8 +46,18 @@ public class ZadachaViewModel extends ViewModel {
 //        });
     }
 
+    public LiveData<String> getsubRazdel() {
+        return subRazdel;
+    }
+
+    public void setsubRazdel(String newsubRazdel) {
+        Log.e(TAG, "Solution razdelname2: " + newsubRazdel);
+        subRazdel.setValue(newsubRazdel);
+    }
+
     public void loadZadachi() {
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Zadachi");
+        String chkSubRazdel = subRazdel.getValue();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Razdel/" + chkSubRazdel);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

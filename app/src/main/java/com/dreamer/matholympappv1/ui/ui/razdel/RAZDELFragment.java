@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
-import com.dreamer.matholympappv1.data.model.model.Razdel;
 import com.dreamer.matholympappv1.utils.MyMenuInflater;
 import com.dreamer.matholympappv1.utils.StringIntegerConverter;
 import com.dreamer.matholympappv1.utils.UserEmailLoginFirebase;
@@ -142,16 +141,16 @@ public class RAZDELFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         viewModel = new ViewModelProvider(this).get(RazdelViewModel.class);
-        viewModel.getRazdelsLiveData().observe(getViewLifecycleOwner(), new Observer<List<Razdel>>() {
+        viewModel.getRazdelsLiveData().observe(getViewLifecycleOwner(), new Observer<List<String>>() {
             @Override
-            public void onChanged(List<Razdel> razdelList) {
+            public void onChanged(List<String> razdelList) {
                 RazdelAdapter adapter = new RazdelAdapter(razdelList, new RazdelAdapter.OnItemClickListener() {
                     @Override
-                    public void onItemClick(Razdel razdel) {
+                    public void onItemClick(String razdel) {
                         // Обработка нажатия на элемент списка
                         Bundle bundle = new Bundle();
-                        bundle.putString("razdelName", razdel.getRazdelname());
-                        Log.d(TAG, "razdelName:" + razdel.getRazdelname());
+                        bundle.putString("razdelName", razdel.toString().trim());
+                        Log.d(TAG, "razdelName:" + razdel.toString().trim());
                         bundle.putString("username", Username);
                         Log.d(TAG, "username:" + bundle);
                         bundle.putString("password", "12345");

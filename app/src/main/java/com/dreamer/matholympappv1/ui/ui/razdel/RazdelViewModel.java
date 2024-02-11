@@ -18,18 +18,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RazdelViewModel extends ViewModel {
+
     private static final String TAG = "TAG";
-    private MutableLiveData<List<Razdel>> razdelsLiveData;
+    private MutableLiveData<List<String>> razdelsLiveData;
     private DatabaseReference razdelsRef;
     private ValueEventListener valueEventListener;
 
     public RazdelViewModel() {
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+
         razdelsLiveData = new MutableLiveData<>();
         razdelsRef = FirebaseDatabase.getInstance().getReference().child("Razdel");
         loadRazdels();
+//        getSections();
     }
 
-    public LiveData<List<Razdel>> getRazdelsLiveData() {
+    public LiveData<List<String>> getRazdelsLiveData() {
         return razdelsLiveData;
     }
 
@@ -37,12 +41,14 @@ public class RazdelViewModel extends ViewModel {
         valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<Razdel> razdels = new ArrayList<>();
+                List<String> razdels = new ArrayList<>();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Razdel razdel = dataSnapshot.getValue(Razdel.class);
-                    if (razdel != null) {
-                        razdels.add(razdel);
-                    }
+                    String razdel_id = dataSnapshot.getKey();
+//                    Razdel razdel = dataSnapshot.getValue(Razdel.class);
+//                    if (razdel != null) {
+                    razdels.add(razdel_id);
+                    Log.e(TAG, "razdelNameList:" + razdel_id);
+//                    }
                 }
                 razdelsLiveData.setValue(razdels);
             }
@@ -64,6 +70,39 @@ public class RazdelViewModel extends ViewModel {
         }
     }
 
+    public List<Razdel> getSections() {
+        List<Razdel> sections = new ArrayList<>();
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Razdel");
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot sectionSnapshot : dataSnapshot.getChildren()) {
+                    Razdel section = sectionSnapshot.getValue(Razdel.class);
+                    sections.add(section);
+                    Log.e(TAG, "razdelNameList:" + sections);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Обработка ошибки
+            }
+        });
+
+        return sections;
+    }
+
+//    public RazdelViewModel() {
+//        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+//        razdelRef = firebaseDatabase.getReference("Razdel"); // Ссылка на таблицу "Razdel"
+//        razdelLiveData = new FirebaseQueryLiveData(razdelRef); // LiveData для отслеживания изменений в таблице "Razdel"
+//    }
+
+//    public LiveData<DataSnapshot> getRazdelLiveData() {
+//        return razdelLiveData;
+//    }
 
 //
 //    private static final String TAG = "TAG";

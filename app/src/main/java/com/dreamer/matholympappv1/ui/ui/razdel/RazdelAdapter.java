@@ -9,15 +9,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
-import com.dreamer.matholympappv1.data.model.model.Razdel;
 
 import java.util.List;
 
 public class RazdelAdapter extends RecyclerView.Adapter<RazdelAdapter.RazdelViewHolder> {
-    private List<Razdel> razdelList;
+    private List<String> razdelList;
     private OnItemClickListener listener;
 
-    public RazdelAdapter(List<Razdel> razdelList, OnItemClickListener listener) {
+    public RazdelAdapter(List<String> razdelList, OnItemClickListener listener) {
         this.razdelList = razdelList;
         this.listener = listener;
     }
@@ -32,7 +31,7 @@ public class RazdelAdapter extends RecyclerView.Adapter<RazdelAdapter.RazdelView
 
     @Override
     public void onBindViewHolder(@NonNull RazdelViewHolder holder, int position) {
-        Razdel razdel = razdelList.get(position);
+        String razdel = razdelList.get(position);
         holder.bind(razdel, listener);
     }
 
@@ -42,7 +41,7 @@ public class RazdelAdapter extends RecyclerView.Adapter<RazdelAdapter.RazdelView
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Razdel razdel);
+        void onItemClick(String razdel);
     }
 
     public static class RazdelViewHolder extends RecyclerView.ViewHolder {
@@ -53,8 +52,8 @@ public class RazdelAdapter extends RecyclerView.Adapter<RazdelAdapter.RazdelView
             razdelNameTextView = itemView.findViewById(R.id.razdel_content);
         }
 
-        public void bind(final Razdel razdel, final OnItemClickListener listener) {
-            razdelNameTextView.setText(razdel.getRazdelname());
+        public void bind(final String razdel, final OnItemClickListener listener) {
+            razdelNameTextView.setText(razdel);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

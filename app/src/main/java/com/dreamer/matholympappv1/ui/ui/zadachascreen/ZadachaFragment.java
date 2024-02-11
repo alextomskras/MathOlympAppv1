@@ -55,17 +55,21 @@ public class ZadachaFragment extends Fragment {
 //    private UserRecyclerViewAdapter userRecyclerViewAdapter;
     private ZadachiRecyclerViewAdapter zadachiRecyclerViewAdapter;
 
+
     private ZadachaViewModel viewModel;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(ZadachaViewModel.class);
         mAuth = FirebaseAuth.getInstance();
 // Get arguments passed from previous fragment
         Bundle args = getArguments();
         if (args != null) {
             String razdelname = args.getString("razdelName");
+            Log.e(TAG, "Solution razdelname: " + razdelname);
+            viewModel.setsubRazdel(razdelname); // Передача данных во вью модель через LiveData
             String username = args.getString("username");
             String password = args.getString("password");
             String solutionlimits = args.getString("solutionlimits", "1");
@@ -81,6 +85,7 @@ public class ZadachaFragment extends Fragment {
             firebaseSaveSolutionLimits(solutionlimitsnum);
             firebaseSaveHintLimits(hintlimitsnum);
 
+
         }
 
         intNavcontroller();
@@ -89,7 +94,8 @@ public class ZadachaFragment extends Fragment {
         }
 //        solutionslimits = 0;
 //        hintslimits = 1;
-        viewModel = new ViewModelProvider(this).get(ZadachaViewModel.class);
+
+
     }
 
     @Override
