@@ -50,6 +50,7 @@ public class ZadachaFragment extends Fragment {
 //        solutionlimits = MyArrayList.firebaseLoadSolutionLimits();
     private Integer solutionslimits;
     private Integer hintslimits;
+    private String Razdelname;
     private int mColumnCount = 1;
     private RecyclerView recyclerView;
 //    private UserRecyclerViewAdapter userRecyclerViewAdapter;
@@ -67,9 +68,12 @@ public class ZadachaFragment extends Fragment {
 // Get arguments passed from previous fragment
         Bundle args = getArguments();
         if (args != null) {
-            String razdelname = args.getString("razdelName");
-            Log.e(TAG, "Solution razdelname: " + razdelname);
-            viewModel.setsubRazdel(razdelname); // Передача данных во вью модель через LiveData
+            Razdelname = args.getString("razdelName");
+//            razdelname = razdelname;
+            Log.e(TAG, "Solution razdelname: " + Razdelname);
+            viewModel.setsubRazdel(Razdelname); // Передача данных во вью модель через LiveData
+            Razdelname = viewModel.getsubRazdel().getValue();
+            Log.e(TAG, "Solution razdelname4: " + Razdelname);
             String username = args.getString("username");
             String password = args.getString("password");
             String solutionlimits = args.getString("solutionlimits", "1");
@@ -148,7 +152,7 @@ public class ZadachaFragment extends Fragment {
         });
         // Observe zadachi list from view model and update adapter
         viewModel.getZadachiLiveData().observe(getViewLifecycleOwner(), zadachi -> {
-            zadachiRecyclerViewAdapter.setZadachiList(zadachi);
+            zadachiRecyclerViewAdapter.setZadachiList(zadachi, Razdelname);
             zadachiRecyclerViewAdapter.notifyDataSetChanged();
         });
 

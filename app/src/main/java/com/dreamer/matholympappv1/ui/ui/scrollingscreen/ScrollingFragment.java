@@ -15,6 +15,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,6 +39,7 @@ import androidx.navigation.Navigation;
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Zadachi;
 import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
+import com.dreamer.matholympappv1.ui.ui.zadachascreen.ZadachaViewModel;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.MyMenuInflater;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
@@ -102,6 +104,8 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private ImageView iv1;
 
     private ScrollingFragmentViewModel viewModel;
+    private ZadachaViewModel viewModelRazdel;
+    private String razdelName;
 
     public ScrollingFragment() {
 
@@ -116,6 +120,10 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         firebaseUserScoreManager = new FirebaseUserScoreManager();
         sharedPreffUtils = new SharedPreffUtils(requireContext());
         viewModel = new ViewModelProvider(this).get(ScrollingFragmentViewModel.class);
+        viewModelRazdel = new ViewModelProvider(requireActivity()).get(ZadachaViewModel.class);
+
+//        viewModelRazdel = ViewModelProviders.of(requireActivity()).get(ZadachaViewModel.class);
+
 
         variableSetup();
 
@@ -127,6 +135,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
     private void variableSetup() {
         setHasOptionsMenu(true);
+        razdelName = "";
         zadacha_main_body = "";
         zadacha_answer = "";
         zadacha_hint = "";
@@ -168,6 +177,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private void getBundleArguments() {
         Bundle bundle = getArguments();
         if (bundle != null) {
+            razdelName = bundle.getString("MyArgRazdel_id"); //получаем раздел в котором решаем задачи
             zadacha_id = bundle.getString(ARG_ZADACHA_ID);
             listFilesFirestore = bundle.getStringArrayList(ARG_ZADACHA_LIST_FILES_FIRESTORE);
             listSolutionFilesFirestore = bundle.getStringArrayList(ARG_ZADACHA_LIST_SOLUTION_FILES_FIRESTORE);
@@ -252,7 +262,15 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 /// не будет реагировать на пустые строчки - без вввода
         if (answer.equals(zadacha_answer)) {
             alertDiaShow(getString(R.string.alertDialogShowUSPEHTitle), getString(R.string.alertDialogShowUSPEHMessageBodySet));
-            MyArrayList.addString(zadacha_id);
+            viewModelRazdel.getsubRazdel().observe(getViewLifecycleOwner(), value -> {
+                if (value != null) {
+                    String razdelName1 = value;
+                    // Используйте значение value
+                    Log.e(TAG, "Solution razdelname3: " + razdelName + razdelName1);
+                }
+            }); // Передача данных from вью модель через LiveData
+
+            MyArrayList.addString(zadacha_id, razdelName);
             //берет данные из шаредпреффс что может быть не совсем хорошо и выдавать не актуальные данные после зачистки программы на девайсе
             int userScore = sharedPreffsLoadUserScore() + 10;
             SharedPreffUtils.sharedPreffsSaveUserScore(userScore);

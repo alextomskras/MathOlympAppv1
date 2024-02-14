@@ -97,7 +97,7 @@ public class ScrollingFragmentViewModel extends ViewModel {
 
         if (answer.equals(zadacha_answer)) {
             // Add a string to the list
-            MyArrayList.addString(zadacha_id);
+            MyArrayList.addString(zadacha_id, "tttt");
 
             // Update the user score
             int userScore = sharedPreffsLoadUserScore() + 10;

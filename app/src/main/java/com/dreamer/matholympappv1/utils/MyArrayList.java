@@ -28,9 +28,9 @@ public class MyArrayList {
         this.list = new ArrayList<String>();
     }
 
-    public static void addString(String value) {
+    public static void addString(String value, String razdelName) {
         list.add(value);
-        saveArrayCompletedTasksToFirebase(list);
+        saveArrayCompletedTasksToFirebase(list, razdelName);//save data to FB in used razdel complited tasks
     }
 
     public static ArrayList<String> getList() {
@@ -42,7 +42,7 @@ public class MyArrayList {
     }
 
 
-    private static void saveArrayCompletedTasksToFirebase(ArrayList<String> list) {
+    private static void saveArrayCompletedTasksToFirebase(ArrayList<String> list, String razdelName) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Log.e(TAG, "Error: current user is null");
@@ -53,7 +53,7 @@ public class MyArrayList {
 //            FirebaseDatabase database = FirebaseDatabase.getInstance();
             //init FirebaseDB
 
-            DatabaseReference complitedtasksRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("completed_tasks");
+            DatabaseReference complitedtasksRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("completed_tasks" + razdelName);
 
 // Convert the list to a HashMap
             HashMap<String, String> hashMap = new HashMap<>();

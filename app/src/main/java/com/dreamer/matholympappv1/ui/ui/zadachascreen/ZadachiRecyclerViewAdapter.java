@@ -617,15 +617,20 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
     private List<String> listSolutionFilesFirestore;
     private Context context;
     private String spotOfSearchImages;
+    private String razdelname;
+    private ZadachaViewModel viewModel;
 
 
     public ZadachiRecyclerViewAdapter(List<Zadachi> zadachiList, Context context) {
+//        viewModel = new ViewModelProvider((ViewModelStoreOwner) this).get(ZadachaViewModel.class);
+//       razdelname = viewModel.getsubRazdel().getValue(); // Передача данных из вью модель через LiveData
 //        listFilesFirestore = new ArrayList<>();
 //        listSolutionFilesFirestore = new ArrayList<>();
 
 //        createArray();
 
 //        testHideZadachi = Collections.singletonList(new int[]{1, 3, 4});
+//        this.razdelname = razdelname;
         this.zadachiList = zadachiList;
         this.context = context;
         listFilesFirestore = new ArrayList<>();
@@ -834,7 +839,8 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 //                return false;
 //            }
 //        }).into(circleImageView);
-
+        final String razdel_id = razdelname;
+        Log.e(TAG, "razdel_id" + razdel_id);
         final String user_id = zadachiList.get(position).Zadachi_id;
         Log.e(TAG, "iconImageViewOnClick at position10 " + zadachiList.size());
 
@@ -861,7 +867,9 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
                 }
                 Bundle bundle = new Bundle();
                 Log.e(TAG, "_Dateitem=10 " + listFilesFirestore.size());
+
                 bundle.putString("MyArgZadacha_id", user_id);
+                bundle.putString("MyArgRazdel_id", razdel_id);
                 bundle.putStringArrayList("MyArgZadacha_listFilesFirestore", (ArrayList<String>) listFilesFirestore);
                 bundle.putStringArrayList("MyArgZadacha_listSolutionFilesFirestore", (ArrayList<String>) listSolutionFilesFirestore);
                 bundle.putString("MyArgZadacha_main_body", zadacha_main_body);
@@ -906,8 +914,8 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
         navController = Navigation.findNavController(MainActivity, R.id.nav_host_fragment);
     }
 
-    public void setZadachiList(List<Zadachi> zadachiList) {
-
+    public void setZadachiList(List<Zadachi> zadachiList, String razdelname) {
+        this.razdelname = razdelname;
         this.zadachiList = zadachiList;
         notifyDataSetChanged();
     }

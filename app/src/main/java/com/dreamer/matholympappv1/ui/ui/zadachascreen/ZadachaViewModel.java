@@ -46,13 +46,14 @@ public class ZadachaViewModel extends ViewModel {
 //        });
     }
 
-    public LiveData<String> getsubRazdel() {
-        return subRazdel;
-    }
 
     public void setsubRazdel(String newsubRazdel) {
         Log.e(TAG, "Solution razdelname2: " + newsubRazdel);
         subRazdel.setValue(newsubRazdel);
+    }
+
+    public LiveData<String> getsubRazdel() {
+        return subRazdel;
     }
 
     public void loadZadachi() {
