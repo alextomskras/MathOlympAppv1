@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MyArrayList {
+
     private static final String TAG = "TAG";
     public static ArrayList<String> list;
 
@@ -32,7 +33,7 @@ public class MyArrayList {
         list.add(value);
         saveArrayCompletedTasksToFirebase(list, razdelName);//save data to FB in used razdel complited tasks
     }
-
+    private static String razdelName1;
     public static ArrayList<String> getList() {
         return list;
     }
@@ -43,6 +44,8 @@ public class MyArrayList {
 
 
     private static void saveArrayCompletedTasksToFirebase(ArrayList<String> list, String razdelName) {
+        razdelName1 = razdelName;
+        Log.e(TAG, "razdelName " + razdelName1);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Log.e(TAG, "Error: current user is null");
@@ -53,7 +56,7 @@ public class MyArrayList {
 //            FirebaseDatabase database = FirebaseDatabase.getInstance();
             //init FirebaseDB
 
-            DatabaseReference complitedtasksRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("completed_tasks" + razdelName);
+            DatabaseReference complitedtasksRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("completed_tasks/" + razdelName);
 
 // Convert the list to a HashMap
             HashMap<String, String> hashMap = new HashMap<>();
@@ -122,7 +125,7 @@ public class MyArrayList {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         //init FirebaseDB
 
-        DatabaseReference complitedtasksRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("completed_tasks");
+        DatabaseReference complitedtasksRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("completed_tasks/" + razdelName1);
 
         complitedtasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

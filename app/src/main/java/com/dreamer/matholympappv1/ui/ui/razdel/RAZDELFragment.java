@@ -170,7 +170,7 @@ public class RAZDELFragment extends Fragment {
         return root;
     }
 
-
+//тест
     @Override
     public void onStart() {
         super.onStart();
