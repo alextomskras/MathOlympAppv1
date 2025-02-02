@@ -39,10 +39,10 @@
     <string name="alertDialogPositiveButtonSolution">Cancel</string>
     <string name="alertDialogHintButton">Hint</string>
     <string name="alertDialogShowTitleHINT">HINT</string>
-    <string name="alertDialogShowMessageBodyHINT">\"zadacha_hint \"</string>
+    <string name="alertDialogShowMessageBodyHINT">"zadacha_hint "</string>
     <string name="alertDialogREZULTATNeutralButton">Solution</string>
     <string name="alertDialogRezultatForSolutionTitle">Solution</string>
-    <string name="alertDialogRezultatForSolutionMessageBody">\"solution \"</string>
+    <string name="alertDialogRezultatForSolutionMessageBody">"solution "</string>
     <string name="alertDialogRezultatNegativeButton">Exit</string>
     <string name="scrollFrgMenuAddHintTitle">hint</string>
     <string name="scrollFrgMenuTitle">hint</string>
@@ -60,4 +60,35 @@
     <string name="appbar_title_scroll_fragm">Uslovie zadachi</string>
     <string name="appbar_title_zadacha_fragm">Spisok zadach</string>
     <string name="appbar_title_razdel_fragm">Razdely zadaniy</string>
+
+    <!-- Network Status Messages -->
+    <string name="network_status_wifi">Подключено к WiFi</string>
+    <string name="network_status_mobile">Подключено к мобильной сети</string>
+    <string name="network_status_ethernet">Подключено к Ethernet</string>
+    <string name="network_status_disconnected">Нет подключения к сети</string>
+    <string name="network_status_checking">Проверка подключения…</string>
+
+    <!-- Permissions -->
+    <string name="permission_dialog_title">Необходимы разрешения</string>
+    <string name="permission_dialog_message">Для корректной работы приложения необходим доступ к интернету</string>
+    <string name="permission_dialog_positive">Повторить</string>
+    <string name="permission_dialog_negative">Отмена</string>
+    <string name="permission_toast_denied">Некоторые функции будут недоступны</string>
+    <string name="permission_toast_settings">Для полной функциональности предоставьте разрешения в настройках</string>
+    <string name="permission_required_title">Необходимы разрешения</string>
+    <string name="permission_required_message">Для корректной работы приложения необходимы следующие разрешения:\n%1$s</string>
+    <string name="permission_denied_title">Разрешения отклонены</string>
+    <string name="permission_denied_message">Без этих разрешений некоторые функции приложения могут работать некорректно. Вы можете предоставить разрешения в настройках приложения.</string>
+    <string name="try_again">Попробовать снова</string>
+    <string name="proceed_anyway">Продолжить без разрешений</string>
+    <string name="open_settings">Открыть настройки</string>
+
+    <!-- Permission Names -->
+    <string name="permission_storage_read">Чтение файлов</string>
+    <string name="permission_storage_write">Запись файлов</string>
+    <string name="permission_camera">Камера</string>
+
+    <!-- Network Connection Messages -->
+    <string name="network_connection_good">Internet connection good</string>
+    <string name="network_connection_none">No internet connection</string>
 </resources>
