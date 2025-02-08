@@ -2,20 +2,16 @@ package com.dreamer.matholympappv1;
 
 import static android.content.ContentValues.TAG;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.NavHost;
 import androidx.navigation.fragment.NavHostFragment;
@@ -66,39 +62,40 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
 
-        NetworkInfo networkInfo;
+//        NetworkInfo networkInfo;
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-    {
-        assert connectivityManager != null;
-        networkInfo = connectivityManager.getActiveNetworkInfo();
-    }
+//    {
+//        assert connectivityManager != null;
+//        networkInfo = connectivityManager.getActiveNetworkInfo();
+//    }
 
-    if (networkInfo != null && networkInfo.isConnected()) {
-        // Internet is available
-        Toast.makeText(this, "Internet connection good", Toast.LENGTH_SHORT).show();
-    } else {
-        // Internet is not available
-        Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
-    }
-
-    //check if android11
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, MY_PERMISSIONS_REQUEST_ACCESS_NETWORK_STATE);
+        if (networkInfo != null && networkInfo.isConnected()) {
+            // Internet is available
+            Toast.makeText(this, "Internet connection good", Toast.LENGTH_SHORT).show();
         } else {
-            // Permission already granted, do whatever you need to do
+            // Internet is not available
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
         }
-    } else {
-        // For Android versions lower than 11, the app is always considered to be in the foreground when it is started
-    }
+
+//    //check if android11
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, MY_PERMISSIONS_REQUEST_ACCESS_NETWORK_STATE);
+//        } else {
+//            // Permission already granted, do whatever you need to do
+//        }
+//    } else {
+//        // For Android versions lower than 11, the app is always considered to be in the foreground when it is started
+//    }
 
 //        toolbar = findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
-    NavHost navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        NavHost navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
 //        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-    navController = navHost.getNavController();
+        navController = navHost.getNavController();
 
-    NavigationUI.setupActionBarWithNavController(this, navController);
+        NavigationUI.setupActionBarWithNavController(this, navController);
 
 
 //        if (savedInstanceState == null) {
@@ -108,15 +105,19 @@ public class MainActivity extends AppCompatActivity {
 //                    .replace(R.id.login_fragment, ScrollingFragment.newInstance())
 //                    .commitNow();
 //        }
-}
+    }
 
+
+//    @Override
+//    public boolean onSupportNavigateUp() {
+//        navController.navigateUp();
+//        return super.onSupportNavigateUp();
+//    }
 
     @Override
     public boolean onSupportNavigateUp() {
-        navController.navigateUp();
-        return super.onSupportNavigateUp();
+        return navController.navigateUp() || super.onSupportNavigateUp();
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
