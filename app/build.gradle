@@ -1,3 +1,4 @@
+
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -8,6 +9,7 @@ plugins {
 
 }
 
+apply from: rootProject.file("versions.gradle")
 android {
     namespace 'com.dreamer.matholympappv1'
     compileSdk 32

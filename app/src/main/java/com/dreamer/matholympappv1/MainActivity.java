@@ -38,9 +38,11 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isDarkThemeEnabled = preferences.getBoolean("dark_theme_enabled", false);
 //        setTheme(isDarkThemeEnabled ? R.style.AppTheme_Dark : R.style.AppTheme);
-        setTheme(isDarkThemeEnabled);
+//        setTheme(isDarkThemeEnabled);
+        setTheme(isDarkThemeEnabled ? R.style.AppTheme_Dark : R.style.AppTheme);
         Log.e(TAG, "isDarkThemeEnabled= " + isDarkThemeEnabled);
         Toast.makeText(this, "R.style.AppTheme_Dark" + isDarkThemeEnabled, Toast.LENGTH_SHORT).show();
+
         super.onCreate(savedInstanceState);
 
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
