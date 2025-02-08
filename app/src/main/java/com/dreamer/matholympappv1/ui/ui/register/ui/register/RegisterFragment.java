@@ -1,3 +1,224 @@
+//package com.dreamer.matholympappv1.ui.ui.register.ui.register;
+//
+//import static android.content.ContentValues.TAG;
+//
+//import android.app.Activity;
+//import android.os.Bundle;
+//import android.text.Editable;
+//import android.text.TextWatcher;
+//import android.util.Log;
+//import android.view.KeyEvent;
+//import android.view.LayoutInflater;
+//import android.view.View;
+//import android.view.ViewGroup;
+//import android.view.inputmethod.EditorInfo;
+//import android.widget.Button;
+//import android.widget.EditText;
+//import android.widget.ProgressBar;
+//import android.widget.TextView;
+//import android.widget.Toast;
+//
+//import androidx.annotation.NonNull;
+//import androidx.annotation.Nullable;
+//import androidx.annotation.StringRes;
+//import androidx.fragment.app.Fragment;
+//import androidx.lifecycle.Observer;
+//import androidx.lifecycle.ViewModelProvider;
+//import androidx.navigation.NavController;
+//import androidx.navigation.Navigation;
+//
+//import com.dreamer.matholympappv1.R;
+//import com.dreamer.matholympappv1.databinding.FragmentRegisterBinding;
+//import com.google.android.gms.tasks.Task;
+//import com.google.android.material.snackbar.Snackbar;
+//import com.google.firebase.auth.FirebaseAuth;
+//import com.google.firebase.auth.FirebaseUser;
+//import com.google.firebase.database.DatabaseReference;
+//import com.google.firebase.database.FirebaseDatabase;
+//import com.google.firebase.messaging.FirebaseMessaging;
+//
+//public class RegisterFragment extends Fragment {
+//
+//    private static final String TAG = RegisterFragment.class.getSimpleName();
+//
+//    private NavController navController;
+//    private DatabaseReference databaseReference;
+//    private RegisterViewModel registerViewModel;
+//    private FragmentRegisterBinding binding;
+//    private FirebaseAuth mAuth;
+//    private FirebaseUser mUser;
+//    private String mToken;
+//
+//    @Nullable
+//    @Override
+//    public View onCreateView(@NonNull LayoutInflater inflater,
+//                             @Nullable ViewGroup container,
+//                             @Nullable Bundle savedInstanceState) {
+//        // Инициализация Firebase
+//        mAuth = FirebaseAuth.getInstance();
+//        mUser = mAuth.getCurrentUser();
+//        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+//
+//        // Инициализируем NavController
+//        navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+//
+//        binding = FragmentRegisterBinding.inflate(inflater, container, false);
+//        return binding.getRoot();
+//    }
+//
+//    @Override
+//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//
+//        registerViewModel = new ViewModelProvider(this, new RegisterViewModelFactory())
+//                .get(RegisterViewModel.class);
+//
+//        final EditText usernameEditText = binding.username;
+//        final EditText passwordEditText = binding.password;
+//        final Button registerButton = binding.register;
+//        final ProgressBar loadingProgressBar = binding.loading;
+//
+//        registerViewModel.getLoginFormState().observe(getViewLifecycleOwner(), new Observer<RegisterFormState>() {
+//            @Override
+//            public void onChanged(@Nullable RegisterFormState registerFormState) {
+//                if (registerFormState == null) {
+//                    return;
+//                }
+//                registerButton.setEnabled(registerFormState.isDataValid());
+//                if (registerFormState.getUsernameError() != null) {
+//                    usernameEditText.setError(getString(registerFormState.getUsernameError()));
+//                }
+//                if (registerFormState.getPasswordError() != null) {
+//                    passwordEditText.setError(getString(registerFormState.getPasswordError()));
+//                }
+//            }
+//        });
+//
+//        registerViewModel.getLoginResult().observe(getViewLifecycleOwner(), new Observer<RegisterResult>() {
+//            @Override
+//            public void onChanged(@Nullable RegisterResult registerResult) {
+//                if (registerResult == null) {
+//                    return;
+//                }
+//                loadingProgressBar.setVisibility(View.GONE);
+//                if (registerResult.getError() != null) {
+//                    showLoginFailed(registerResult.getError());
+//                }
+//                if (registerResult.getSuccess() != null) {
+//                    updateUiWithUser(registerResult.getSuccess());
+//                }
+//            }
+//        });
+//
+//        TextWatcher afterTextChangedListener = new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                // ignore
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                // ignore
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                registerViewModel.loginDataChanged(
+//                        usernameEditText.getText().toString(),
+//                        passwordEditText.getText().toString());
+//            }
+//        };
+//        usernameEditText.addTextChangedListener(afterTextChangedListener);
+//        passwordEditText.addTextChangedListener(afterTextChangedListener);
+//
+//        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                    registerViewModel.login(
+//                            usernameEditText.getText().toString(),
+//                            passwordEditText.getText().toString());
+//                }
+//                return false;
+//            }
+//        });
+//
+//        registerButton.setOnClickListener(v -> {
+//            loadingProgressBar.setVisibility(View.VISIBLE);
+//            registerViewModel.login(
+//                    usernameEditText.getText().toString(),
+//                    passwordEditText.getText().toString());
+//
+//            mAuth.createUserWithEmailAndPassword(
+//                            usernameEditText.getText().toString(),
+//                            passwordEditText.getText().toString())
+//                    .addOnCompleteListener((Activity) getContext(), task -> {
+//                        loadingProgressBar.setVisibility(View.GONE);
+//                        if (task.isSuccessful()) {
+//                            // Получаем FCM токен
+//                            FirebaseMessaging.getInstance().getToken()
+//                                    .addOnCompleteListener(tokenTask -> {
+//                                        if (!tokenTask.isSuccessful()) {
+//                                            Log.w(TAG, "Fetching FCM registration token failed", tokenTask.getException());
+//                                            return;
+//                                        }
+//                                        mToken = tokenTask.getResult();
+//                                        Log.d(TAG, "Refreshed token: " + mToken);
+//
+//                                        // Если пользователь существует, обновляем данные в Realtime Database
+//                                        if (mAuth.getCurrentUser() != null) {
+//                                            String userId = mAuth.getCurrentUser().getUid();
+//                                            DatabaseReference userData = databaseReference.child(userId);
+//                                            userData.child("token_id").setValue(mToken)
+//                                                    .addOnSuccessListener(aVoid -> {
+//                                                        // Токен успешно сохранён
+//                                                    })
+//                                                    .addOnFailureListener(e -> {
+//                                                        Log.e(TAG, "Failed to save token: " + e.getMessage());
+//                                                    });
+//                                            userData.child("username").setValue(usernameEditText.getText().toString())
+//                                                    .addOnSuccessListener(aVoid -> {
+//                                                        // Имя пользователя успешно сохранено
+//                                                    })
+//                                                    .addOnFailureListener(e -> {
+//                                                        Log.e(TAG, "Failed to save username: " + e.getMessage());
+//                                                    });
+//                                        } else {
+//                                            Log.w(TAG, "Current user is null after registration");
+//                                        }
+//                                        // Выводим сообщение об успешной регистрации и навигируем к LoginFragment
+//                                        Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                                                getString(R.string.registration_success),
+//                                                Snackbar.LENGTH_LONG).show();
+//                                        navController.clearBackStack(R.id.registerFragment);
+//                                        navController.navigate(R.id.action_registerFragment_to_loginFragment2);
+//                                    });
+//                        } else {
+//                            Snackbar.make(getActivity().findViewById(android.R.id.content),
+//                                    task.getException().getLocalizedMessage(),
+//                                    Snackbar.LENGTH_LONG).show();
+//                        }
+//                    });
+//        });
+//    }
+//
+//    private void updateUiWithUser(RegisterInUserView model) {
+//        String welcome = getString(R.string.welcome) + model.getDisplayName();
+//        Toast.makeText(getContext(), welcome, Toast.LENGTH_LONG).show();
+//    }
+//
+//    private void showLoginFailed(@StringRes Integer errorString) {
+//        Toast.makeText(getContext(), errorString, Toast.LENGTH_LONG).show();
+//    }
+//
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        binding = null;
+//    }
+//}
+
+
 package com.dreamer.matholympappv1.ui.ui.register.ui.register;
 
 import android.app.Activity;
@@ -41,7 +262,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class RegisterFragment extends Fragment {
-
+    private static final String TAG = RegisterFragment.class.getSimpleName();
     NavController navController;
     DatabaseReference databaseReference;
     private RegisterViewModel registerViewModel;
@@ -51,7 +272,7 @@ public class RegisterFragment extends Fragment {
     private FirebaseMessaging mFmess;
     private String fbToken;
     private String mToken;
-    private String TAG;
+//    private String TAG;
 
     @Nullable
     @Override

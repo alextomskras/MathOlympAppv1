@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application
         android:allowBackup="true"
         android:name=".MyApp"
@@ -56,6 +58,14 @@
         <!--            </intent-filter>-->
         <!--        </activity>-->
         <!--        <service android:name="com.dreamer.matholympappv1.ui.ui.register.ui.register.RegisterFragment$LatestFirebaseMessagingService" />-->
+        <service
+            android:name=".firebase.LatestFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>
