@@ -7,6 +7,10 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.dreamer.matholympappv1.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -17,8 +21,27 @@ public class LatestFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String token) {
         super.onNewToken(token);
-        Log.d(TAG, "New token received: " + token);
-        // Здесь можно обновить токен на сервере или в Firebase Realtime Database
+        Log.d(TAG, "Новый FCM токен: " + token);
+
+        // Обновляем токен в Firebase Database
+        updateTokenInFirebase(token);
+    }
+
+    private void updateTokenInFirebase(String token) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            DatabaseReference ref = FirebaseDatabase.getInstance()
+                    .getReference("Users")
+                    .child(userId)
+                    .child("token_id");  // Поле token_id, как в вашей базе
+
+            ref.setValue(token)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "FCM-токен успешно обновлён"))
+                    .addOnFailureListener(e -> Log.e(TAG, "Ошибка при обновлении FCM-токена: " + e.getMessage()));
+        } else {
+            Log.e(TAG, "Пользователь не авторизован, не удалось обновить FCM-токен");
+        }
     }
 
     @Override
