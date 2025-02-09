@@ -15,3 +15,18 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Игнорирование временных файлов IDE
+.idea/*
+
+# Игнорирование кэша Gradle
+.gradle/
+build/
+captures/
+
+# Игнорирование временных и локальных файлов
+*.log
+*.tmp
+
+# Игнорирование кода NDK и промежуточных файлов
+.externalNativeBuild/
+.cxx/
