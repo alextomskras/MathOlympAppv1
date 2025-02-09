@@ -83,7 +83,7 @@ public class LoginFragment extends Fragment {
 //        mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
 //        if (mAuth.getCurrentUser() == null) {
-
+            Log.d(TAG, "Пользователь уже авторизован: " + mUser.getEmail());
             navController.clearBackStack(R.id.loginFragment);
 //            navController.navigate(R.id.action_loginFragment_to_zadachaFragment);
             navController.navigate(R.id.action_loginFragment_to_RAZDELFragment);
