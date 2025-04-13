@@ -2,105 +2,113 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-
-    id 'androidx.navigation.safeargs.kotlin'
-    // Add the Google services Gradle plugin
+    id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs'
+    id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
-
 }
 
 apply from: rootProject.file("versions.gradle")
 android {
     namespace 'com.dreamer.matholympappv1'
-    compileSdk 32
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "com.dreamer.matholympappv1"
-        minSdk 21
-        targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
     packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE-FIREBASE.txt'
         exclude 'META-INF/NOTICE'
     }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 dependencies {
-
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.7.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
-    implementation 'androidx.annotation:annotation:1.5.0'
-    implementation 'androidx.preference:preference:1.2.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.navigation:navigation-fragment:2.5.3'
-//    implementation 'androidx.navigation:navigation-safe-args-generator:2.5.3'
-
-    implementation 'androidx.navigation:navigation-common:2.5.3'
-
-    implementation 'androidx.navigation:navigation-ui:2.5.3'
-//    implementation 'androidx.navigation:navigation:2.5.3'
-
-
-    // Use the SplashScreen compat library.
-    implementation 'androidx.core:core-splashscreen:1.0.0'
-
-
-    def lifecycle_version = '2.5.1'
-    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
-
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
-
-    implementation 'com.squareup.picasso:picasso:2.8'
-
-    implementation 'com.google.android.material:material:1.7.0'
-
-
-    implementation 'com.github.bumptech.glide:glide:4.14.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
-    // FirebaseUI Storage only
-    implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
-
-    // Import the BoM for the Firebase platform
+    // AndroidX Core
+    implementation "androidx.core:core-ktx:${rootProject.ext.coreKtxVersion}"
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.appCompatVersion}"
+    
+    // UI Components
+    implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
+    implementation "androidx.constraintlayout:constraintlayout:${rootProject.ext.constraintLayoutVersion}"
+    
+    // Navigation
+    implementation "androidx.navigation:navigation-fragment-ktx:${rootProject.ext.navigationVersion}"
+    implementation "androidx.navigation:navigation-ui-ktx:${rootProject.ext.navigationVersion}"
+    
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${rootProject.ext.lifecycleVersion}"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:${rootProject.ext.lifecycleVersion}"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:${rootProject.ext.lifecycleVersion}"
+    
+    // Room
+    implementation "androidx.room:room-runtime:${rootProject.ext.roomVersion}"
+    kapt "androidx.room:room-compiler:${rootProject.ext.roomVersion}"
+    implementation "androidx.room:room-ktx:${rootProject.ext.roomVersion}"
+    
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${rootProject.ext.coroutinesVersion}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.ext.coroutinesVersion}"
+    
+    // Networking
+    implementation "com.squareup.retrofit2:retrofit:${rootProject.ext.retrofitVersion}"
+    implementation "com.squareup.retrofit2:converter-gson:${rootProject.ext.retrofitVersion}"
+    implementation "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttpVersion}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${rootProject.ext.okhttpVersion}"
+    
+    // Image Loading
+    implementation "com.github.bumptech.glide:glide:${rootProject.ext.glideVersion}"
+    kapt "com.github.bumptech.glide:compiler:${rootProject.ext.glideVersion}"
+    
+    // Dependency Injection
+    implementation "com.google.dagger:hilt-android:${rootProject.ext.hiltVersion}"
+    kapt "com.google.dagger:hilt-compiler:${rootProject.ext.hiltVersion}"
+    
+    // Logging
+    implementation "com.jakewharton.timber:timber:${rootProject.ext.timberVersion}"
+    
+    // Firebase
     implementation platform('com.google.firebase:firebase-bom:31.1.1')
-
-    // Add the dependency for the Firebase Authentication library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-core'
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-core:21.1.1'
-
-    implementation 'com.google.code.gson:gson:2.8.9'
-
-
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    
+    // Testing
+    testImplementation "junit:junit:${rootProject.ext.junitVersion}"
+    androidTestImplementation "androidx.test.ext:junit:${rootProject.ext.androidxJunitVersion}"
+    androidTestImplementation "androidx.test.espresso:espresso-core:${rootProject.ext.espressoVersion}"
+    testImplementation "org.mockito:mockito-core:${rootProject.ext.mockitoVersion}"
+    
+    // Debug Tools
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:${rootProject.ext.leakCanaryVersion}"
 }
