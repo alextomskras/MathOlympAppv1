@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.utils.MyMenuInflater;
+import com.dreamer.matholympappv1.utils.SharedPreffUtils2;
 import com.dreamer.matholympappv1.utils.StringIntegerConverter;
 import com.dreamer.matholympappv1.utils.UserEmailLoginFirebase;
 import com.google.android.material.snackbar.Snackbar;
@@ -61,7 +62,7 @@ public class RAZDELFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mUsersRef;
-
+    private SharedPreffUtils2 sharedPreferencesHelper;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -89,6 +90,8 @@ public class RAZDELFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Инициализируем SharedPreferences
+        sharedPreferencesHelper = new SharedPreffUtils2(getContext());
         setHasOptionsMenu(true); // Важная строка для того, чтобы вызывать
 
         Bundle args = getArguments();
@@ -108,6 +111,21 @@ public class RAZDELFragment extends Fragment {
 
             firebaseSaveSolutionLimits(solutionlimitsnum);
             firebaseSaveHintLimits(hintlimitsnum);
+
+//// Проверяем, есть ли username в SharedPreferences
+//            Username = sharedPreferencesHelper.loadUsername();
+//
+//            if (Username != null && !Username.isEmpty()) {
+//                // Если username найден в SharedPreferences, пропускаем запрос в Firebase
+//                Log.d(TAG, "Username loaded from SharedPreferences: " + Username);
+//            } else {
+//                // Если username нет в SharedPreferences, нужно запросить его из Firebase
+// //               loadUserFromFirebase();
+////                FirebaseUser currentUser = mAuth.getCurrentUser();
+////                loadUsername(currentUser.getUid());
+//                navController.clearBackStack(R.id.RAZDELFragment);
+//                navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
+//            }
 
         }
 
@@ -174,17 +192,41 @@ public class RAZDELFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
         if (currentUser != null) {
-            // Пользователь уже залогинен
-            loadUsername(currentUser.getUid());
+            String savedUid = sharedPreferencesHelper.loadUid();
+            String savedUsername = sharedPreferencesHelper.loadUsername();
+
+            // Проверка: пользователь новый или данных нет
+            if (!currentUser.getUid().equals(savedUid) || savedUsername.isEmpty()) {
+                loadUsername(currentUser.getUid());
+            } else {
+                Username = savedUsername;
+                Log.d(TAG, "Username loaded from SharedPreferences: " + Username);
+            }
+
         } else {
-            // Пользователь не залогинен
-            // Реализуйте здесь логику для обработки случая, когда пользователь не залогинен
             navController.clearBackStack(R.id.RAZDELFragment);
             navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
         }
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        String savedUid = sharedPreferencesHelper.loadUid();
+//        String savedUsername = sharedPreferencesHelper.loadUsername();
+//        // Проверка: пользователь новый или данных нет
+//        if (!currentUser.getUid().equals(savedUid) || savedUsername.isEmpty()) {
+//
+//            // Пользователь уже залогинен
+//            loadUsername(currentUser.getUid());
+//        } else {
+//            Username = savedUsername;
+//            Log.d(TAG, "Username loaded from SharedPreferences: " + Username);
+//        }
+//
+//    } else {
+//        navController.clearBackStack(R.id.RAZDELFragment);
+//        navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
+//    }
     }
 
     private void loadUsername(String userId) {
@@ -196,6 +238,9 @@ public class RAZDELFragment extends Fragment {
                     if (username != null) {
                         Username = username;
 //                        mUsernameTextView.setText(username);
+                        // Сохраняем в SharedPreferences
+                        sharedPreferencesHelper.saveUsername(username);
+                        sharedPreferencesHelper.saveUid(userId);
                         Snackbar.make(getActivity().findViewById(android.R.id.content),
                                 "Username:" + Username, Snackbar.LENGTH_LONG).show();
                     } else {

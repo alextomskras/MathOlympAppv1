@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -304,5 +306,14 @@ public class ZadachaFragment extends Fragment {
 //            }
 //        });
 //    }
+public void onDestroyView() {
+    super.onDestroyView();
 
+    ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+    if (actionBar != null) {
+        actionBar.setCustomView(null); // ❗ удаляем кастомный заголовок
+        actionBar.setDisplayShowCustomEnabled(false); // ❗ отключаем его отображение
+        actionBar.setDisplayShowTitleEnabled(true);   // ❗ включаем обычный заголовок
+    }
+}
 }

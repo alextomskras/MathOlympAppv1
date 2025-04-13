@@ -63,4 +63,7 @@
     <string name="appbar_title_scroll_fragm">Uslovie zadachi</string>
     <string name="appbar_title_zadacha_fragm">Spisok zadach</string>
     <string name="appbar_title_razdel_fragm">Razdely zadaniy</string>
+    <string name="fragment_title_home">1</string>
+    <string name="fragment_title_tasks">2</string>
+    <string name="fragment_title_settings">3</string>
 </resources>

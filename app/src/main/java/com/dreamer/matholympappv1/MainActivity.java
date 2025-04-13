@@ -182,6 +182,27 @@ public class MainActivity extends AppCompatActivity {
         if (navHost != null) {
             navController = navHost.getNavController();
             NavigationUI.setupActionBarWithNavController(this, navController);
+            // 🔽 Добавляем изменение заголовка фрагмента через ресурсы
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                int destId = destination.getId();
+                String title;
+
+                switch (destId) {
+                    case R.id.RAZDELFragment:
+                        title = getString(R.string.fragment_title_home);
+                        break;
+                    case R.id.zadachaFragment:
+                        title = getString(R.string.fragment_title_tasks);
+                        break;
+                    case R.id.settingsFragment:
+                        title = getString(R.string.fragment_title_settings);
+                        break;
+                    default:
+                        title = getString(R.string.app_name);
+                }
+
+                getSupportActionBar().setTitle(title);
+            });
         }
     }
 
