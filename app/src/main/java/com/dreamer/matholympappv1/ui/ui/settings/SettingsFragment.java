@@ -1,10 +1,10 @@
 package com.dreamer.matholympappv1.ui.ui.settings;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
@@ -21,7 +21,27 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         isDarkThemeEnabled = sharedPreferences.getBoolean("dark_theme_enabled", false);
+
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        Preference logoutPref = findPreference("logout");
+        if (logoutPref != null) {
+            logoutPref.setOnPreferenceClickListener(preference -> {
+                showLogoutConfirmationDialog();
+                return true;
+            });
+        }
+    }
+
+
+    private void showLogoutConfirmationDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Выход из аккаунта")
+                .setMessage("Вы уверены, что хотите выйти?")
+                .setPositiveButton("Да", (dialog, which) -> {
+                    ((MainActivity) requireActivity()).logout();
+                })
+                .setNegativeButton("Отмена", null)
+                .show();
     }
 
     @Override
@@ -39,30 +59,20 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 //
 //
 //            // Recreate the activity to apply the new theme
-////            if (getActivity() != null) {
-////                getActivity().recreate();
-////            }
-////            getActivity().recreate();
+//            if (getActivity() != null) {
+//                getActivity().recreate();
+//            }
+//            getActivity().recreate();
 //        }
+//    }
 
         if (key.equals("dark_theme_enabled")) {
-            isDarkThemeEnabled = sharedPreferences.getBoolean(key, false);
-            ((MainActivity) getActivity()).setTheme(isDarkThemeEnabled);
-            getActivity().getTheme();
-            String mTheme = getActivity().getTheme().toString();
-            Toast.makeText(getContext(), "R.style.AppTheme_Dark = " + mTheme, Toast.LENGTH_SHORT).show();
-            // Получить интент текущей активности
-            Intent intent = getActivity().getIntent();
+            boolean isDarkThemeEnabled = sharedPreferences.getBoolean(key, false);
 
-// Добавить флаг FLAG_ACTIVITY_NO_ANIMATION, чтобы избежать анимации при перезапуске активности
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
-// Закрыть текущую активность
-            getActivity().finish();
-
-// Перезапустить активность с помощью интента
-            getActivity().startActivity(intent);
-
+            // Меняем тему без перезапуска вручную
+            AppCompatDelegate.setDefaultNightMode(
+                    isDarkThemeEnabled ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+            );
         }
     }
 

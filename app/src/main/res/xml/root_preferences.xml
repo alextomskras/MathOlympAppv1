@@ -11,5 +11,9 @@
     <!--            android:icon="@drawable/ic_dark_theme" />-->
 
     <!--    </PreferenceScreen>-->
-
+    <Preference
+        android:icon="@drawable/ic_baseline_bubble_chart_24"
+        android:key="logout"
+        android:summary="Завершить сеанс и вернуться к экрану входа"
+        android:title="Выйти из аккаунта" />
 </PreferenceScreen>
