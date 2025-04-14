@@ -29,6 +29,7 @@ import androidx.navigation.Navigation;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.databinding.FragmentLoginBinding;
+import com.dreamer.matholympappv1.utils.SharedPreffUtils2;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,12 +44,19 @@ public class LoginFragment extends Fragment {
     NavController navController;
     private LoginViewModel loginViewModel;
     private FragmentLoginBinding binding;
-
+    private SharedPreffUtils2 sharedPrefs;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
-//    public static LoginFragment newInstance() {
+
+    //    public static LoginFragment newInstance() {
 //        return new LoginFragment();
 //    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
+        sharedPrefs = new SharedPreffUtils2(getContext());
+    }
 
     @Nullable
     @Override
@@ -56,7 +64,7 @@ public class LoginFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        mAuth = FirebaseAuth.getInstance();
+
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
         binding = FragmentLoginBinding.inflate(inflater, container, false);
@@ -79,16 +87,22 @@ public class LoginFragment extends Fragment {
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
-
-//        mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser() != null) {
-//        if (mAuth.getCurrentUser() == null) {
-            Log.d(TAG, "Пользователь уже авторизован: " + mUser.getEmail());
+// 🔁 Автологин
+        if (isUserAlreadyLoggedIn()) {
+            Log.d(TAG, "Пользователь уже авторизован");
             navController.clearBackStack(R.id.loginFragment);
-//            navController.navigate(R.id.action_loginFragment_to_zadachaFragment);
             navController.navigate(R.id.action_loginFragment_to_RAZDELFragment);
             return;
         }
+//        mAuth = FirebaseAuth.getInstance();
+//        if (mAuth.getCurrentUser() != null) {
+////        if (mAuth.getCurrentUser() == null) {
+//            Log.d(TAG, "Пользователь уже авторизован: " + mUser.getEmail());
+//            navController.clearBackStack(R.id.loginFragment);
+////            navController.navigate(R.id.action_loginFragment_to_zadachaFragment);
+//            navController.navigate(R.id.action_loginFragment_to_RAZDELFragment);
+//            return;
+//        }
 //        else {
 //            navController.clearBackStack(R.id.loginFragment);
 //            navController.navigate(R.id.loginFragment);
@@ -198,11 +212,17 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 firebaseSignOut();
+                sharedPrefs.clearData(); // 💾 очищаем sharedPrefs при выходе
+                Snackbar.make(requireView(), "Выход выполнен", Snackbar.LENGTH_SHORT).show();
 
 
             }
         });
 
+    }
+
+    private boolean isUserAlreadyLoggedIn() {
+        return FirebaseAuth.getInstance().getCurrentUser() != null || sharedPrefs.loadLoginStatus();
     }
 
     private void intNavcontroller() {

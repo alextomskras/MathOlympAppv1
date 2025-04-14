@@ -55,6 +55,26 @@ public class SharedPreffUtils2 {
         return loadString("uid");
     }
 
+    // Универсальное сохранение булевого значения
+    public void saveBoolean(String key, boolean value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+
+    // Универсальная загрузка булевого значения
+    public boolean loadBoolean(String key, boolean defaultValue) {
+        return sharedPreferences.getBoolean(key, defaultValue);
+    }
+
+    public void saveLoginStatus(boolean isLoggedIn) {
+        saveBoolean("is_logged_in", isLoggedIn);
+    }
+
+    public boolean loadLoginStatus() {
+        return loadBoolean("is_logged_in", false);
+    }
+
     // Сохранение балла задачи
     public void saveUserScore(int score) {
         saveInt("zadacha_score", score);
