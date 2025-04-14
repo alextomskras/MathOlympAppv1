@@ -255,6 +255,10 @@ public class LoginFragment extends Fragment {
         mAuth.signInWithEmailAndPassword(username1, password1).addOnCompleteListener((Activity) getContext(),
                 task -> {
                     if (task.isSuccessful()) {
+                        // 💾 сохраняем авторизацию
+                        sharedPrefs.saveLoginStatus(true);
+                        sharedPrefs.saveUsername(username);
+
                         Snackbar.make(getActivity().findViewById(android.R.id.content),
                                 task.getResult().getUser().getEmail(), Snackbar.LENGTH_LONG).show();
 //                        FragmentTransaction ft = getFragmentManager().beginTransaction();
