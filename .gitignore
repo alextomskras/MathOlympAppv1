@@ -1,32 +1,8 @@
-*.iml
-.gradle
-/debug
-/release
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
-# Игнорирование временных файлов IDE
-.idea/*
+```
+# IDE
+.idea/
 
-# Игнорирование кэша Gradle
+# Gradle
 .gradle/
 build/
-captures/
-
-# Игнорирование временных и локальных файлов
-*.log
-*.tmp
-
-# Игнорирование кода NDK и промежуточных файлов
-.externalNativeBuild/
-.cxx/
+```
