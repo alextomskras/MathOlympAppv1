@@ -6,7 +6,7 @@
     <string name="txt_hint_text">hint_text</string>
     <string name="txt_answer_text">answer_text</string>
     <string name="appbar_title_razdel_fragm">Razdely zadaniy</string>
-    <string name="fragment_title_home">1</string>
-    <string name="fragment_title_tasks">2</string>
-    <string name="fragment_title_settings">3</string>
+    <string name="fragment_title_home">MathOlymp</string>
+    <string name="fragment_title_tasks">Tasks</string>
+    <string name="fragment_title_settings">Settings</string>
 </resources>

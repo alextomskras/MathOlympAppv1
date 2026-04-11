@@ -22,12 +22,12 @@ public class MyMenuInflater {
             return true;
         });
 
-        menuScroll = menu.add("exit");
-        menuScroll.setTitle("exit");
-        menuScroll.setTitleCondensed("exit");
+        menuScroll = menu.add(context.getString(R.string.allertDialogNegativeButton));
+        menuScroll.setTitle(context.getString(R.string.allertDialogNegativeButton));
+        menuScroll.setTitleCondensed(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setOnMenuItemClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
-            navController.clearBackStack(R.id.scrollingfragment);
+            navController.clearBackStack(R.id.scrollingFragment2);
             navController.navigate(R.id.action_scrollingFragment2_to_loginFragment);
             return true;
         });
@@ -53,9 +53,9 @@ public class MyMenuInflater {
 //            return true;
 //        });
 
-        MenuItem menuScroll = menu.add("exit");
-        menuScroll.setTitle("exit");
-        menuScroll.setTitleCondensed("exit");
+        MenuItem menuScroll = menu.add(context.getString(R.string.allertDialogNegativeButton));
+        menuScroll.setTitle(context.getString(R.string.allertDialogNegativeButton));
+        menuScroll.setTitleCondensed(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setOnMenuItemClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             navController.clearBackStack(R.id.RAZDELFragment);
