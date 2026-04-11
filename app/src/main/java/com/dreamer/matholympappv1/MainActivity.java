@@ -141,6 +141,7 @@ import com.dreamer.matholympappv1.utils.NetworkManager;
 import com.dreamer.matholympappv1.utils.NetworkManager.NetworkState;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
     private NetworkManager networkManager;
     // Диалог, информирующий пользователя об отсутствии подключения
     private AlertDialog noInternetDialog;
+    private AuthStateListener authStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,12 +187,18 @@ public class MainActivity extends AppCompatActivity {
             initNetworkManager();
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            NavController navController = ((NavHostFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.nav_host_fragment)).getNavController();
-            navController.navigate(R.id.loginFragment);
-        }
+        // Настраиваем слушатель состояния аутентификации
+        authStateListener = new AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth mAuth) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                if (user == null) {
+                    // Пользователь не авторизован - выполняем анонимный вход
+                    mAuth.signInAnonymously();
+                }
+            }
+        };
+
         // Инициализация навигации
         NavHost navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         if (navHost != null) {
@@ -302,6 +310,20 @@ public class MainActivity extends AppCompatActivity {
         if (noInternetDialog != null && noInternetDialog.isShowing()) {
             noInternetDialog.dismiss();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Подключаем слушатель состояния аутентификации при старте активности
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Отключаем слушатель при остановке активности
+        FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
     }
 
     @Override
