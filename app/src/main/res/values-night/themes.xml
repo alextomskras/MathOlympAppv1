@@ -12,7 +12,7 @@
         <item name="materialButtonStyle">@style/GlobalButtonStyle.Dark</item>
     </style>
 
-    <style name="Theme.App.Dark" parent="Theme.MathOlympAppv1.Dark">
+    <style name="Theme.App.Dark" parent="Theme.MaterialComponents.DayNight">
         <item name="colorPrimary">@color/lime_200</item>
         <item name="colorPrimaryVariant">@android:color/black</item>
         <item name="colorOnPrimary">@android:color/black</item>
@@ -30,7 +30,7 @@
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/purple_700</item>
         <item name="textInputStyle">@style/GlobalTextInputStyle</item>
         <item name="materialButtonStyle">@style/GlobalButtonStyle</item>
     </style>
@@ -44,7 +44,7 @@
         <item name="colorOnSecondary">@color/black</item>
         <item name="android:statusBarColor">@color/black</item>
         <item name="android:navigationBarColor">@color/black</item>
-        <item name="android:windowBackground">@color/night_background</item>
+        <item name="android:windowBackground">@color/black</item>
     </style>
 
     <style name="GlobalTextInputStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">

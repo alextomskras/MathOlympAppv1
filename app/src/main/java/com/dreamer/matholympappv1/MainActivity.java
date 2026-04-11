@@ -132,6 +132,7 @@ import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.NavHost;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
@@ -193,8 +194,17 @@ public class MainActivity extends AppCompatActivity {
         // Инициализация навигации
         NavHost navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         if (navHost != null) {
+//            navController = navHost.getNavController();
+//            NavigationUI.setupActionBarWithNavController(this, navController);
             navController = navHost.getNavController();
-            NavigationUI.setupActionBarWithNavController(this, navController);
+
+// 👇 Указываем, что стрелка не нужна в RAZDELFragment
+            AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                    R.id.RAZDELFragment
+            ).build();
+
+// 👇 Подключаем к AppBar
+            NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
             // 🔽 Добавляем изменение заголовка фрагмента через ресурсы
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int destId = destination.getId();
