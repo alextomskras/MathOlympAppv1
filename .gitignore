@@ -1,8 +1,4 @@
 ```
-# IDE
-.idea/
-
-# Gradle
 .gradle/
-build/
+*.log
 ```
