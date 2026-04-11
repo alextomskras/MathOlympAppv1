@@ -108,8 +108,15 @@ public class ZadachaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
+        
+        // Get razdelName from arguments for the title - use the class field Razdelname
+        String title = "Tasks";
+        if (Razdelname != null && !Razdelname.isEmpty()) {
+            title = Razdelname;
+        }
+        
         ActionBarHelper actionBarHelper = new ActionBarHelper(getActivity());
-        actionBarHelper.setupActionBar(getActivity(), getString(R.string.appbar_title_zadacha_fragm), getString(R.string.appbar_score));
+        actionBarHelper.setupActionBar(getActivity(), title, getString(R.string.appbar_score));
 //        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 //// Inflate the custom view
 //        View customView = inflater.inflate(R.layout.actionbar, null);

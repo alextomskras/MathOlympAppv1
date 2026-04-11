@@ -1,28 +1,74 @@
 ```
-# Build outputs
+# Android build artifacts
 build/
-bin/
-gen/
-
-# Dependencies
 .gradle/
-node_modules/
-vendor/
+*/build/
 
-# Logs
+# APK and other compiled files
+*.apk
+*.aar
+*.dex
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild
+
+# NDK
+obj/
+
+# Log Files
 *.log
 
-# IDE files
+# User-specific configurations
 .idea/
-.vscode/
 *.iml
-*.ipr
 *.iws
+
+# Code coverage reports
+coverage/
+*.ec
+*.lcov
+
+# Proguard logs
+proguard/
+
+# Android cache
+.cache/
+
+# Environment files
+.env
+.env.local
+.env.*
+
+# Temporary files
+*.tmp
+*.swp
+*~
 
 # OS generated files
 .DS_Store
 Thumbs.db
 
-# Local configuration
-local.properties
+# Python related (if any Python scripts in project)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+*.log
 ```
