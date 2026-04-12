@@ -1,13 +1,14 @@
-```
 # Compiled and build artifacts
 *.class
 *.o
 *.obj
 *.so
-*.a
 *.dll
 *.exe
 *.out
+*.a
+build/
+dist/
 
 # Dependencies
 node_modules/
@@ -19,33 +20,24 @@ __pycache__/
 target/
 .gradle/
 
-# Build directories (Android/Java specific)
-build/
-.gradle/
-local.properties
-
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-
-# Environment
-.env
-.env.local
-*.env.*
-
 # Editors
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# OS generated files
+# System files
 .DS_Store
 Thumbs.db
+.env
+.env.local
+*.env.*
 
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-```
+# Logs and temp files
+*.log
+*.tmp
+
+# Java-specific
+*.class
+!app/src/main/java/com/dreamer/matholympappv1/ui/ui/zadachascreen/ZadachaFragment.java
+!app/src/main/java/com/dreamer/matholympappv1/utils/SharedPreffUtils.java

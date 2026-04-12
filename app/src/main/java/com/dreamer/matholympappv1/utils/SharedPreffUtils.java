@@ -26,19 +26,23 @@ public class SharedPreffUtils {
     }
 
     public static void sharedPreffsSaveUserScore(Integer zadacha_score) {
-//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(context);
-        saveData("zadacha_score", zadacha_score);
+        if (sharedPreferences != null) {
+            saveData("zadacha_score", zadacha_score);
+        }
     }
 
     public static void saveData(String key, Integer value) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(key, value);
-        editor.apply();
+        if (sharedPreferences != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(key, value);
+            editor.apply();
+        }
     }
 
     public static void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
-//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        saveData("solution_limits", solutionLimits);
+        if (solutionLimits != null && sharedPreferences != null) {
+            saveData("solution_limits", solutionLimits);
+        }
     }
 
     public static Integer sharedPreffsLoadSolutionLimits() {
@@ -47,8 +51,9 @@ public class SharedPreffUtils {
     }
 
     public static void sharedPreffsSaveHintLimits(Integer hintLimits) {
-//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        saveData("hint_limits", hintLimits);
+        if (hintLimits != null && sharedPreferences != null) {
+            saveData("hint_limits", hintLimits);
+        }
     }
 
     public static Integer sharedPreffsLoadHintLimits() {

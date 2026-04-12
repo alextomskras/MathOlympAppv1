@@ -188,16 +188,16 @@ public class ZadachaFragment extends Fragment {
         getSolutionLimitsFromFirebase(new MyArrayList.SolutionLimitsCallback() {
             @Override
             public int onSuccess(Integer solutionlimits) {
-                if (solutionlimits != null) {
+                if (solutionlimits != null && getContext() != null) {
                     // Do something with the solution limits value here
                     solutionslimits = solutionlimits;
                     Log.d(TAG, "Solution limits9: " + solutionlimits);
+                    sharedPreffsSaveSolutionLimits(solutionslimits);
                 } else {
                     // Handle the null value here
-                    return
-                            Log.e(TAG, "Solution limits value is null.");
+                    Log.e(TAG, "Solution limits value is null or fragment not attached.");
                 }
-                return solutionslimits;
+                return 0;
             }
 
             @Override
@@ -227,17 +227,17 @@ public class ZadachaFragment extends Fragment {
 //    }
 
     private void sharedPreffsSaveHintLimits(Integer hintLimits) {
-        if (hintLimits != 0) {
-            SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        if (hintLimits != 0 && getContext() != null) {
+            SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(getContext());
             sharedPreferencesManager.saveData("hint_limits", hintLimits);
         }
     }
 
     private void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
-        if (solutionLimits == null) {
+        if (solutionLimits == null || getContext() == null) {
             return;
         }
-        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(getContext());
         sharedPreferencesManager.saveData("solution_limits", solutionLimits);
 
     }
@@ -277,7 +277,11 @@ public class ZadachaFragment extends Fragment {
             solutionslimits = solutionlimits;
             Log.d(TAG, "Solution limits2: " + solutionlimits);
             Log.d(TAG, "Solution limits21: " + solutionslimits);
-            sharedPreffsSaveSolutionLimits(solutionslimits);
+            if (getContext() != null) {
+                sharedPreffsSaveSolutionLimits(solutionslimits);
+            } else {
+                Log.e(TAG, "Fragment not attached to context, skipping save to SharedPreferences");
+            }
 
         }, new OnFailureListener() {
             @Override
