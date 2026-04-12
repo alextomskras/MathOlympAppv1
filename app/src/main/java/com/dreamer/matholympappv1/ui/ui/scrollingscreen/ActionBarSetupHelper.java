@@ -33,8 +33,8 @@ public class ActionBarSetupHelper {
         actionBar.setDisplayShowCustomEnabled(false); // Временно выключаем
         
         // 2. Очищаем стандартные текстовые поля
-        actionBar.setTitle("");
-        actionBar.setSubtitle("");
+        actionBar.setTitle("ууууу");
+        actionBar.setSubtitle("ккккк");
         
         View customView = inflater.inflate(R.layout.actionbar, null);
         
