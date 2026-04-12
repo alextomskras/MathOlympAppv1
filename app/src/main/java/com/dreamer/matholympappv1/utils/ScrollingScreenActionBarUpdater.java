@@ -12,10 +12,14 @@ public class ScrollingScreenActionBarUpdater {
     }
 
     public void updateTitle(String title) {
-        myAppBarTitleTextView.setText(title);
+        if (myAppBarTitleTextView != null) {
+            myAppBarTitleTextView.setText(title);
+        }
     }
 
     public void updateScore(String score) {
-        myAppBarScoreTextView.setText("");
+        if (myAppBarScoreTextView != null) {
+            myAppBarScoreTextView.setText(score);
+        }
     }
 }

@@ -44,6 +44,8 @@ import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.MyMenuInflater;
 import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
 import com.dreamer.matholympappv1.utils.InputValidator;
+import com.dreamer.matholympappv1.utils.ScrollingScreenActionBarSetupHelper;
+import com.dreamer.matholympappv1.utils.ScrollingScreenActionBarUpdater;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -54,9 +56,9 @@ import java.util.List;
 
 public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf {
 
-    private ActionBarUpdater actionBarUpdater;
+    private ScrollingScreenActionBarUpdater actionBarUpdater;
     public List listFilesFirestore;
-    private ActionBarSetupHelper actionBarSetupHelper;
+    private ScrollingScreenActionBarSetupHelper actionBarSetupHelper;
     static final String ARG_ZADACHA_ID = "MyArgZadacha_id";
     static final String ARG_ZADACHA_NAME = "MyArgZadacha_name";
     static final String ARG_ZADACHA_LIST_FILES_FIRESTORE = "MyArgZadacha_listFilesFirestore";
@@ -96,8 +98,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private Integer hintLimits;
     public AlertDialog.Builder builder;
     private String MainMessage;
-    private TextView myAppBarTitleTextView;
-    private TextView myAppBarScoreTextView;
     private String searchimagesPath = "answersimages";
     private String answerImageUrl;
     private String solutionImageUrl;
@@ -119,7 +119,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        actionBarSetupHelper = new ActionBarSetupHelper((AppCompatActivity) getActivity());
+        actionBarSetupHelper = new ScrollingScreenActionBarSetupHelper((AppCompatActivity) getActivity());
         firebaseUserScoreManager = new FirebaseUserScoreManager();
         sharedPreffUtils = new SecureSharedPrefsUtils(requireContext());
         viewModel = new ViewModelProvider(this).get(ScrollingFragmentViewModel.class);
@@ -173,6 +173,12 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         
         actionBarSetupHelper.setupActionBar(inflater, title, getString(R.string.appbar_score));
         binding = FragmentScrollingBinding.inflate(inflater, container, false);
+        
+        // Инициализируем actionBarUpdater после установки ActionBar
+        actionBarUpdater = new ScrollingScreenActionBarUpdater(
+            actionBarSetupHelper.getAppBarTitleTextView(),
+            actionBarSetupHelper.getAppBarScoreTextView()
+        );
 
         FirebaseUserScoreManager.setupFirebaseStorage();
 
