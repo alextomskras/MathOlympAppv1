@@ -1,48 +1,26 @@
 ```
-# Build artifacts
-build/
-.apk
-.aab
+# Android build artifacts
 *.apk
-*.aab
+*.aar
+*.dex
+*.so
+*.jar
 
-# Gradle
+# Android dependency directories
 .gradle/
-!gradle.properties
-!gradlew
-!gradlew.bat
+build/
+app/build/
 
-# Android Studio
+# Android IDE files
 .idea/
 *.iml
 *.iws
-*.db
-*.db-shm
-*.db-wal
+*.log
 
 # Generated files
 gen/
-r/
-R.java
-BuildConfig.java
+out/
 
 # Local configuration
 local.properties
-.settings/
-
-# Log files
-*.log
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Dependencies
-node_modules/
-venv/
-.venv/
-__pycache__/
-*.egg-info/
-MANIFEST
 ```
