@@ -40,6 +40,7 @@ import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.data.model.model.Zadachi;
 import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
 import com.dreamer.matholympappv1.ui.ui.zadachascreen.ZadachaViewModel;
+import com.dreamer.matholympappv1.utils.ActionBarManager;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.MyMenuInflater;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
@@ -53,9 +54,8 @@ import java.util.List;
 
 public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf {
 
-    private ActionBarUpdater actionBarUpdater;
+    private ActionBarManager actionBarManager;
     public List listFilesFirestore;
-    private ActionBarSetupHelper actionBarSetupHelper;
     static final String ARG_ZADACHA_ID = "MyArgZadacha_id";
     static final String ARG_ZADACHA_NAME = "MyArgZadacha_name";
     static final String ARG_ZADACHA_LIST_FILES_FIRESTORE = "MyArgZadacha_listFilesFirestore";
@@ -95,8 +95,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private Integer hintLimits;
     public AlertDialog.Builder builder;
     private String MainMessage;
-    private TextView myAppBarTitleTextView;
-    private TextView myAppBarScoreTextView;
     private String searchimagesPath = "answersimages";
     private String answerImageUrl;
     private String solutionImageUrl;
@@ -118,7 +116,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        actionBarSetupHelper = new ActionBarSetupHelper((AppCompatActivity) getActivity());
+        actionBarManager = new ActionBarManager((AppCompatActivity) requireActivity());
         firebaseUserScoreManager = new FirebaseUserScoreManager();
         sharedPreffUtils = new SharedPreffUtils(requireContext());
         viewModel = new ViewModelProvider(this).get(ScrollingFragmentViewModel.class);
@@ -170,7 +168,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             title = zadacha_name;
         }
         
-        actionBarSetupHelper.setupActionBar(inflater, title, getString(R.string.appbar_score));
+        actionBarManager.setupActionBar(inflater, title, getString(R.string.appbar_score));
         binding = FragmentScrollingBinding.inflate(inflater, container, false);
 
         FirebaseUserScoreManager.setupFirebaseStorage();
@@ -504,6 +502,12 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        
+        // Очищаем ActionBar при уничтожении view фрагмента
+        if (actionBarManager != null) {
+            actionBarManager.cleanupActionBar();
+        }
+        
         binding = null;
     }
 

@@ -19,55 +19,33 @@ __pycache__/
 target/
 .gradle/
 
-# Build directories
+# Build directories (Android/Java specific)
 build/
-dist/
+.gradle/
+local.properties
 
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
-
-# Logs
+# Logs and temp files
 *.log
-
-# System files
-.DS_Store
-Thumbs.db
+*.tmp
+*.swp
 
 # Environment
 .env
 .env.local
 *.env.*
 
-# Coverage
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Coverage reports
 coverage/
 htmlcov/
 .coverage
-
-# Compressed files
-*.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
-*.zst
-*.lz4
-*.lzh
-*.cab
-*.arj
-*.rpm
-*.deb
-*.Z
-*.lz
-*.lzo
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
 ```
