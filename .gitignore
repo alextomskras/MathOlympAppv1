@@ -1,1 +1,28 @@
-Nothing needs to be ignored since only a README.md file was added, which is a source/config file.
+```
+# Build artifacts
+*.apk
+*.aar
+*.jar
+*.class
+build/
+bin/
+gen/
+
+# Dependencies
+libs/
+vendor/
+
+# IDE files
+.gradle/
+.idea/
+*.iml
+*.ipr
+*.iws
+.settings/
+
+# Log files
+*.log
+
+# Local configuration
+local.properties
+```
