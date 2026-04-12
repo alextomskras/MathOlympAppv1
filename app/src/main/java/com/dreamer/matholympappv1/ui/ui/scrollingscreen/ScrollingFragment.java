@@ -69,7 +69,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     static final String BASE_IMAGE_SOLUTIONIMAGES = "gs://matholymp1.appspot.com/solutionimages/";
     static final String SEARCH_ANSWER_IMAGES = "answersimages";
     static final String SEARCH_SOLUTION_IMAGES = "solutionimages";
-    static final String TAG = "TAG";
+    static final String TAG = "ScrollingFragment";
     NavController navController;
     MenuItem menuScroll;
     private @NonNull

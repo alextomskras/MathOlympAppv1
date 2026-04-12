@@ -27,10 +27,10 @@ public class ActionBarSetupHelper {
         }
 
         // 1. Сначала полностью очищаем все флаги и скрываем всё стандартное
-        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setDisplayShowCustomEnabled(false); // Временно выключаем
+        actionBar.setDisplayShowCustomEnabled(true); // Временно выключаем
         
         // 2. Очищаем стандартные текстовые поля
         actionBar.setTitle("ууууу");
@@ -66,7 +66,7 @@ public class ActionBarSetupHelper {
         actionBar.setDisplayOptions(displayOptions);
         
         // 5. Финальная проверка - ещё раз очищаем титул
-        actionBar.setTitle("");
+        actionBar.setTitle(title);
         actionBar.setSubtitle("");
         
         android.util.Log.e("TAG", "ActionBarSetupHelper: Custom view enabled. Display options: " + actionBar.getDisplayOptions());

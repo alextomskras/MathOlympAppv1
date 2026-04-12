@@ -140,8 +140,8 @@ import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.NetworkManager;
 import com.dreamer.matholympappv1.utils.NetworkManager.NetworkState;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -223,6 +223,9 @@ public class MainActivity extends AppCompatActivity {
                         title = getString(R.string.fragment_title_home);
                         break;
                     case R.id.zadachaFragment:
+                        title = getString(R.string.fragment_title_tasks);
+                        break;
+                    case R.id.scrollingFragment2:
                         title = getString(R.string.fragment_title_tasks);
                         break;
                     case R.id.settingsFragment:
