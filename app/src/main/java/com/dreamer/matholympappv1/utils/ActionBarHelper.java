@@ -23,7 +23,9 @@ public class ActionBarHelper {
     public void setupActionBar(FragmentActivity activity, String title, String subTitle) {
         ActionBar actionBar = this.activity.getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setDisplayShowHomeEnabled(false);
             actionBar.setDisplayShowCustomEnabled(true);
 
             View customView = LayoutInflater.from(this.activity).inflate(R.layout.actionbar, null);
