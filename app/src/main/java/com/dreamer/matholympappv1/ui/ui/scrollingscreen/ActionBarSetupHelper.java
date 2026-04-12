@@ -28,8 +28,8 @@ public class ActionBarSetupHelper {
 
         // 1. Сначала полностью очищаем все флаги и скрываем всё стандартное
         actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayShowCustomEnabled(false); // Временно выключаем
         
         // 2. Очищаем стандартные текстовые поля
@@ -61,8 +61,8 @@ public class ActionBarSetupHelper {
         // 3. Устанавливаем кастомный view
         actionBar.setCustomView(customView, layout);
         
-        // 4. Явно включаем ТОЛЬКО DISPLAY_SHOW_CUSTOM, используя битовые операции для уверенности
-        int displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM;
+        // 4. Включаем DISPLAY_SHOW_CUSTOM и DISPLAY_HOME_AS_UP (кнопка назад), используя битовые операции для уверенности
+        int displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP;
         actionBar.setDisplayOptions(displayOptions);
         
         // 5. Финальная проверка - ещё раз очищаем титул
