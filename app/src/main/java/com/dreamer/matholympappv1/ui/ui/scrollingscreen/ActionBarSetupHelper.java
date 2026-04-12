@@ -67,7 +67,7 @@ public class ActionBarSetupHelper {
         
         // 5. Финальная проверка - ещё раз очищаем титул
         actionBar.setTitle(title);
-        actionBar.setSubtitle("");
+        actionBar.setSubtitle(score);
         
         android.util.Log.e("TAG", "ActionBarSetupHelper: Custom view enabled. Display options: " + actionBar.getDisplayOptions());
         android.util.Log.e("TAG", "ActionBarSetupHelper: Final title check: '" + actionBar.getTitle() + "'");
