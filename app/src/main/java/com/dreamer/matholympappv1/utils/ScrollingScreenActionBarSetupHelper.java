@@ -15,6 +15,8 @@ public class ScrollingScreenActionBarSetupHelper {
 
     private final AppCompatActivity activity;
     private final ActionBar actionBar;
+    private TextView myAppBarTitleTextView;
+    private TextView myAppBarScoreTextView;
 
     public ScrollingScreenActionBarSetupHelper(@NonNull AppCompatActivity activity) {
         this.activity = activity;
@@ -38,8 +40,8 @@ public class ScrollingScreenActionBarSetupHelper {
         
         View customView = inflater.inflate(R.layout.actionbar, null);
         
-        TextView myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
-        TextView myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
+        myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
+        myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
 
         if (myAppBarTitleTextView != null) {
             myAppBarTitleTextView.setText(title);
@@ -71,5 +73,13 @@ public class ScrollingScreenActionBarSetupHelper {
         
         android.util.Log.e("TAG", "ScrollingScreenActionBarSetupHelper: Custom view enabled. Display options: " + actionBar.getDisplayOptions());
         android.util.Log.e("TAG", "ScrollingScreenActionBarSetupHelper: Final title check: '" + actionBar.getTitle() + "'");
+    }
+
+    public TextView getAppBarTitleTextView() {
+        return myAppBarTitleTextView;
+    }
+
+    public TextView getAppBarScoreTextView() {
+        return myAppBarScoreTextView;
     }
 }
