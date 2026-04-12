@@ -130,6 +130,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.NavHost;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -175,6 +176,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Пример использования кастомного класса
         MyArrayList myArrayList = new MyArrayList();
+
+        // Проверка авторизации и навигация к нужному фрагменту
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            // Пользователь не авторизован - показываем экран входа
+            navController.navigate(R.id.loginFragment);
+        } else {
+            // Пользователь авторизован - показываем главный экран (RAZDELFragment)
+            navController.navigate(R.id.RAZDELFragment);
+        }
 
         // Проверка и запрос разрешения для доступа к состоянию сети
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE)
