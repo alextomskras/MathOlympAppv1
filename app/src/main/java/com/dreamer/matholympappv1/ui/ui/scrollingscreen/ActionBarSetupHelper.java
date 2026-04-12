@@ -28,6 +28,7 @@ public class ActionBarSetupHelper {
 
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setTitle(""); // Явно очищаем стандартный заголовок
 
         View customView = inflater.inflate(R.layout.actionbar, null);
         ActionBar.LayoutParams layout = new ActionBar.LayoutParams(
