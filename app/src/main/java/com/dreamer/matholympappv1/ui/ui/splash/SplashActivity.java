@@ -16,7 +16,7 @@ import com.dreamer.matholympappv1.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_DURATION = 2500; // 2.5 секунды
+    private static final int SPLASH_DURATION = 1500; // 1.5 секунды
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,7 @@ public class SplashActivity extends AppCompatActivity {
         }, 300);
 
         // Переход в MainActivity после задержки
+        // MainActivity сама проверит авторизацию и покажет нужный экран
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
             startActivity(intent);
