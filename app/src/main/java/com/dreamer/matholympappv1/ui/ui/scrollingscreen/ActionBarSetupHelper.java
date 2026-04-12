@@ -26,10 +26,15 @@ public class ActionBarSetupHelper {
             return;
         }
 
-        // Полностью отключаем стандартный заголовок и домашнюю кнопку
+        // 1. Сначала полностью очищаем все флаги и скрываем всё стандартное
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(false); // Временно выключаем
+        
+        // 2. Очищаем стандартные текстовые поля
+        actionBar.setTitle("");
+        actionBar.setSubtitle("");
         
         View customView = inflater.inflate(R.layout.actionbar, null);
         
@@ -53,10 +58,18 @@ public class ActionBarSetupHelper {
         );
         layout.gravity = Gravity.CENTER_HORIZONTAL;
         
-        // Явно устанавливаем только DISPLAY_SHOW_CUSTOM
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        // 3. Устанавливаем кастомный view
         actionBar.setCustomView(customView, layout);
         
+        // 4. Явно включаем ТОЛЬКО DISPLAY_SHOW_CUSTOM, используя битовые операции для уверенности
+        int displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM;
+        actionBar.setDisplayOptions(displayOptions);
+        
+        // 5. Финальная проверка - ещё раз очищаем титул
+        actionBar.setTitle("");
+        actionBar.setSubtitle("");
+        
         android.util.Log.e("TAG", "ActionBarSetupHelper: Custom view enabled. Display options: " + actionBar.getDisplayOptions());
+        android.util.Log.e("TAG", "ActionBarSetupHelper: Final title check: '" + actionBar.getTitle() + "'");
     }
 }
