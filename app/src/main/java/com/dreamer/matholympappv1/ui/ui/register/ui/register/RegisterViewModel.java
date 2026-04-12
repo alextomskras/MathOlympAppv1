@@ -10,6 +10,7 @@ import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.ui.ui.register.data.RegisterRepository;
 import com.dreamer.matholympappv1.ui.ui.register.data.Result;
 import com.dreamer.matholympappv1.ui.ui.register.data.model.RegisteredInUser;
+import com.dreamer.matholympappv1.utils.InputValidator;
 
 public class RegisterViewModel extends ViewModel {
 
@@ -59,12 +60,19 @@ public class RegisterViewModel extends ViewModel {
         if (username.contains("@")) {
             return Patterns.EMAIL_ADDRESS.matcher(username).matches();
         } else {
-            return !username.trim().isEmpty();
+            // Используем улучшенную валидацию имени пользователя
+            return InputValidator.isValidUsername(username);
         }
     }
 
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
-        return password != null && password.trim().length() > 5;
+        if (password == null) {
+            return false;
+        }
+        // Минимум 8 символов, должен содержать буквы и цифры
+        return password.trim().length() >= 8 && 
+               password.matches(".*[A-Za-z].*") && 
+               password.matches(".*\\d.*");
     }
 }

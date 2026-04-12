@@ -30,7 +30,8 @@ import androidx.navigation.Navigation;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.databinding.FragmentLoginBinding;
-import com.dreamer.matholympappv1.utils.SharedPreffUtils2;
+import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
+import com.dreamer.matholympappv1.utils.InputValidator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,7 +46,7 @@ public class LoginFragment extends Fragment {
     NavController navController;
     private LoginViewModel loginViewModel;
     private FragmentLoginBinding binding;
-    private SharedPreffUtils2 sharedPrefs;
+    private SecureSharedPrefsUtils sharedPrefs;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
 
@@ -56,7 +57,7 @@ public class LoginFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-        sharedPrefs = new SharedPreffUtils2(getContext());
+        sharedPrefs = new SecureSharedPrefsUtils(getContext());
     }
 
     @Nullable
@@ -185,14 +186,27 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                String username = usernameEditText.getText().toString().split("@")[0];
                 String username = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
-                Log.d(TAG, "username:" + username);
-                checkUsernameAndGetUserId(username);
+                
+                // Санитизация и валидация ввода перед отправкой
+                String sanitizedUsername = InputValidator.validateAndSanitize(username);
+                String sanitizedPassword = InputValidator.sanitizeInput(password);
+                
+                if (sanitizedUsername == null || sanitizedUsername.isEmpty()) {
+                    usernameEditText.setError("Неверный формат имени пользователя");
+                    return;
+                }
+                
+                if (sanitizedPassword == null || sanitizedPassword.isEmpty()) {
+                    passwordEditText.setError("Неверный формат пароля");
+                    return;
+                }
+                
+                Log.d(TAG, "username:" + sanitizedUsername);
+                checkUsernameAndGetUserId(sanitizedUsername);
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                loginViewModel.login(sanitizedUsername, sanitizedPassword);
 
 
             }
@@ -294,8 +308,15 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    public void checkUsernameAndGetUserId(String username) {
+    private void checkUsernameAndGetUserId(String username) {
         mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        
+        // Проверка на NoSQL инъекции перед запросом к Firebase
+        if (InputValidator.containsNoSqlInjection(username)) {
+            Log.w(TAG, "Обнаружена попытка NoSQL инъекции: " + username);
+            return;
+        }
+        
         Query query = mDatabase.orderByChild("username").equalTo(username);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
