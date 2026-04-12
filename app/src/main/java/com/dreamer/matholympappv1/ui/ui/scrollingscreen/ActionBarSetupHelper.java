@@ -27,14 +27,14 @@ public class ActionBarSetupHelper {
         }
 
         // 1. Сначала полностью очищаем все флаги и скрываем всё стандартное
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayShowCustomEnabled(false); // Временно выключаем
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(true); // Временно выключаем
         
         // 2. Очищаем стандартные текстовые поля
-        actionBar.setTitle("");
-        actionBar.setSubtitle("");
+        actionBar.setTitle("ууууу");
+        actionBar.setSubtitle("ккккк");
         
         View customView = inflater.inflate(R.layout.actionbar, null);
         
