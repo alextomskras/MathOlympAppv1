@@ -26,19 +26,26 @@ public class ActionBarSetupHelper {
             return;
         }
 
+        // Полностью отключаем стандартный заголовок и домашнюю кнопку
         actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
         
         View customView = inflater.inflate(R.layout.actionbar, null);
         
         TextView myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
         TextView myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
 
-        myAppBarTitleTextView.setText(title);
-        myAppBarScoreTextView.setText(score);
+        if (myAppBarTitleTextView != null) {
+            myAppBarTitleTextView.setText(title);
+            android.util.Log.e("TAG", "ActionBarSetupHelper: Title set to: " + title);
+        } else {
+            android.util.Log.e("TAG", "ActionBarSetupHelper: ERROR - appBarTVtitle is NULL");
+        }
         
-        // Отладочный лог
-        android.util.Log.e("TAG", "ActionBarSetupHelper: setting title = " + title);
-        android.util.Log.e("TAG", "ActionBarSetupHelper: textView text = " + myAppBarTitleTextView.getText().toString());
+        if (myAppBarScoreTextView != null) {
+            myAppBarScoreTextView.setText(score);
+        }
 
         ActionBar.LayoutParams layout = new ActionBar.LayoutParams(
                 ActionBar.LayoutParams.WRAP_CONTENT,
@@ -46,7 +53,10 @@ public class ActionBarSetupHelper {
         );
         layout.gravity = Gravity.CENTER_HORIZONTAL;
         
-        actionBar.setDisplayShowCustomEnabled(true);
+        // Явно устанавливаем только DISPLAY_SHOW_CUSTOM
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(customView, layout);
+        
+        android.util.Log.e("TAG", "ActionBarSetupHelper: Custom view enabled. Display options: " + actionBar.getDisplayOptions());
     }
 }
