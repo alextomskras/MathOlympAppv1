@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
 //            NavigationUI.setupActionBarWithNavController(this, navController);
             navController = navHost.getNavController();
 
-// 👇 Указываем, что стрелка не нужна в RAZDELFragment
+// 👇 Указываем, что стрелка не нужна только в RAZDELFragment (верхнеуровневый экран)
             AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                     R.id.RAZDELFragment
             ).build();
