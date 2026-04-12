@@ -276,6 +276,9 @@ public class ZadachaFragment extends Fragment {
             solutionslimits = solutionlimits;
             Log.d(TAG, "Solution limits2: " + solutionlimits);
             Log.d(TAG, "Solution limits21: " + solutionslimits);
+            if (isAdded() && !ZadachaFragment.this.isRemoving()) {
+                sharedPreffsSaveSolutionLimits(solutionlimits);
+            }
             sharedPreffsSaveSolutionLimits(solutionslimits);
 
         }, new OnFailureListener() {
