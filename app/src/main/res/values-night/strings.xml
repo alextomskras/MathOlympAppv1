@@ -7,6 +7,6 @@
     <string name="txt_answer_text">answer_text</string>
     <string name="appbar_title_razdel_fragm">Razdely zadaniy</string>
     <string name="fragment_title_home">MathOlymp</string>
-    <string name="fragment_title_tasks">Tasks</string>
+    <string name="fragment_title_tasks"></string>
     <string name="fragment_title_settings">Settings</string>
 </resources>
