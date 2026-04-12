@@ -26,15 +26,15 @@ public class ActionBarSetupHelper {
             return;
         }
 
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayShowCustomEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
 
         View customView = inflater.inflate(R.layout.actionbar, null);
         ActionBar.LayoutParams layout = new ActionBar.LayoutParams(
                 ActionBar.LayoutParams.WRAP_CONTENT,
                 ActionBar.LayoutParams.MATCH_PARENT
         );
-        layout.gravity = Gravity.END;
+        layout.gravity = Gravity.CENTER_HORIZONTAL;
         actionBar.setCustomView(customView, layout);
 
         TextView myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
