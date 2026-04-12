@@ -194,6 +194,11 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             zadacha_hint = bundle.getString(ARG_ZADACHA_HINT);
             zadacha_solution = bundle.getString(ARG_ZADACHA_SOLUTION);
 
+            Log.e(TAG, "=== getBundleArguments ===");
+            Log.e(TAG, "zadacha_id: " + zadacha_id);
+            Log.e(TAG, "zadacha_name: " + zadacha_name);
+            Log.e(TAG, "razdelName: " + razdelName);
+            Log.e(TAG, "========================");
         }
     }
 
