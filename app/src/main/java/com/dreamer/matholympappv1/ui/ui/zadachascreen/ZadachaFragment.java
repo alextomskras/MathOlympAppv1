@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
-import com.dreamer.matholympappv1.utils.ActionBarHelper;
+import com.dreamer.matholympappv1.utils.ActionBarManager;
 import com.dreamer.matholympappv1.utils.FirebaseHelper;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
@@ -45,8 +45,6 @@ public class ZadachaFragment extends Fragment {
     private FirebaseAuth mAuth;
     private static final String ARG_COLUMN_COUNT = "column-count";
     private static final String TAG = "TAG";
-    private TextView myAppBarTitleTextView;
-    private TextView myAppBarScoreTextView;
 
     //        getSolutionLimitsFromFirebase();
 //        solutionlimits = MyArrayList.firebaseLoadSolutionLimits();
@@ -60,6 +58,7 @@ public class ZadachaFragment extends Fragment {
 
 
     private ZadachaViewModel viewModel;
+    private ActionBarManager actionBarManager;
 
 
     @Override
@@ -67,6 +66,7 @@ public class ZadachaFragment extends Fragment {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ZadachaViewModel.class);
         mAuth = FirebaseAuth.getInstance();
+        actionBarManager = new ActionBarManager((AppCompatActivity) requireActivity());
 // Get arguments passed from previous fragment
         Bundle args = getArguments();
         if (args != null) {
@@ -115,8 +115,9 @@ public class ZadachaFragment extends Fragment {
             title = Razdelname;
         }
         
-        ActionBarHelper actionBarHelper = new ActionBarHelper(getActivity());
-        actionBarHelper.setupActionBar(getActivity(), title, getString(R.string.appbar_score));
+        actionBarManager.setupActionBar(inflater, title, getString(R.string.appbar_score));
+//        ActionBarHelper actionBarHelper = new ActionBarHelper(getActivity());
+//        actionBarHelper.setupActionBar(getActivity(), title, getString(R.string.appbar_score));
 //        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 //// Inflate the custom view
 //        View customView = inflater.inflate(R.layout.actionbar, null);
@@ -316,11 +317,9 @@ public class ZadachaFragment extends Fragment {
 public void onDestroyView() {
     super.onDestroyView();
 
-    ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-    if (actionBar != null) {
-        actionBar.setCustomView(null); // ❗ удаляем кастомный заголовок
-        actionBar.setDisplayShowCustomEnabled(false); // ❗ отключаем его отображение
-        actionBar.setDisplayShowTitleEnabled(true);   // ❗ включаем обычный заголовок
+    // Очищаем ActionBar при уничтожении view фрагмента
+    if (actionBarManager != null) {
+        actionBarManager.cleanupActionBar();
     }
 }
 }
