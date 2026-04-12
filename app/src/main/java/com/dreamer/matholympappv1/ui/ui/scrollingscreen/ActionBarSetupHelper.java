@@ -27,21 +27,26 @@ public class ActionBarSetupHelper {
         }
 
         actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayShowCustomEnabled(true);
-        actionBar.setTitle(""); // Явно очищаем стандартный заголовок
-
+        
         View customView = inflater.inflate(R.layout.actionbar, null);
-        ActionBar.LayoutParams layout = new ActionBar.LayoutParams(
-                ActionBar.LayoutParams.WRAP_CONTENT,
-                ActionBar.LayoutParams.MATCH_PARENT
-        );
-        layout.gravity = Gravity.CENTER_HORIZONTAL;
-        actionBar.setCustomView(customView, layout);
-
+        
         TextView myAppBarTitleTextView = customView.findViewById(R.id.appBarTVtitle);
         TextView myAppBarScoreTextView = customView.findViewById(R.id.appBarTVscore);
 
         myAppBarTitleTextView.setText(title);
         myAppBarScoreTextView.setText(score);
+        
+        // Отладочный лог
+        android.util.Log.e("TAG", "ActionBarSetupHelper: setting title = " + title);
+        android.util.Log.e("TAG", "ActionBarSetupHelper: textView text = " + myAppBarTitleTextView.getText().toString());
+
+        ActionBar.LayoutParams layout = new ActionBar.LayoutParams(
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                ActionBar.LayoutParams.MATCH_PARENT
+        );
+        layout.gravity = Gravity.CENTER_HORIZONTAL;
+        
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(customView, layout);
     }
 }
