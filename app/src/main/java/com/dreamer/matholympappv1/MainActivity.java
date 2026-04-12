@@ -177,16 +177,6 @@ public class MainActivity extends AppCompatActivity {
         // Пример использования кастомного класса
         MyArrayList myArrayList = new MyArrayList();
 
-        // Проверка авторизации и навигация к нужному фрагменту
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser == null) {
-            // Пользователь не авторизован - показываем экран входа
-            navController.navigate(R.id.loginFragment);
-        } else {
-            // Пользователь авторизован - показываем главный экран (RAZDELFragment)
-            navController.navigate(R.id.RAZDELFragment);
-        }
-
         // Проверка и запрос разрешения для доступа к состоянию сети
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -248,6 +238,16 @@ public class MainActivity extends AppCompatActivity {
 
                 getSupportActionBar().setTitle(title);
             });
+
+            // Проверка авторизации и навигация к нужному фрагменту (после инициализации navController)
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser == null) {
+                // Пользователь не авторизован - показываем экран входа
+                navController.navigate(R.id.loginFragment);
+            } else {
+                // Пользователь авторизован - показываем главный экран (RAZDELFragment)
+                navController.navigate(R.id.RAZDELFragment);
+            }
         }
     }
 
