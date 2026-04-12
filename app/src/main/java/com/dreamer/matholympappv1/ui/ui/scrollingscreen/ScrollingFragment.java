@@ -187,6 +187,18 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             razdelName = bundle.getString("MyArgRazdel_id"); //получаем раздел в котором решаем задачи
             zadacha_id = bundle.getString(ARG_ZADACHA_ID);
             zadacha_name = bundle.getString(ARG_ZADACHA_NAME);
+            
+            // Преобразуем техническое имя "zadacha_1" в красивое "Задача 1"
+            if (zadacha_name != null && zadacha_name.startsWith("zadacha_")) {
+                String numberPart = zadacha_name.substring("zadacha_".length());
+                try {
+                    int taskNumber = Integer.parseInt(numberPart);
+                    zadacha_name = "Задача " + taskNumber;
+                } catch (NumberFormatException e) {
+                    // Если не удалось распарсить число, оставляем как есть
+                }
+            }
+            
             listFilesFirestore = bundle.getStringArrayList(ARG_ZADACHA_LIST_FILES_FIRESTORE);
             listSolutionFilesFirestore = bundle.getStringArrayList(ARG_ZADACHA_LIST_SOLUTION_FILES_FIRESTORE);
             zadacha_main_body = bundle.getString(ARG_ZADACHA_MAIN_BODY);
