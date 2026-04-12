@@ -67,6 +67,9 @@ dependencies {
 
     // Use the SplashScreen compat library.
     implementation 'androidx.core:core-splashscreen:1.0.0'
+    
+    // AndroidX Security для EncryptedSharedPreferences
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
 
 
     def lifecycle_version = '2.5.1'

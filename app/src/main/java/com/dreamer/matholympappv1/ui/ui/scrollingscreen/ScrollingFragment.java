@@ -42,7 +42,8 @@ import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
 import com.dreamer.matholympappv1.ui.ui.zadachascreen.ZadachaViewModel;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.MyMenuInflater;
-import com.dreamer.matholympappv1.utils.SharedPreffUtils;
+import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
+import com.dreamer.matholympappv1.utils.InputValidator;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -87,7 +88,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private String zadacha_solution;
     private String zadacha_name;
     public ArrayList<String> myList;
-    public SharedPreffUtils sharedPreferencesManager;
+    public SecureSharedPrefsUtils sharedPreferencesManager;
 
     private Integer userScore;
     private String zadacha_id;
@@ -101,7 +102,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private String answerImageUrl;
     private String solutionImageUrl;
     private FirebaseUserScoreManager firebaseUserScoreManager;
-    private SharedPreffUtils sharedPreffUtils;
+    private SecureSharedPrefsUtils sharedPreffUtils;
     private String searchImagesPath;
     private ImageView iv1;
 
@@ -120,7 +121,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
         actionBarSetupHelper = new ActionBarSetupHelper((AppCompatActivity) getActivity());
         firebaseUserScoreManager = new FirebaseUserScoreManager();
-        sharedPreffUtils = new SharedPreffUtils(requireContext());
+        sharedPreffUtils = new SecureSharedPrefsUtils(requireContext());
         viewModel = new ViewModelProvider(this).get(ScrollingFragmentViewModel.class);
         viewModelRazdel = new ViewModelProvider(requireActivity()).get(ZadachaViewModel.class);
 
@@ -284,8 +285,17 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         if (answer.trim().isEmpty()) {
             return;
         }
+        
+        // Санитизация ответа перед проверкой (разрешены только цифры)
+        String sanitizedAnswer = InputValidator.validateAndSanitizeAnswer(answer);
+        if (sanitizedAnswer == null) {
+            // Если ответ не прошел валидацию, показываем ошибку
+            alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), "Неверный формат ответа. Введите только цифры.");
+            return;
+        }
+        
 /// не будет реагировать на пустые строчки - без вввода
-        if (answer.equals(zadacha_answer)) {
+        if (sanitizedAnswer.equals(zadacha_answer)) {
             alertDiaShow(getString(R.string.alertDialogShowUSPEHTitle), getString(R.string.alertDialogShowUSPEHMessageBodySet));
             viewModelRazdel.getsubRazdel().observe(getViewLifecycleOwner(), value -> {
                 if (value != null) {
@@ -297,8 +307,8 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
             MyArrayList.addString(zadacha_id, razdelName);
             //берет данные из шаредпреффс что может быть не совсем хорошо и выдавать не актуальные данные после зачистки программы на девайсе
-            int userScore = sharedPreffsLoadUserScore() + 10;
-            SharedPreffUtils.sharedPreffsSaveUserScore(userScore);
+            int userScore = sharedPreffUtils.loadUserScore() + 10;
+            sharedPreffUtils.saveUserScore(userScore);
             FirebaseUserScoreManager.saveUserScore(userScore);
         } else {
             alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), getString(R.string.alertDialogShowOSHIBKAMessageBodySet));
