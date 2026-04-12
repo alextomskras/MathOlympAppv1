@@ -93,7 +93,10 @@ public class LoginFragment extends Fragment {
         if (isUserAlreadyLoggedIn()) {
             Log.d(TAG, "Пользователь уже авторизован");
             navController.clearBackStack(R.id.loginFragment);
-            navController.navigate(R.id.action_loginFragment_to_RAZDELFragment);
+            NavOptions navOptions = new NavOptions.Builder()
+                    .setPopUpTo(R.id.loginFragment, true)
+                    .build();
+            navController.navigate(R.id.RAZDELFragment, null, navOptions);
             return;
         }
 //        mAuth = FirebaseAuth.getInstance();
