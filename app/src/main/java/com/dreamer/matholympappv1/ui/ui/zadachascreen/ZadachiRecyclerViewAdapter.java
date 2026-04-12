@@ -868,7 +868,9 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
                 Bundle bundle = new Bundle();
                 Log.e(TAG, "_Dateitem=10 " + listFilesFirestore.size());
 
+                String zadacha_name = zadachiList.get(position).getZadachi_list_name();
                 bundle.putString("MyArgZadacha_id", user_id);
+                bundle.putString("MyArgZadacha_name", zadacha_name);
                 bundle.putString("MyArgRazdel_id", razdel_id);
                 bundle.putStringArrayList("MyArgZadacha_listFilesFirestore", (ArrayList<String>) listFilesFirestore);
                 bundle.putStringArrayList("MyArgZadacha_listSolutionFilesFirestore", (ArrayList<String>) listSolutionFilesFirestore);

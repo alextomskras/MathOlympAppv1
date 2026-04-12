@@ -57,6 +57,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     public List listFilesFirestore;
     private ActionBarSetupHelper actionBarSetupHelper;
     static final String ARG_ZADACHA_ID = "MyArgZadacha_id";
+    static final String ARG_ZADACHA_NAME = "MyArgZadacha_name";
     static final String ARG_ZADACHA_LIST_FILES_FIRESTORE = "MyArgZadacha_listFilesFirestore";
     static final String ARG_ZADACHA_LIST_SOLUTION_FILES_FIRESTORE = "MyArgZadacha_listSolutionFilesFirestore";
     static final String ARG_ZADACHA_MAIN_BODY = "MyArgZadacha_main_body";
@@ -84,6 +85,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private String zadacha_hint;
     public FirebaseImageLoader firebaseImageLoader;
     private String zadacha_solution;
+    private String zadacha_name;
     public ArrayList<String> myList;
     public SharedPreffUtils sharedPreferencesManager;
 
@@ -161,12 +163,17 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        actionBarSetupHelper.setupActionBar(inflater, getString(R.string.appbar_title_scroll_fragm), getString(R.string.appbar_score));
+        getBundleArguments();
+        
+        String title = zadacha_id;
+        if (zadacha_name != null && !zadacha_name.isEmpty()) {
+            title = zadacha_name;
+        }
+        
+        actionBarSetupHelper.setupActionBar(inflater, title, getString(R.string.appbar_score));
         binding = FragmentScrollingBinding.inflate(inflater, container, false);
 
         FirebaseUserScoreManager.setupFirebaseStorage();
-        getBundleArguments();
-
 
         return binding.getRoot();
 
@@ -179,6 +186,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         if (bundle != null) {
             razdelName = bundle.getString("MyArgRazdel_id"); //получаем раздел в котором решаем задачи
             zadacha_id = bundle.getString(ARG_ZADACHA_ID);
+            zadacha_name = bundle.getString(ARG_ZADACHA_NAME);
             listFilesFirestore = bundle.getStringArrayList(ARG_ZADACHA_LIST_FILES_FIRESTORE);
             listSolutionFilesFirestore = bundle.getStringArrayList(ARG_ZADACHA_LIST_SOLUTION_FILES_FIRESTORE);
             zadacha_main_body = bundle.getString(ARG_ZADACHA_MAIN_BODY);
