@@ -15,7 +15,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.bumptech.glide.Glide;
+import coil.Coil;
+import coil.request.ImageRequest;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 import com.google.firebase.storage.FirebaseStorage;
@@ -134,11 +135,13 @@ public class ScrollingFragmentViewModel extends ViewModel {
             String imagePatch = searchimagesPath + "/" + imageLoad;
 
             storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(uri -> {
-                // Download directly from StorageReference using Glide
-                // (See MyAppGlideModule for Loader registration)
-                Glide.with(context)
-                        .load(uri)
-                        .into(iv1);
+                // Download directly from StorageReference using Coil
+                ImageRequest request = new ImageRequest.Builder(context)
+                        .data(uri)
+                        .target(iv1)
+                        .build();
+                
+                Coil.imageLoader(context).enqueue(request);
 
                 // Got the download URL for 'users/me/profile.png'
             }).addOnFailureListener(exception -> {
