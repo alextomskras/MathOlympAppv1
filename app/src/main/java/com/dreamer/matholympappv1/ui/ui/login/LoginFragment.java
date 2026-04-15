@@ -49,6 +49,7 @@ public class LoginFragment extends Fragment {
     private SecureSharedPrefsUtils sharedPrefs;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
+    private ProgressBar loadingProgressBar;
 
     //    public static LoginFragment newInstance() {
 //        return new LoginFragment();
@@ -126,7 +127,7 @@ public class LoginFragment extends Fragment {
         final Button loginButton = binding.login;
         final Button registerButton = binding.btnregister;
         final Button signoutButton = binding.btnsignout;
-        final ProgressBar loadingProgressBar = binding.loading;
+        loadingProgressBar = binding.loading;
 
         loginViewModel.getLoginFormState().observe(getViewLifecycleOwner(), new Observer<LoginFormState>() {
             @Override
