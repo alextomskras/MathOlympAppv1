@@ -77,12 +77,11 @@ public class ZadachaFragment extends Fragment {
             Razdelname = viewModel.getsubRazdel().getValue();
             Log.e(TAG, "Solution razdelname4: " + Razdelname);
             String username = args.getString("username");
-            String password = args.getString("password");
             String solutionlimits = args.getString("solutionlimits", "1");
             String hintlimits = args.getString("hintlimits", "3");
 
-            // Do something with username and password
-            UserEmailLoginFirebase.updateUiWithUser(username, password, getActivity());
+            // Do something with username
+            UserEmailLoginFirebase.updateUiWithUser(username, null, getActivity());
 //            updateUiWithUser(username, password);
 
             int solutionlimitsnum = StringIntegerConverter.stringToInt(solutionlimits); // num will be 123
