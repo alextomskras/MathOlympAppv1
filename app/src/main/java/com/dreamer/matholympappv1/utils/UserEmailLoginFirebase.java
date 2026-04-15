@@ -14,16 +14,18 @@ public class UserEmailLoginFirebase {
         // Получаем экземпляр FirebaseAuth
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-        // Выполняем вход в систему с использованием переданных имени пользователя и пароля
-        mAuth.signInWithEmailAndPassword(username1, password1).addOnCompleteListener(activity,
-                task -> {
-                    if (task.isSuccessful()) {
-                        // Если вход в систему успешен, показываем Snackbar с электронной почтой пользователя
-                        Snackbar.make(activity.findViewById(android.R.id.content),
-                                task.getResult().getUser().getEmail(), Snackbar.LENGTH_LONG).show();
+        // Если пароль не null, выполняем вход в систему
+        if (password1 != null && !password1.isEmpty()) {
+            // Выполняем вход в систему с использованием переданных имени пользователя и пароля
+            mAuth.signInWithEmailAndPassword(username1, password1).addOnCompleteListener(activity,
+                    task -> {
+                        if (task.isSuccessful()) {
+                            // Если вход в систему успешен, показываем Snackbar с электронной почтой пользователя
+                            Snackbar.make(activity.findViewById(android.R.id.content),
+                                    task.getResult().getUser().getEmail(), Snackbar.LENGTH_LONG).show();
 
-                        // Здесь можно добавить дополнительный код для обработки успешного входа в систему
-                        // Например, переход на другой экран или выполнение других действий
+                            // Здесь можно добавить дополнительный код для обработки успешного входа в систему
+                            // Например, переход на другой экран или выполнение других действий
 
 //                        Bundle args = new Bundle();
 //                        args.putString("username", username);
@@ -31,14 +33,16 @@ public class UserEmailLoginFirebase {
 //                        navController.clearBackStack(R.id.loginFragment);
 //                        navController.navigate(R.id.action_loginFragment_to_zadachaFragment);
 
-                    } else {
-                        // Если вход в систему не удался, показываем Snackbar с сообщением об ошибке
-                        Snackbar.make(activity.findViewById(android.R.id.content),
-                                task.getException().getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+                        } else {
+                            // Если вход в систему не удался, показываем Snackbar с сообщением об ошибке
+                            Snackbar.make(activity.findViewById(android.R.id.content),
+                                    task.getException().getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
 
-                        // Здесь можно добавить дополнительный код для обработки неудачного входа в систему
-                        // Например, показать диалоговое окно с предупреждением или выполнить другие действия
-                    }
-                });
+                            // Здесь можно добавить дополнительный код для обработки неудачного входа в систему
+                            // Например, показать диалоговое окно с предупреждением или выполнить другие действия
+                        }
+                    });
+        }
+        // Если пароль null, пользователь уже аутентифицирован, ничего делать не нужно
     }
 }
