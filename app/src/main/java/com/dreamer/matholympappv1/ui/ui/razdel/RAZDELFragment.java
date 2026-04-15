@@ -167,8 +167,6 @@ public class RAZDELFragment extends Fragment {
                         Log.d(TAG, "razdelName:" + razdel.toString().trim());
                         bundle.putString("username", Username);
                         Log.d(TAG, "username:" + bundle);
-                        bundle.putString("password", "12345");
-                        Log.d(TAG, "password:" + bundle);
                         bundle.putString("solutionlimits", "3");
                         bundle.putString("hintlimits", "3");
 
