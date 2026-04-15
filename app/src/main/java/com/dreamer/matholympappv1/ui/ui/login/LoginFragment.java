@@ -58,6 +58,13 @@ public class LoginFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         sharedPrefs = new SecureSharedPrefsUtils(getContext());
+        
+        // Проверяем, есть ли активная сессия Firebase при создании фрагмента
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            Log.d(TAG, "Пользователь уже авторизован в Firebase: " + currentUser.getEmail());
+            // Данные пользователя будут загружены через isUserAlreadyLoggedIn() в onViewCreated()
+        }
     }
 
     @Nullable
@@ -207,11 +214,10 @@ public class LoginFragment extends Fragment {
                 }
                 
                 Log.d(TAG, "username:" + sanitizedUsername);
-                checkUsernameAndGetUserId(sanitizedUsername);
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(sanitizedUsername, sanitizedPassword);
-
-
+                
+                // Выполняем аутентификацию через Firebase Auth
+                performFirebaseLogin(sanitizedUsername, sanitizedPassword);
             }
         });
 
@@ -240,7 +246,16 @@ public class LoginFragment extends Fragment {
     }
 
     private boolean isUserAlreadyLoggedIn() {
-        return FirebaseAuth.getInstance().getCurrentUser() != null || sharedPrefs.loadLoginStatus();
+        // Проверяем активную сессию Firebase Auth
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            Log.d(TAG, "Пользователь авторизован в Firebase: " + firebaseUser.getEmail());
+            // Загружаем данные пользователя из Firebase Database (без навигации)
+            loadUserDataFromFirebase(firebaseUser.getUid(), firebaseUser.getEmail(), true);
+            return true;
+        }
+        // Также проверяем локальный статус входа (на случай если сессия Firebase ещё не восстановилась)
+        return sharedPrefs.loadLoginStatus();
     }
 
     private void intNavcontroller() {
@@ -265,50 +280,137 @@ public class LoginFragment extends Fragment {
     }
 
     private void updateUiWithUser(String username, String password) {
-        String username1 = username;
-        String password1 = password;
-//        String welcome = getString(R.string.welcome) + model.getDisplayName() + model.getPassword();
-//        Log.d(TAG, "User ID1welcome: " + welcome);
-//        mAuth.signInWithEmailAndPassword(model.getDisplayName(), model.getPassword()).addOnCompleteListener((Activity) getContext(),
-        mAuth.signInWithEmailAndPassword(username1, password1).addOnCompleteListener((Activity) getContext(),
-                task -> {
-                    if (task.isSuccessful()) {
-                        // 💾 сохраняем авторизацию
-                        sharedPrefs.saveLoginStatus(true);
-                        sharedPrefs.saveUsername(username);
-
-                        Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                task.getResult().getUser().getEmail(), Snackbar.LENGTH_LONG).show();
-//                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-//                        Fragment mFrag = new ZadachaFragment();
-//                        ft.replace(R.id.zadachaFragment, mFrag);
-//                        ft.commit();
-                        Bundle args = new Bundle();
-                        args.putString("username", username);
-                        args.putString("password", password);
-                        args.putString("solutionlimits", "1");
-                        args.putString("hintlimits", "3");
-                        // Навигация с очисткой loginFragment из back stack
-                        NavOptions navOptions = new NavOptions.Builder()
-                                .setPopUpTo(R.id.loginFragment, true) // очищаем backStack до loginFragment включительно
-                                .build();
-
-                        navController.navigate(R.id.RAZDELFragment, args, navOptions);
-//                        navController.clearBackStack(R.id.loginFragment);
-////                        navController.navigate(R.id.action_loginFragment_to_zadachaFragment, args);
-//                        navController.navigate(R.id.action_loginFragment_to_RAZDELFragment, args);
-                    } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                task.getException().getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
-                    }
-
-                });
-
+        // Больше не передаем пароль между экранами - используем Firebase Auth
+        String welcome = "Добро пожаловать, " + username;
+        
         if (getContext() != null && getContext().getApplicationContext() != null) {
-//            Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-
-
+            Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * Выполняет вход через Firebase Authentication используя email и пароль.
+     * После успешной аутентификации загружает данные пользователя из Firebase Database.
+     */
+    private void performFirebaseLogin(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(requireActivity(), task -> {
+                    loadingProgressBar.setVisibility(View.GONE);
+                    
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        String userId = firebaseUser.getUid();
+                        
+                        Log.d(TAG, "Успешный вход. User ID: " + userId);
+                        
+                        // Сохраняем статус авторизации и username в зашифрованном хранилище
+                        sharedPrefs.saveLoginStatus(true);
+                        sharedPrefs.saveUsername(email);
+                        sharedPrefs.saveUid(userId);
+                        
+                        // Загружаем дополнительные данные пользователя из Firebase Database
+                        loadUserDataFromFirebase(userId, email);
+                        
+                    } else {
+                        Log.e(TAG, "Ошибка входа: " + task.getException().getMessage());
+                        showLoginFailed(R.string.login_failed);
+                    }
+                });
+    }
+    
+    /**
+     * Загружает данные пользователя (solutionlimits, hintlimits) из Firebase Database
+     * после успешной аутентификации.
+     */
+    private void loadUserDataFromFirebase(String userId, String email) {
+        mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        
+        mDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Получаем данные пользователя
+                    String solutionLimits = dataSnapshot.child("solutionlimits").getValue(String.class);
+                    String hintLimits = dataSnapshot.child("hintlimits").getValue(String.class);
+                    
+                    // Значения по умолчанию
+                    if (solutionLimits == null) solutionLimits = "1";
+                    if (hintLimits == null) hintLimits = "3";
+                    
+                    Log.d(TAG, "Данные загружены. solutionLimits: " + solutionLimits + ", hintLimits: " + hintLimits);
+                    
+                    // Навигация к главному экрану с передачей только необходимых данных
+                    navigateToMainScreen(email, solutionLimits, hintLimits);
+                    
+                } else {
+                    Log.w(TAG, "Данные пользователя не найдены в базе. Используем значения по умолчанию.");
+                    // Если данных нет, используем значения по умолчанию
+                    navigateToMainScreen(email, "1", "3");
+                }
+            }
+            
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Ошибка загрузки данных: " + databaseError.getMessage());
+                // При ошибке всё равно переходим на главный экран с дефолтными значениями
+                navigateToMainScreen(email, "1", "3");
+            }
+        });
+    }
+    
+    /**
+     * Перегрузка для авто-входа (без навигации, если пользователь уже на главном экране)
+     */
+    private void loadUserDataFromFirebase(String userId, String email, boolean isAutoLogin) {
+        mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        
+        mDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Получаем данные пользователя
+                    String solutionLimits = dataSnapshot.child("solutionlimits").getValue(String.class);
+                    String hintLimits = dataSnapshot.child("hintlimits").getValue(String.class);
+                    
+                    // Сохраняем в SharedPreferences для использования в других экранах
+                    sharedPrefs.saveString("solutionlimits", solutionLimits != null ? solutionLimits : "1");
+                    sharedPrefs.saveString("hintlimits", hintLimits != null ? hintLimits : "3");
+                    
+                    Log.d(TAG, "Данные загружены (auto-login). solutionLimits: " + solutionLimits + ", hintLimits: " + hintLimits);
+                    
+                } else {
+                    Log.w(TAG, "Данные пользователя не найдены в базе (auto-login).");
+                    // Сохраняем значения по умолчанию
+                    sharedPrefs.saveString("solutionlimits", "1");
+                    sharedPrefs.saveString("hintlimits", "3");
+                }
+            }
+            
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Ошибка загрузки данных (auto-login): " + databaseError.getMessage());
+            }
+        });
+    }
+    
+    /**
+     * Переход на главный экран (RAZDELFragment) без передачи пароля.
+     * Передаём только email и лимиты, которые будут использованы в приложении.
+     */
+    private void navigateToMainScreen(String email, String solutionLimits, String hintLimits) {
+        Bundle args = new Bundle();
+        args.putString("username", email);
+        // Пароль больше не передаём! Он не нужен после аутентификации Firebase
+        // args.putString("password", password); // <-- УДАЛЕНО
+        args.putString("solutionlimits", solutionLimits);
+        args.putString("hintlimits", hintLimits);
+        
+        // Навигация с очисткой loginFragment из back stack
+        NavOptions navOptions = new NavOptions.Builder()
+                .setPopUpTo(R.id.loginFragment, true)
+                .build();
+        
+        navController.navigate(R.id.RAZDELFragment, args, navOptions);
     }
 
     private void checkUsernameAndGetUserId(String username) {
