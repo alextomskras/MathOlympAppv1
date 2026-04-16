@@ -53,7 +53,7 @@
         <!--        </activity>-->
         <!--        <service android:name="com.dreamer.matholympappv1.ui.ui.register.ui.register.RegisterFragment$LatestFirebaseMessagingService" />-->
         <service
-            android:name=".firebase.LatestFirebaseMessagingService"
+            android:name=".utils.LatestFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
