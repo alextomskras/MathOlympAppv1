@@ -26,9 +26,12 @@ public class MyMenuInflater {
         menuScroll.setTitle(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setTitleCondensed(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setOnMenuItemClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
-            navController.clearBackStack(R.id.scrollingFragment2);
+            // Сначала выполняем навигацию
             navController.navigate(R.id.action_scrollingFragment2_to_loginFragment);
+            // Затем очищаем бэкстек
+            navController.clearBackStack(R.id.scrollingFragment2);
+            // И только после этого выходим из аккаунта
+            FirebaseAuth.getInstance().signOut();
             return true;
         });
 
@@ -57,9 +60,12 @@ public class MyMenuInflater {
         menuScroll.setTitle(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setTitleCondensed(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setOnMenuItemClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
-            navController.clearBackStack(R.id.RAZDELFragment);
+            // Сначала выполняем навигацию
             navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
+            // Затем очищаем бэкстек
+            navController.clearBackStack(R.id.RAZDELFragment);
+            // И только после этого выходим из аккаунта
+            FirebaseAuth.getInstance().signOut();
             return true;
         });
 
