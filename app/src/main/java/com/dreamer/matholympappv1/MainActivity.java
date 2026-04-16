@@ -376,22 +376,21 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void logout() {
-        // 1. Выход из Firebase
-        FirebaseAuth.getInstance().signOut();
-
-        // 2. Очистка SharedPreferences
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().clear().apply();
-
-        // 3. Переход на loginFragment
+        // 1. Сначала очищаем бэкстек до loginFragment
         NavController navController = ((NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment)).getNavController();
-
-        // 4. Очищаем весь backstack до корня
+        
         navController.popBackStack(R.id.loginFragment, false);
         
-        // 5. Навигируем на loginFragment
+        // 2. Затем выполняем навигацию на loginFragment
         navController.navigate(R.id.loginFragment);
+        
+        // 3. И только после этого выходим из Firebase
+        FirebaseAuth.getInstance().signOut();
+
+        // 4. Очистка SharedPreferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().clear().apply();
     }
 
 }
