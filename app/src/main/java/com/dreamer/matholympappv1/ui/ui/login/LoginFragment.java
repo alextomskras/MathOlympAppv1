@@ -22,8 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
@@ -44,7 +42,6 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginFragment extends Fragment {
     NavController navController;
-    private LoginViewModel loginViewModel;
     private FragmentLoginBinding binding;
     private SecureSharedPrefsUtils sharedPrefs;
     private FirebaseAuth mAuth;
@@ -94,8 +91,8 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         intNavcontroller();
 
-        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
+        // LoginViewModel больше не используется - аутентификация выполняется напрямую через Firebase
+        // Удаляем инициализацию ViewModel для упрощения кода
 
 // 🔁 Автологин
         if (isUserAlreadyLoggedIn()) {
@@ -129,40 +126,9 @@ public class LoginFragment extends Fragment {
         final Button signoutButton = binding.btnsignout;
         loadingProgressBar = binding.loading;
 
-        loginViewModel.getLoginFormState().observe(getViewLifecycleOwner(), new Observer<LoginFormState>() {
-            @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
-                    return;
-                }
-                loginButton.setEnabled(loginFormState.isDataValid());
-                if (loginFormState.getUsernameError() != null) {
-                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
-                }
-                if (loginFormState.getPasswordError() != null) {
-                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
-                }
-            }
-        });
-
-        loginViewModel.getLoginResult().observe(getViewLifecycleOwner(), new Observer<LoginResult>() {
-            @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
-                    return;
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
-                }
-                if (loginResult.getSuccess() != null) {
-                    String username = usernameEditText.getText().toString();
-                    String password = passwordEditText.getText().toString();
-                    updateUiWithUser(username, password);
-                }
-            }
-        });
-
+        // Observers больше не нужны, так как аутентификация выполняется напрямую через Firebase
+        // Убираем наблюдение за ViewModel, чтобы избежать путаницы
+        
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -176,8 +142,20 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                // Валидация в реальном времени через InputValidator
+                String usernameText = usernameEditText.getText().toString();
+                String passwordText = passwordEditText.getText().toString();
+                
+                boolean isEmailValid = InputValidator.isValidEmail(usernameText.trim());
+                boolean isPasswordValid = !InputValidator.sanitizeInput(passwordText.trim()).isEmpty();
+                
+                loginButton.setEnabled(isEmailValid && isPasswordValid);
+                
+                if (!isEmailValid && !usernameText.isEmpty()) {
+                    usernameEditText.setError("Неверный формат email");
+                } else {
+                    usernameEditText.setError(null);
+                }
             }
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
@@ -187,8 +165,32 @@ public class LoginFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                    String username = usernameEditText.getText().toString();
+                    String password = passwordEditText.getText().toString();
+                    
+                    // Trim whitespace
+                    String trimmedUsername = username.trim();
+                    String trimmedPassword = password.trim();
+                    
+                    // Проверяем формат email
+                    if (!InputValidator.isValidEmail(trimmedUsername)) {
+                        usernameEditText.setError("Неверный формат email");
+                        return false;
+                    }
+                    
+                    // Санитизация пароля
+                    String sanitizedPassword = InputValidator.sanitizeInput(trimmedPassword);
+                    
+                    if (sanitizedPassword == null || sanitizedPassword.isEmpty()) {
+                        passwordEditText.setError("Неверный формат пароля");
+                        return false;
+                    }
+                    
+                    Log.d(TAG, "Login attempt for email: " + trimmedUsername);
+                    loadingProgressBar.setVisibility(View.VISIBLE);
+                    
+                    // Выполняем аутентификацию через Firebase Auth
+                    performFirebaseLogin(trimmedUsername, sanitizedPassword);
                 }
                 return false;
             }
@@ -200,25 +202,29 @@ public class LoginFragment extends Fragment {
                 String username = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
                 
-                // Санитизация и валидация ввода перед отправкой
-                String sanitizedUsername = InputValidator.validateAndSanitize(username);
-                String sanitizedPassword = InputValidator.sanitizeInput(password);
+                //Trim whitespace
+                String trimmedUsername = username.trim();
+                String trimmedPassword = password.trim();
                 
-                if (sanitizedUsername == null || sanitizedUsername.isEmpty()) {
-                    usernameEditText.setError("Неверный формат имени пользователя");
+                // Проверяем формат email
+                if (!InputValidator.isValidEmail(trimmedUsername)) {
+                    usernameEditText.setError("Неверный формат email");
                     return;
                 }
+                
+                // Санитизация пароля (удаляем опасные символы)
+                String sanitizedPassword = InputValidator.sanitizeInput(trimmedPassword);
                 
                 if (sanitizedPassword == null || sanitizedPassword.isEmpty()) {
                     passwordEditText.setError("Неверный формат пароля");
                     return;
                 }
                 
-                Log.d(TAG, "username:" + sanitizedUsername);
+                Log.d(TAG, "Login attempt for email: " + trimmedUsername);
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 
                 // Выполняем аутентификацию через Firebase Auth
-                performFirebaseLogin(sanitizedUsername, sanitizedPassword);
+                performFirebaseLogin(trimmedUsername, sanitizedPassword);
             }
         });
 
@@ -447,24 +453,6 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    private void signInWithEmailAndPassword(String email, String password) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener((Activity) getContext(), task -> {
-                    if (task.isSuccessful()) {
-                        // TODO: Handle successful sign-in
-                    } else {
-                        // TODO: Handle sign-in failure
-                    }
-                });
-    }
-
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        FirebaseAuth.getInstance().signOut();
-//    }
 
 
 }
