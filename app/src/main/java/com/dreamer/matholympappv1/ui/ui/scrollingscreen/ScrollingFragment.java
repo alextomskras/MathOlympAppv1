@@ -293,12 +293,13 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         }
         
         // Санитизация ответа перед проверкой (разрешены только цифры)
-        String sanitizedAnswer = InputValidator.validateAndSanitizeAnswer(answer);
-        if (sanitizedAnswer == null) {
-            // Если ответ не прошел валидацию, показываем ошибку
-            alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), "Неверный формат ответа. Введите только цифры.");
-            return;
-        }
+        // String sanitizedAnswer = InputValidator.validateAndSanitizeAnswer(answer);
+        String sanitizedAnswer = answer.trim();
+        // if (sanitizedAnswer == null) {
+        //     // Если ответ не прошел валидацию, показываем ошибку
+        //     alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), "Неверный формат ответа. Введите только цифры.");
+        //     return;
+        // }
         
 /// не будет реагировать на пустые строчки - без вввода
         if (sanitizedAnswer.equals(zadacha_answer)) {
