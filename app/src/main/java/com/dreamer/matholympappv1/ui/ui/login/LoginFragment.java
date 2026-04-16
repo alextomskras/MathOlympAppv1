@@ -147,7 +147,8 @@ public class LoginFragment extends Fragment {
                 String passwordText = passwordEditText.getText().toString();
                 
                 boolean isEmailValid = InputValidator.isValidEmail(usernameText.trim());
-                boolean isPasswordValid = !InputValidator.sanitizeInput(passwordText.trim()).isEmpty();
+                // boolean isPasswordValid = !InputValidator.sanitizeInput(passwordText.trim()).isEmpty();
+                boolean isPasswordValid = !passwordText.trim().isEmpty();
                 
                 loginButton.setEnabled(isEmailValid && isPasswordValid);
                 
@@ -179,9 +180,11 @@ public class LoginFragment extends Fragment {
                     }
                     
                     // Санитизация пароля
-                    String sanitizedPassword = InputValidator.sanitizeInput(trimmedPassword);
+                    // String sanitizedPassword = InputValidator.sanitizeInput(trimmedPassword);
+                    String sanitizedPassword = trimmedPassword;
                     
-                    if (sanitizedPassword == null || sanitizedPassword.isEmpty()) {
+                    // if (sanitizedPassword == null || sanitizedPassword.isEmpty()) {
+                    if (sanitizedPassword.isEmpty()) {
                         passwordEditText.setError("Неверный формат пароля");
                         return false;
                     }
@@ -213,9 +216,11 @@ public class LoginFragment extends Fragment {
                 }
                 
                 // Санитизация пароля (удаляем опасные символы)
-                String sanitizedPassword = InputValidator.sanitizeInput(trimmedPassword);
+                // String sanitizedPassword = InputValidator.sanitizeInput(trimmedPassword);
+                String sanitizedPassword = trimmedPassword;
                 
-                if (sanitizedPassword == null || sanitizedPassword.isEmpty()) {
+                // if (sanitizedPassword == null || sanitizedPassword.isEmpty()) {
+                if (sanitizedPassword.isEmpty()) {
                     passwordEditText.setError("Неверный формат пароля");
                     return;
                 }
