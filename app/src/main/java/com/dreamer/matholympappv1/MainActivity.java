@@ -387,10 +387,11 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = ((NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment)).getNavController();
 
-        navController.navigate(R.id.loginFragment);
-
-        // 4. Очистка backstack, чтобы нельзя было вернуться назад
+        // 4. Очищаем весь backstack до корня
         navController.popBackStack(R.id.loginFragment, false);
+        
+        // 5. Навигируем на loginFragment
+        navController.navigate(R.id.loginFragment);
     }
 
 }
