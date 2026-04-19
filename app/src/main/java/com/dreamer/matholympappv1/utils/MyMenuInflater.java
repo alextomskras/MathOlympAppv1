@@ -10,6 +10,7 @@ import androidx.navigation.NavController;
 import com.dreamer.matholympappv1.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.dreamer.matholympappv1.utils.SharedPreffUtils2;
 
 public class MyMenuInflater {
 
@@ -26,9 +27,17 @@ public class MyMenuInflater {
         menuScroll.setTitle(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setTitleCondensed(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setOnMenuItemClickListener(v -> {
+            // 1. Очистка SharedPreferences
+            SharedPreffUtils2 prefsUtils = new SharedPreffUtils2(context);
+            prefsUtils.clearData();
+            
+            // 2. Выход из Firebase
             FirebaseAuth.getInstance().signOut();
-            navController.clearBackStack(R.id.scrollingFragment2);
-            navController.navigate(R.id.action_scrollingFragment2_to_loginFragment);
+            
+            // 3. Очищаем весь backstack и переходим на loginFragment
+            navController.popBackStack(R.id.loginFragment, false);
+            navController.navigate(R.id.loginFragment);
+            
             return true;
         });
 
@@ -57,9 +66,17 @@ public class MyMenuInflater {
         menuScroll.setTitle(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setTitleCondensed(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setOnMenuItemClickListener(v -> {
+            // 1. Очистка SharedPreferences
+            SharedPreffUtils2 prefsUtils = new SharedPreffUtils2(context);
+            prefsUtils.clearData();
+            
+            // 2. Выход из Firebase
             FirebaseAuth.getInstance().signOut();
-            navController.clearBackStack(R.id.RAZDELFragment);
-            navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
+            
+            // 3. Очищаем весь backstack и переходим на loginFragment
+            navController.popBackStack(R.id.loginFragment, false);
+            navController.navigate(R.id.loginFragment);
+            
             return true;
         });
 
