@@ -19,7 +19,13 @@
         "killshell",
         "bash",
         "exit"
-      ]
+      ],
+      "target": {
+        "native": {
+          "provider": "CUSTOM_OPENAI",
+          "model": "d31cf7d4-2350-4655-8436-549ca48c3343"
+        }
+      }
     },
     {
       "id": 2,
@@ -42,7 +48,13 @@
         "write",
         "bash",
         "exit"
-      ]
+      ],
+      "target": {
+        "native": {
+          "provider": "CUSTOM_OPENAI",
+          "model": "d31cf7d4-2350-4655-8436-549ca48c3343"
+        }
+      }
     }
   ],
   "hooks": {}
