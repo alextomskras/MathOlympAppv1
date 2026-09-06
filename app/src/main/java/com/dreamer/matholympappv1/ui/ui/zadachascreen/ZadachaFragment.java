@@ -77,12 +77,11 @@ public class ZadachaFragment extends Fragment {
             Razdelname = viewModel.getsubRazdel().getValue();
             Log.e(TAG, "Solution razdelname4: " + Razdelname);
             String username = args.getString("username");
-            String password = args.getString("password");
             String solutionlimits = args.getString("solutionlimits", "1");
             String hintlimits = args.getString("hintlimits", "3");
 
-            // Do something with username and password
-            UserEmailLoginFirebase.updateUiWithUser(username, password, getActivity());
+            // Do something with username
+            UserEmailLoginFirebase.updateUiWithUser(username, null, getActivity());
 //            updateUiWithUser(username, password);
 
             int solutionlimitsnum = StringIntegerConverter.stringToInt(solutionlimits); // num will be 123
@@ -108,8 +107,15 @@ public class ZadachaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
+        
+        // Get razdelName from arguments for the title - use the class field Razdelname
+        String title = "Tasks";
+        if (Razdelname != null && !Razdelname.isEmpty()) {
+            title = Razdelname;
+        }
+        
         ActionBarHelper actionBarHelper = new ActionBarHelper(getActivity());
-        actionBarHelper.setupActionBar(getActivity(), getString(R.string.appbar_title_zadacha_fragm), getString(R.string.appbar_score));
+        actionBarHelper.setupActionBar(getActivity(), title, getString(R.string.appbar_score));
 //        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 //// Inflate the custom view
 //        View customView = inflater.inflate(R.layout.actionbar, null);
@@ -180,16 +186,16 @@ public class ZadachaFragment extends Fragment {
         getSolutionLimitsFromFirebase(new MyArrayList.SolutionLimitsCallback() {
             @Override
             public int onSuccess(Integer solutionlimits) {
-                if (solutionlimits != null) {
+                if (solutionlimits != null && getContext() != null) {
                     // Do something with the solution limits value here
                     solutionslimits = solutionlimits;
                     Log.d(TAG, "Solution limits9: " + solutionlimits);
+                    sharedPreffsSaveSolutionLimits(solutionslimits);
                 } else {
                     // Handle the null value here
-                    return
-                            Log.e(TAG, "Solution limits value is null.");
+                    Log.e(TAG, "Solution limits value is null or fragment not attached.");
                 }
-                return solutionslimits;
+                return 0;
             }
 
             @Override
@@ -219,17 +225,17 @@ public class ZadachaFragment extends Fragment {
 //    }
 
     private void sharedPreffsSaveHintLimits(Integer hintLimits) {
-        if (hintLimits != 0) {
-            SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        if (hintLimits != 0 && getContext() != null) {
+            SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(getContext());
             sharedPreferencesManager.saveData("hint_limits", hintLimits);
         }
     }
 
     private void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
-        if (solutionLimits == null) {
+        if (solutionLimits == null || getContext() == null) {
             return;
         }
-        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
+        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(getContext());
         sharedPreferencesManager.saveData("solution_limits", solutionLimits);
 
     }
@@ -269,7 +275,11 @@ public class ZadachaFragment extends Fragment {
             solutionslimits = solutionlimits;
             Log.d(TAG, "Solution limits2: " + solutionlimits);
             Log.d(TAG, "Solution limits21: " + solutionslimits);
-            sharedPreffsSaveSolutionLimits(solutionslimits);
+            if (getContext() != null) {
+                sharedPreffsSaveSolutionLimits(solutionslimits);
+            } else {
+                Log.e(TAG, "Fragment not attached to context, skipping save to SharedPreferences");
+            }
 
         }, new OnFailureListener() {
             @Override

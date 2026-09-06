@@ -12,12 +12,13 @@ plugins {
 apply from: rootProject.file("versions.gradle")
 android {
     namespace 'com.dreamer.matholympappv1'
-    compileSdk 32
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.dreamer.matholympappv1"
         minSdk 21
-        targetSdk 32
+        //noinspection EditedTargetSdkVersion
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -43,6 +44,9 @@ android {
     buildFeatures {
         viewBinding true
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
@@ -67,6 +71,9 @@ dependencies {
 
     // Use the SplashScreen compat library.
     implementation 'androidx.core:core-splashscreen:1.0.0'
+    
+    // AndroidX Security для EncryptedSharedPreferences
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
 
 
     def lifecycle_version = '2.5.1'
@@ -79,9 +86,9 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.7.0'
 
-
-    implementation 'com.github.bumptech.glide:glide:4.14.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
+    // Coil for image loading
+    implementation 'io.coil-kt:coil:2.5.0'
+    
     // FirebaseUI Storage only
     implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
 

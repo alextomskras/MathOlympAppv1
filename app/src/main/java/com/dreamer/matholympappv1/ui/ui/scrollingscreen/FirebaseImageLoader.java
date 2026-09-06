@@ -3,7 +3,9 @@ package com.dreamer.matholympappv1.ui.ui.scrollingscreen;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
+import coil.Coil;
+import coil.ImageLoader;
+import coil.request.ImageRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -45,9 +47,12 @@ public class FirebaseImageLoader {
         String imagePatch = searchImagesPath + "/" + imageLoad;
 
         storageRef.child(searchImagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(uri -> {
-            Glide.with(scrollingFragment.getContext())
-                    .load(uri)
-                    .into(imageView);
+            ImageRequest request = new ImageRequest.Builder(scrollingFragment.getContext())
+                    .data(uri)
+                    .target(imageView)
+                    .build();
+            
+            Coil.imageLoader(scrollingFragment.getContext()).enqueue(request);
         }).addOnFailureListener(exception -> {
             Log.d(ScrollingFragment.TAG, "____DATE= " + "storageRef");
         });

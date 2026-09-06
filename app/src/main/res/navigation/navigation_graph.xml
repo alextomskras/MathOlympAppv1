@@ -57,7 +57,13 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.dreamer.matholympappv1.ui.ui.settings.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="SettingsFragment">
+        <action
+            android:id="@+id/action_settingsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
     <fragment
         android:id="@+id/RAZDELFragment"
         android:name="com.dreamer.matholympappv1.ui.ui.razdel.RAZDELFragment"

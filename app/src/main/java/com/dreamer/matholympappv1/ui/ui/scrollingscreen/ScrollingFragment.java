@@ -42,7 +42,10 @@ import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
 import com.dreamer.matholympappv1.ui.ui.zadachascreen.ZadachaViewModel;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.MyMenuInflater;
-import com.dreamer.matholympappv1.utils.SharedPreffUtils;
+import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
+import com.dreamer.matholympappv1.utils.InputValidator;
+import com.dreamer.matholympappv1.utils.ScrollingScreenActionBarSetupHelper;
+import com.dreamer.matholympappv1.utils.ScrollingScreenActionBarUpdater;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -53,10 +56,11 @@ import java.util.List;
 
 public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf {
 
-    private ActionBarUpdater actionBarUpdater;
+    private ScrollingScreenActionBarUpdater actionBarUpdater;
     public List listFilesFirestore;
-    private ActionBarSetupHelper actionBarSetupHelper;
+    private ScrollingScreenActionBarSetupHelper actionBarSetupHelper;
     static final String ARG_ZADACHA_ID = "MyArgZadacha_id";
+    static final String ARG_ZADACHA_NAME = "MyArgZadacha_name";
     static final String ARG_ZADACHA_LIST_FILES_FIRESTORE = "MyArgZadacha_listFilesFirestore";
     static final String ARG_ZADACHA_LIST_SOLUTION_FILES_FIRESTORE = "MyArgZadacha_listSolutionFilesFirestore";
     static final String ARG_ZADACHA_MAIN_BODY = "MyArgZadacha_main_body";
@@ -68,7 +72,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     static final String BASE_IMAGE_SOLUTIONIMAGES = "gs://matholymp1.appspot.com/solutionimages/";
     static final String SEARCH_ANSWER_IMAGES = "answersimages";
     static final String SEARCH_SOLUTION_IMAGES = "solutionimages";
-    static final String TAG = "TAG";
+    static final String TAG = "ScrollingFragment";
     NavController navController;
     MenuItem menuScroll;
     private @NonNull
@@ -84,8 +88,9 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private String zadacha_hint;
     public FirebaseImageLoader firebaseImageLoader;
     private String zadacha_solution;
+    private String zadacha_name;
     public ArrayList<String> myList;
-    public SharedPreffUtils sharedPreferencesManager;
+    public SecureSharedPrefsUtils sharedPreferencesManager;
 
     private Integer userScore;
     private String zadacha_id;
@@ -93,13 +98,11 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private Integer hintLimits;
     public AlertDialog.Builder builder;
     private String MainMessage;
-    private TextView myAppBarTitleTextView;
-    private TextView myAppBarScoreTextView;
     private String searchimagesPath = "answersimages";
     private String answerImageUrl;
     private String solutionImageUrl;
     private FirebaseUserScoreManager firebaseUserScoreManager;
-    private SharedPreffUtils sharedPreffUtils;
+    private SecureSharedPrefsUtils sharedPreffUtils;
     private String searchImagesPath;
     private ImageView iv1;
 
@@ -116,9 +119,9 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        actionBarSetupHelper = new ActionBarSetupHelper((AppCompatActivity) getActivity());
+        actionBarSetupHelper = new ScrollingScreenActionBarSetupHelper((AppCompatActivity) getActivity());
         firebaseUserScoreManager = new FirebaseUserScoreManager();
-        sharedPreffUtils = new SharedPreffUtils(requireContext());
+        sharedPreffUtils = new SecureSharedPrefsUtils(requireContext());
         viewModel = new ViewModelProvider(this).get(ScrollingFragmentViewModel.class);
         viewModelRazdel = new ViewModelProvider(requireActivity()).get(ZadachaViewModel.class);
 
@@ -161,12 +164,23 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        actionBarSetupHelper.setupActionBar(inflater, getString(R.string.appbar_title_scroll_fragm), getString(R.string.appbar_score));
+        getBundleArguments();
+        
+        String title = zadacha_id;
+        if (zadacha_name != null && !zadacha_name.isEmpty()) {
+            title = zadacha_name;
+        }
+        
+        actionBarSetupHelper.setupActionBar(inflater, title, getString(R.string.appbar_score));
         binding = FragmentScrollingBinding.inflate(inflater, container, false);
+        
+        // Инициализируем actionBarUpdater после установки ActionBar
+        actionBarUpdater = new ScrollingScreenActionBarUpdater(
+            actionBarSetupHelper.getAppBarTitleTextView(),
+            actionBarSetupHelper.getAppBarScoreTextView()
+        );
 
         FirebaseUserScoreManager.setupFirebaseStorage();
-        getBundleArguments();
-
 
         return binding.getRoot();
 
@@ -179,6 +193,19 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         if (bundle != null) {
             razdelName = bundle.getString("MyArgRazdel_id"); //получаем раздел в котором решаем задачи
             zadacha_id = bundle.getString(ARG_ZADACHA_ID);
+            zadacha_name = bundle.getString(ARG_ZADACHA_NAME);
+            
+            // Преобразуем техническое имя "zadacha_1" в красивое "Задача 1"
+            if (zadacha_name != null && zadacha_name.startsWith("zadacha_")) {
+                String numberPart = zadacha_name.substring("zadacha_".length());
+                try {
+                    int taskNumber = Integer.parseInt(numberPart);
+                    zadacha_name = "Задача " + taskNumber;
+                } catch (NumberFormatException e) {
+                    // Если не удалось распарсить число, оставляем как есть
+                }
+            }
+            
             listFilesFirestore = bundle.getStringArrayList(ARG_ZADACHA_LIST_FILES_FIRESTORE);
             listSolutionFilesFirestore = bundle.getStringArrayList(ARG_ZADACHA_LIST_SOLUTION_FILES_FIRESTORE);
             zadacha_main_body = bundle.getString(ARG_ZADACHA_MAIN_BODY);
@@ -186,6 +213,11 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             zadacha_hint = bundle.getString(ARG_ZADACHA_HINT);
             zadacha_solution = bundle.getString(ARG_ZADACHA_SOLUTION);
 
+            Log.e(TAG, "=== getBundleArguments ===");
+            Log.e(TAG, "zadacha_id: " + zadacha_id);
+            Log.e(TAG, "zadacha_name: " + zadacha_name);
+            Log.e(TAG, "razdelName: " + razdelName);
+            Log.e(TAG, "========================");
         }
     }
 
@@ -259,8 +291,18 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
         if (answer.trim().isEmpty()) {
             return;
         }
+        
+        // Санитизация ответа перед проверкой (разрешены только цифры)
+        // String sanitizedAnswer = InputValidator.validateAndSanitizeAnswer(answer);
+        String sanitizedAnswer = answer.trim();
+        // if (sanitizedAnswer == null) {
+        //     // Если ответ не прошел валидацию, показываем ошибку
+        //     alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), "Неверный формат ответа. Введите только цифры.");
+        //     return;
+        // }
+        
 /// не будет реагировать на пустые строчки - без вввода
-        if (answer.equals(zadacha_answer)) {
+        if (sanitizedAnswer.equals(zadacha_answer)) {
             alertDiaShow(getString(R.string.alertDialogShowUSPEHTitle), getString(R.string.alertDialogShowUSPEHMessageBodySet));
             viewModelRazdel.getsubRazdel().observe(getViewLifecycleOwner(), value -> {
                 if (value != null) {
@@ -272,8 +314,8 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
             MyArrayList.addString(zadacha_id, razdelName);
             //берет данные из шаредпреффс что может быть не совсем хорошо и выдавать не актуальные данные после зачистки программы на девайсе
-            int userScore = sharedPreffsLoadUserScore() + 10;
-            SharedPreffUtils.sharedPreffsSaveUserScore(userScore);
+            int userScore = sharedPreffUtils.loadUserScore() + 10;
+            sharedPreffUtils.saveUserScore(userScore);
             FirebaseUserScoreManager.saveUserScore(userScore);
         } else {
             alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), getString(R.string.alertDialogShowOSHIBKAMessageBodySet));

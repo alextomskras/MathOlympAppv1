@@ -22,15 +22,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.databinding.FragmentLoginBinding;
-import com.dreamer.matholympappv1.utils.SharedPreffUtils2;
+import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
+import com.dreamer.matholympappv1.utils.InputValidator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,11 +42,11 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginFragment extends Fragment {
     NavController navController;
-    private LoginViewModel loginViewModel;
     private FragmentLoginBinding binding;
-    private SharedPreffUtils2 sharedPrefs;
+    private SecureSharedPrefsUtils sharedPrefs;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
+    private ProgressBar loadingProgressBar;
 
     //    public static LoginFragment newInstance() {
 //        return new LoginFragment();
@@ -56,7 +55,14 @@ public class LoginFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-        sharedPrefs = new SharedPreffUtils2(getContext());
+        sharedPrefs = new SecureSharedPrefsUtils(getContext());
+        
+        // Проверяем, есть ли активная сессия Firebase при создании фрагмента
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            Log.d(TAG, "Пользователь уже авторизован в Firebase: " + currentUser.getEmail());
+            // Данные пользователя будут загружены через isUserAlreadyLoggedIn() в onViewCreated()
+        }
     }
 
     @Nullable
@@ -85,14 +91,17 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         intNavcontroller();
 
-        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
+        // LoginViewModel больше не используется - аутентификация выполняется напрямую через Firebase
+        // Удаляем инициализацию ViewModel для упрощения кода
 
 // 🔁 Автологин
         if (isUserAlreadyLoggedIn()) {
             Log.d(TAG, "Пользователь уже авторизован");
             navController.clearBackStack(R.id.loginFragment);
-            navController.navigate(R.id.action_loginFragment_to_RAZDELFragment);
+            NavOptions navOptions = new NavOptions.Builder()
+                    .setPopUpTo(R.id.loginFragment, true)
+                    .build();
+            navController.navigate(R.id.RAZDELFragment, null, navOptions);
             return;
         }
 //        mAuth = FirebaseAuth.getInstance();
@@ -115,42 +124,11 @@ public class LoginFragment extends Fragment {
         final Button loginButton = binding.login;
         final Button registerButton = binding.btnregister;
         final Button signoutButton = binding.btnsignout;
-        final ProgressBar loadingProgressBar = binding.loading;
+        loadingProgressBar = binding.loading;
 
-        loginViewModel.getLoginFormState().observe(getViewLifecycleOwner(), new Observer<LoginFormState>() {
-            @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
-                    return;
-                }
-                loginButton.setEnabled(loginFormState.isDataValid());
-                if (loginFormState.getUsernameError() != null) {
-                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
-                }
-                if (loginFormState.getPasswordError() != null) {
-                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
-                }
-            }
-        });
-
-        loginViewModel.getLoginResult().observe(getViewLifecycleOwner(), new Observer<LoginResult>() {
-            @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
-                    return;
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
-                }
-                if (loginResult.getSuccess() != null) {
-                    String username = usernameEditText.getText().toString();
-                    String password = passwordEditText.getText().toString();
-                    updateUiWithUser(username, password);
-                }
-            }
-        });
-
+        // Observers больше не нужны, так как аутентификация выполняется напрямую через Firebase
+        // Убираем наблюдение за ViewModel, чтобы избежать путаницы
+        
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -164,8 +142,21 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                // Валидация в реальном времени через InputValidator
+                String usernameText = usernameEditText.getText().toString();
+                String passwordText = passwordEditText.getText().toString();
+                
+                boolean isEmailValid = InputValidator.isValidEmail(usernameText.trim());
+                // boolean isPasswordValid = !InputValidator.sanitizeInput(passwordText.trim()).isEmpty();
+                boolean isPasswordValid = !passwordText.trim().isEmpty();
+                
+                loginButton.setEnabled(isEmailValid && isPasswordValid);
+                
+                if (!isEmailValid && !usernameText.isEmpty()) {
+                    usernameEditText.setError("Неверный формат email");
+                } else {
+                    usernameEditText.setError(null);
+                }
             }
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
@@ -175,8 +166,34 @@ public class LoginFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                    String username = usernameEditText.getText().toString();
+                    String password = passwordEditText.getText().toString();
+                    
+                    // Trim whitespace
+                    String trimmedUsername = username.trim();
+                    String trimmedPassword = password.trim();
+                    
+                    // Проверяем формат email
+                    if (!InputValidator.isValidEmail(trimmedUsername)) {
+                        usernameEditText.setError("Неверный формат email");
+                        return false;
+                    }
+                    
+                    // Санитизация пароля
+                    // String sanitizedPassword = InputValidator.sanitizeInput(trimmedPassword);
+                    String sanitizedPassword = trimmedPassword;
+                    
+                    // if (sanitizedPassword == null || sanitizedPassword.isEmpty()) {
+                    if (sanitizedPassword.isEmpty()) {
+                        passwordEditText.setError("Неверный формат пароля");
+                        return false;
+                    }
+                    
+                    Log.d(TAG, "Login attempt for email: " + trimmedUsername);
+                    loadingProgressBar.setVisibility(View.VISIBLE);
+                    
+                    // Выполняем аутентификацию через Firebase Auth
+                    performFirebaseLogin(trimmedUsername, sanitizedPassword);
                 }
                 return false;
             }
@@ -185,16 +202,34 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                String username = usernameEditText.getText().toString().split("@")[0];
                 String username = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
-                Log.d(TAG, "username:" + username);
-                checkUsernameAndGetUserId(username);
+                
+                //Trim whitespace
+                String trimmedUsername = username.trim();
+                String trimmedPassword = password.trim();
+                
+                // Проверяем формат email
+                if (!InputValidator.isValidEmail(trimmedUsername)) {
+                    usernameEditText.setError("Неверный формат email");
+                    return;
+                }
+                
+                // Санитизация пароля (удаляем опасные символы)
+                // String sanitizedPassword = InputValidator.sanitizeInput(trimmedPassword);
+                String sanitizedPassword = trimmedPassword;
+                
+                // if (sanitizedPassword == null || sanitizedPassword.isEmpty()) {
+                if (sanitizedPassword.isEmpty()) {
+                    passwordEditText.setError("Неверный формат пароля");
+                    return;
+                }
+                
+                Log.d(TAG, "Login attempt for email: " + trimmedUsername);
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
-
-
+                
+                // Выполняем аутентификацию через Firebase Auth
+                performFirebaseLogin(trimmedUsername, sanitizedPassword);
             }
         });
 
@@ -223,7 +258,16 @@ public class LoginFragment extends Fragment {
     }
 
     private boolean isUserAlreadyLoggedIn() {
-        return FirebaseAuth.getInstance().getCurrentUser() != null || sharedPrefs.loadLoginStatus();
+        // Проверяем активную сессию Firebase Auth
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            Log.d(TAG, "Пользователь авторизован в Firebase: " + firebaseUser.getEmail());
+            // Загружаем данные пользователя из Firebase Database (без навигации)
+            loadUserDataFromFirebase(firebaseUser.getUid(), firebaseUser.getEmail(), true);
+            return true;
+        }
+        // Также проверяем локальный статус входа (на случай если сессия Firebase ещё не восстановилась)
+        return sharedPrefs.loadLoginStatus();
     }
 
     private void intNavcontroller() {
@@ -248,54 +292,148 @@ public class LoginFragment extends Fragment {
     }
 
     private void updateUiWithUser(String username, String password) {
-        String username1 = username;
-        String password1 = password;
-//        String welcome = getString(R.string.welcome) + model.getDisplayName() + model.getPassword();
-//        Log.d(TAG, "User ID1welcome: " + welcome);
-//        mAuth.signInWithEmailAndPassword(model.getDisplayName(), model.getPassword()).addOnCompleteListener((Activity) getContext(),
-        mAuth.signInWithEmailAndPassword(username1, password1).addOnCompleteListener((Activity) getContext(),
-                task -> {
-                    if (task.isSuccessful()) {
-                        // 💾 сохраняем авторизацию
-                        sharedPrefs.saveLoginStatus(true);
-                        sharedPrefs.saveUsername(username);
-
-                        Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                task.getResult().getUser().getEmail(), Snackbar.LENGTH_LONG).show();
-//                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-//                        Fragment mFrag = new ZadachaFragment();
-//                        ft.replace(R.id.zadachaFragment, mFrag);
-//                        ft.commit();
-                        Bundle args = new Bundle();
-                        args.putString("username", username);
-                        args.putString("password", password);
-                        args.putString("solutionlimits", "1");
-                        args.putString("hintlimits", "3");
-                        // Навигация с очисткой loginFragment из back stack
-                        NavOptions navOptions = new NavOptions.Builder()
-                                .setPopUpTo(R.id.loginFragment, true) // очищаем backStack до loginFragment включительно
-                                .build();
-
-                        navController.navigate(R.id.RAZDELFragment, args, navOptions);
-//                        navController.clearBackStack(R.id.loginFragment);
-////                        navController.navigate(R.id.action_loginFragment_to_zadachaFragment, args);
-//                        navController.navigate(R.id.action_loginFragment_to_RAZDELFragment, args);
-                    } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                task.getException().getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
-                    }
-
-                });
-
+        // Больше не передаем пароль между экранами - используем Firebase Auth
+        String welcome = "Добро пожаловать, " + username;
+        
         if (getContext() != null && getContext().getApplicationContext() != null) {
-//            Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-
-
+            Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
         }
     }
 
-    public void checkUsernameAndGetUserId(String username) {
+    /**
+     * Выполняет вход через Firebase Authentication используя email и пароль.
+     * После успешной аутентификации загружает данные пользователя из Firebase Database.
+     */
+    private void performFirebaseLogin(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(requireActivity(), task -> {
+                    loadingProgressBar.setVisibility(View.GONE);
+                    
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        String userId = firebaseUser.getUid();
+                        
+                        Log.d(TAG, "Успешный вход. User ID: " + userId);
+                        
+                        // Сохраняем статус авторизации и username в зашифрованном хранилище
+                        sharedPrefs.saveLoginStatus(true);
+                        sharedPrefs.saveUsername(email);
+                        sharedPrefs.saveUid(userId);
+                        
+                        // Загружаем дополнительные данные пользователя из Firebase Database
+                        loadUserDataFromFirebase(userId, email);
+                        
+                    } else {
+                        Log.e(TAG, "Ошибка входа: " + task.getException().getMessage());
+                        showLoginFailed(R.string.login_failed);
+                    }
+                });
+    }
+    
+    /**
+     * Загружает данные пользователя (solutionlimits, hintlimits) из Firebase Database
+     * после успешной аутентификации.
+     */
+    private void loadUserDataFromFirebase(String userId, String email) {
         mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        
+        mDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Получаем данные пользователя
+                    String solutionLimits = dataSnapshot.child("solutionlimits").getValue(String.class);
+                    String hintLimits = dataSnapshot.child("hintlimits").getValue(String.class);
+                    
+                    // Значения по умолчанию
+                    if (solutionLimits == null) solutionLimits = "1";
+                    if (hintLimits == null) hintLimits = "3";
+                    
+                    Log.d(TAG, "Данные загружены. solutionLimits: " + solutionLimits + ", hintLimits: " + hintLimits);
+                    
+                    // Навигация к главному экрану с передачей только необходимых данных
+                    navigateToMainScreen(email, solutionLimits, hintLimits);
+                    
+                } else {
+                    Log.w(TAG, "Данные пользователя не найдены в базе. Используем значения по умолчанию.");
+                    // Если данных нет, используем значения по умолчанию
+                    navigateToMainScreen(email, "1", "3");
+                }
+            }
+            
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Ошибка загрузки данных: " + databaseError.getMessage());
+                // При ошибке всё равно переходим на главный экран с дефолтными значениями
+                navigateToMainScreen(email, "1", "3");
+            }
+        });
+    }
+    
+    /**
+     * Перегрузка для авто-входа (без навигации, если пользователь уже на главном экране)
+     */
+    private void loadUserDataFromFirebase(String userId, String email, boolean isAutoLogin) {
+        mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        
+        mDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Получаем данные пользователя
+                    String solutionLimits = dataSnapshot.child("solutionlimits").getValue(String.class);
+                    String hintLimits = dataSnapshot.child("hintlimits").getValue(String.class);
+                    
+                    // Сохраняем в SharedPreferences для использования в других экранах
+                    sharedPrefs.saveString("solutionlimits", solutionLimits != null ? solutionLimits : "1");
+                    sharedPrefs.saveString("hintlimits", hintLimits != null ? hintLimits : "3");
+                    
+                    Log.d(TAG, "Данные загружены (auto-login). solutionLimits: " + solutionLimits + ", hintLimits: " + hintLimits);
+                    
+                } else {
+                    Log.w(TAG, "Данные пользователя не найдены в базе (auto-login).");
+                    // Сохраняем значения по умолчанию
+                    sharedPrefs.saveString("solutionlimits", "1");
+                    sharedPrefs.saveString("hintlimits", "3");
+                }
+            }
+            
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Ошибка загрузки данных (auto-login): " + databaseError.getMessage());
+            }
+        });
+    }
+    
+    /**
+     * Переход на главный экран (RAZDELFragment) без передачи пароля.
+     * Передаём только email и лимиты, которые будут использованы в приложении.
+     */
+    private void navigateToMainScreen(String email, String solutionLimits, String hintLimits) {
+        Bundle args = new Bundle();
+        args.putString("username", email);
+        // Пароль больше не передаём! Он не нужен после аутентификации Firebase
+        // args.putString("password", password); // <-- УДАЛЕНО
+        args.putString("solutionlimits", solutionLimits);
+        args.putString("hintlimits", hintLimits);
+        
+        // Навигация с очисткой loginFragment из back stack
+        NavOptions navOptions = new NavOptions.Builder()
+                .setPopUpTo(R.id.loginFragment, true)
+                .build();
+        
+        navController.navigate(R.id.RAZDELFragment, args, navOptions);
+    }
+
+    private void checkUsernameAndGetUserId(String username) {
+        mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        
+        // Проверка на NoSQL инъекции перед запросом к Firebase
+        if (InputValidator.containsNoSqlInjection(username)) {
+            Log.w(TAG, "Обнаружена попытка NoSQL инъекции: " + username);
+            return;
+        }
+        
         Query query = mDatabase.orderByChild("username").equalTo(username);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -320,24 +458,6 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    private void signInWithEmailAndPassword(String email, String password) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener((Activity) getContext(), task -> {
-                    if (task.isSuccessful()) {
-                        // TODO: Handle successful sign-in
-                    } else {
-                        // TODO: Handle sign-in failure
-                    }
-                });
-    }
-
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        FirebaseAuth.getInstance().signOut();
-//    }
 
 
 }

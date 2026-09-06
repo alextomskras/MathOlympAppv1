@@ -130,6 +130,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.NavHost;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -140,6 +141,7 @@ import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.NetworkManager;
 import com.dreamer.matholympappv1.utils.NetworkManager.NetworkState;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
@@ -151,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
     private NetworkManager networkManager;
     // Диалог, информирующий пользователя об отсутствии подключения
     private AlertDialog noInternetDialog;
+    private AuthStateListener authStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,12 +188,18 @@ public class MainActivity extends AppCompatActivity {
             initNetworkManager();
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            NavController navController = ((NavHostFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.nav_host_fragment)).getNavController();
-            navController.navigate(R.id.loginFragment);
-        }
+        // Настраиваем слушатель состояния аутентификации
+        authStateListener = new AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth mAuth) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                if (user == null) {
+                    // Пользователь не авторизован - выполняем анонимный вход
+                    mAuth.signInAnonymously();
+                }
+            }
+        };
+
         // Инициализация навигации
         NavHost navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         if (navHost != null) {
@@ -198,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
 //            NavigationUI.setupActionBarWithNavController(this, navController);
             navController = navHost.getNavController();
 
-// 👇 Указываем, что стрелка не нужна в RAZDELFragment
+// 👇 Указываем, что стрелка не нужна только в RAZDELFragment (верхнеуровневый экран)
             AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                     R.id.RAZDELFragment
             ).build();
@@ -217,6 +226,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.zadachaFragment:
                         title = getString(R.string.fragment_title_tasks);
                         break;
+                    case R.id.scrollingFragment2:
+                        title = getString(R.string.fragment_title_tasks);
+                        break;
                     case R.id.settingsFragment:
                         title = getString(R.string.fragment_title_settings);
                         break;
@@ -226,6 +238,16 @@ public class MainActivity extends AppCompatActivity {
 
                 getSupportActionBar().setTitle(title);
             });
+
+            // Проверка авторизации и навигация к нужному фрагменту (после инициализации navController)
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser == null) {
+                // Пользователь не авторизован - показываем экран входа
+                navController.navigate(R.id.loginFragment);
+            } else {
+                // Пользователь авторизован - показываем главный экран (RAZDELFragment)
+                navController.navigate(R.id.RAZDELFragment);
+            }
         }
     }
 
@@ -305,6 +327,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        // Подключаем слушатель состояния аутентификации при старте активности
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Отключаем слушатель при остановке активности
+        FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         return navController.navigateUp() || super.onSupportNavigateUp();
     }
@@ -340,21 +376,21 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void logout() {
-        // 1. Выход из Firebase
-        FirebaseAuth.getInstance().signOut();
-
-        // 2. Очистка SharedPreferences
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().clear().apply();
-
-        // 3. Переход на loginFragment
+        // 1. Сначала очищаем бэкстек до loginFragment
         NavController navController = ((NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment)).getNavController();
-
-        navController.navigate(R.id.loginFragment);
-
-        // 4. Очистка backstack, чтобы нельзя было вернуться назад
+        
         navController.popBackStack(R.id.loginFragment, false);
+        
+        // 2. Затем выполняем навигацию на loginFragment
+        navController.navigate(R.id.loginFragment);
+        
+        // 3. И только после этого выходим из Firebase
+        FirebaseAuth.getInstance().signOut();
+
+        // 4. Очистка SharedPreferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().clear().apply();
     }
 
 }

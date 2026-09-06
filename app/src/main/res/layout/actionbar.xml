@@ -11,7 +11,7 @@
         android:layout_centerVertical="true"
         android:text="AppBarTitle"
         android:textSize="18sp"
-
+        android:textColor="@color/white"
         android:textStyle="bold" />
 
     <TextView
@@ -22,6 +22,7 @@
         android:textStyle="bold"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:textColor="@color/white"
         android:text="Score: " />
 </RelativeLayout>
 

@@ -22,13 +22,16 @@ public class MyMenuInflater {
             return true;
         });
 
-        menuScroll = menu.add("exit");
-        menuScroll.setTitle("exit");
-        menuScroll.setTitleCondensed("exit");
+        menuScroll = menu.add(context.getString(R.string.allertDialogNegativeButton));
+        menuScroll.setTitle(context.getString(R.string.allertDialogNegativeButton));
+        menuScroll.setTitleCondensed(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setOnMenuItemClickListener(v -> {
+            // 1. Сначала очищаем бэкстек до loginFragment
+            navController.popBackStack(R.id.loginFragment, false);
+            // 2. Затем выполняем навигацию на loginFragment
+            navController.navigate(R.id.loginFragment);
+            // 3. И только после этого выходим из аккаунта
             FirebaseAuth.getInstance().signOut();
-            navController.clearBackStack(R.id.scrollingfragment);
-            navController.navigate(R.id.action_scrollingFragment2_to_loginFragment);
             return true;
         });
 
@@ -53,13 +56,16 @@ public class MyMenuInflater {
 //            return true;
 //        });
 
-        MenuItem menuScroll = menu.add("exit");
-        menuScroll.setTitle("exit");
-        menuScroll.setTitleCondensed("exit");
+        MenuItem menuScroll = menu.add(context.getString(R.string.allertDialogNegativeButton));
+        menuScroll.setTitle(context.getString(R.string.allertDialogNegativeButton));
+        menuScroll.setTitleCondensed(context.getString(R.string.allertDialogNegativeButton));
         menuScroll.setOnMenuItemClickListener(v -> {
+            // 1. Сначала очищаем бэкстек до loginFragment
+            navController.popBackStack(R.id.loginFragment, false);
+            // 2. Затем выполняем навигацию на loginFragment
+            navController.navigate(R.id.loginFragment);
+            // 3. И только после этого выходим из аккаунта
             FirebaseAuth.getInstance().signOut();
-            navController.clearBackStack(R.id.RAZDELFragment);
-            navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
             return true;
         });
 

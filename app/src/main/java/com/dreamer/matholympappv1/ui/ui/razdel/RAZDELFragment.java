@@ -98,42 +98,29 @@ public class RAZDELFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             String username = args.getString("username");
-            String password = args.getString("password");
+            // Пароль больше не передаётся! Удаляем получение пароля
+            // String password = args.getString("password");
             String solutionlimits = args.getString("solutionlimits", "1");
             String hintlimits = args.getString("hintlimits", "3");
-//            Username = username;
-//            Password = password;
-            // Do something with username and password
-            UserEmailLoginFirebase.updateUiWithUser(username, password, getActivity());
-//            updateUiWithUser(username, password);
-
+            
+            // Больше не вызываем updateUiWithUser с паролем - Firebase Auth уже выполнил аутентификацию
+            // UserEmailLoginFirebase.updateUiWithUser(username, password, getActivity()); // <-- УДАЛЕНО
+            
+            // Сохраняем username в SharedPreferences для использования в других местах
+            if (username != null && !username.isEmpty()) {
+                sharedPreferencesHelper.saveUsername(username);
+                Username = username;
+                Log.d(TAG, "Username получен из Bundle: " + username);
+            }
+            
             int solutionlimitsnum = StringIntegerConverter.stringToInt(solutionlimits); // num will be 123
             int hintlimitsnum = StringIntegerConverter.stringToInt(hintlimits); // num will be 123
 
             firebaseSaveSolutionLimits(solutionlimitsnum);
             firebaseSaveHintLimits(hintlimitsnum);
-
-//// Проверяем, есть ли username в SharedPreferences
-//            Username = sharedPreferencesHelper.loadUsername();
-//
-//            if (Username != null && !Username.isEmpty()) {
-//                // Если username найден в SharedPreferences, пропускаем запрос в Firebase
-//                Log.d(TAG, "Username loaded from SharedPreferences: " + Username);
-//            } else {
-//                // Если username нет в SharedPreferences, нужно запросить его из Firebase
-// //               loadUserFromFirebase();
-////                FirebaseUser currentUser = mAuth.getCurrentUser();
-////                loadUsername(currentUser.getUid());
-//                navController.clearBackStack(R.id.RAZDELFragment);
-//                navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
-//            }
-
         }
 
-//        intNavcontroller();
-
         if (getArguments() != null) {
-
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
         viewModel = new ViewModelProvider(this).get(RazdelViewModel.class);
@@ -180,8 +167,6 @@ public class RAZDELFragment extends Fragment {
                         Log.d(TAG, "razdelName:" + razdel.toString().trim());
                         bundle.putString("username", Username);
                         Log.d(TAG, "username:" + bundle);
-                        bundle.putString("password", "12345");
-                        Log.d(TAG, "password:" + bundle);
                         bundle.putString("solutionlimits", "3");
                         bundle.putString("hintlimits", "3");
 
@@ -212,30 +197,25 @@ public class RAZDELFragment extends Fragment {
                 loadUsername(currentUser.getUid());
             } else {
                 Username = savedUsername;
-                Log.d(TAG, "Username loaded from SharedPreferences: " + Username);
+                Log.d(TAG, "Username загружен из SharedPreferences: " + Username);
+            }
+            
+            // Загружаем лимиты из SharedPreferences если они не были переданы в Bundle
+            String solutionLimits = sharedPreferencesHelper.loadString("solutionlimits");
+            String hintLimits = sharedPreferencesHelper.loadString("hintlimits");
+            
+            if (solutionLimits != null && !solutionLimits.isEmpty()) {
+                firebaseSaveSolutionLimits(StringIntegerConverter.stringToInt(solutionLimits));
+            }
+            if (hintLimits != null && !hintLimits.isEmpty()) {
+                firebaseSaveHintLimits(StringIntegerConverter.stringToInt(hintLimits));
             }
 
         } else {
+            // Пользователь не авторизован - возвращаем на экран входа
             navController.clearBackStack(R.id.RAZDELFragment);
             navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
         }
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        String savedUid = sharedPreferencesHelper.loadUid();
-//        String savedUsername = sharedPreferencesHelper.loadUsername();
-//        // Проверка: пользователь новый или данных нет
-//        if (!currentUser.getUid().equals(savedUid) || savedUsername.isEmpty()) {
-//
-//            // Пользователь уже залогинен
-//            loadUsername(currentUser.getUid());
-//        } else {
-//            Username = savedUsername;
-//            Log.d(TAG, "Username loaded from SharedPreferences: " + Username);
-//        }
-//
-//    } else {
-//        navController.clearBackStack(R.id.RAZDELFragment);
-//        navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
-//    }
     }
 
     private void loadUsername(String userId) {

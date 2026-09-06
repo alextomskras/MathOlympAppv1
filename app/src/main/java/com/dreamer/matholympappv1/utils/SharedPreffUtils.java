@@ -26,8 +26,9 @@ public class SharedPreffUtils {
     }
 
     public static void sharedPreffsSaveUserScore(Integer zadacha_score) {
-//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(context);
-        saveData("zadacha_score", zadacha_score);
+        if (sharedPreferences != null) {
+            saveData("zadacha_score", zadacha_score);
+        }
     }
 
     public static void saveData(String key, Integer value) {

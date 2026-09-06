@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -18,27 +17,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App"
         tools:targetApi="31">
-        <!--        <activity-->
-        <!--            android:name=".ui.ui.splash.SplashActivity"-->
-        <!--            android:exported="true">-->
-        <!--            <intent-filter>-->
-        <!--                <action android:name="android.intent.action.MAIN" />-->
-
-        <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-        <!--            </intent-filter>-->
-
-        <!--            <meta-data-->
-        <!--                android:name="android.app.lib_name"-->
-        <!--                android:value="" />-->
-        <!--        </activity>-->
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="false">
 
             <meta-data
                 android:name="android.app.lib_name"
@@ -59,7 +53,7 @@
         <!--        </activity>-->
         <!--        <service android:name="com.dreamer.matholympappv1.ui.ui.register.ui.register.RegisterFragment$LatestFirebaseMessagingService" />-->
         <service
-            android:name=".firebase.LatestFirebaseMessagingService"
+            android:name=".utils.LatestFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
