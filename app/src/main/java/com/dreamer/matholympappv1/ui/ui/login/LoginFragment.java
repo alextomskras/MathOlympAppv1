@@ -28,10 +28,11 @@ import androidx.navigation.Navigation;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.databinding.FragmentLoginBinding;
+import com.dreamer.matholympappv1.domain.usecase.auth.LoginUseCase;
+import com.dreamer.matholympappv1.domain.usecase.session.SessionManager;
 import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
 import com.dreamer.matholympappv1.utils.InputValidator;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,9 +45,10 @@ public class LoginFragment extends Fragment {
     NavController navController;
     private FragmentLoginBinding binding;
     private SecureSharedPrefsUtils sharedPrefs;
-    private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private ProgressBar loadingProgressBar;
+    private LoginUseCase loginUseCase;
+    private SessionManager sessionManager;
 
     //    public static LoginFragment newInstance() {
 //        return new LoginFragment();
@@ -54,11 +56,12 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
         sharedPrefs = new SecureSharedPrefsUtils(getContext());
+        loginUseCase = new LoginUseCase();
+        sessionManager = new SessionManager();
         
         // Проверяем, есть ли активная сессия Firebase при создании фрагмента
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseUser currentUser = loginUseCase.checkCurrentSession();
         if (currentUser != null) {
             Log.d(TAG, "Пользователь уже авторизован в Firebase: " + currentUser.getEmail());
             // Данные пользователя будут загружены через isUserAlreadyLoggedIn() в onViewCreated()
@@ -301,33 +304,39 @@ public class LoginFragment extends Fragment {
     }
 
     /**
-     * Выполняет вход через Firebase Authentication используя email и пароль.
+     * Выполняет вход через LoginUseCase с использованием SessionManager.
      * После успешной аутентификации загружает данные пользователя из Firebase Database.
      */
     private void performFirebaseLogin(String email, String password) {
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(requireActivity(), task -> {
-                    loadingProgressBar.setVisibility(View.GONE);
-                    
-                    if (task.isSuccessful()) {
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                        String userId = firebaseUser.getUid();
-                        
-                        Log.d(TAG, "Успешный вход. User ID: " + userId);
-                        
-                        // Сохраняем статус авторизации и username в зашифрованном хранилище
-                        sharedPrefs.saveLoginStatus(true);
-                        sharedPrefs.saveUsername(email);
-                        sharedPrefs.saveUid(userId);
-                        
-                        // Загружаем дополнительные данные пользователя из Firebase Database
-                        loadUserDataFromFirebase(userId, email);
-                        
-                    } else {
-                        Log.e(TAG, "Ошибка входа: " + task.getException().getMessage());
-                        showLoginFailed(R.string.login_failed);
-                    }
-                });
+        Log.d(TAG, "Выполнение входа через LoginUseCase для: " + email);
+        
+        loginUseCase.execute(email, password, new LoginUseCase.OnLoginCompleteCallback() {
+            @Override
+            public void onLoginComplete(FirebaseUser user) {
+                loadingProgressBar.setVisibility(View.GONE);
+                
+                String userId = user.getUid();
+                Log.d(TAG, "Успешный вход. User ID: " + userId);
+                
+                // Сохраняем статус авторизации и username в зашифрованном хранилище
+                sharedPrefs.saveLoginStatus(true);
+                sharedPrefs.saveUsername(email);
+                sharedPrefs.saveUid(userId);
+                
+                // Запускаем менеджер сессий для автоматического обновления токена
+                sessionManager.start();
+                
+                // Загружаем дополнительные данные пользователя из Firebase Database
+                loadUserDataFromFirebase(userId, email);
+            }
+            
+            @Override
+            public void onError(String errorMessage) {
+                loadingProgressBar.setVisibility(View.GONE);
+                Log.e(TAG, "Ошибка входа: " + errorMessage);
+                showLoginFailed(R.string.login_failed);
+            }
+        });
     }
     
     /**
