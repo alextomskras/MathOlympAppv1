@@ -1,53 +1,148 @@
 ```
-# Dependencies
-node_modules/
-venv/
-.venv/
-__pycache__/
-.mypy_cache/
-.pytest_cache/
-target/
-.gradle/
+# ==========================================
+# ANDROID PROJECT - SECURITY & BUILD IGNORE
+# ==========================================
 
-# Build artifacts
-dist/
-build/
-*.pyc
+# 1. СКОМПИЛИРОВАННЫЕ ФАЙЛЫ И АРТЕФАКТЫ СБОРКИ
 *.class
+*.log
+*.pyc
 *.o
-*.exe
-*.dll
-*.so
 *.a
-*.obj
-*.out
+*.so
+*.dylib
+*.dll
+*.exe
+*.jar
+*.aar
+*.apk
+*.ap_
+*.dex
+*.rbxc
+*.emb
+*.keystore
+!gradle/wrapper/gradle-wrapper.jar
 
-# Editor/IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
+build/
+out/
+bin/
+gen/
+apk/
+apks/
+dist/
+release/
+intermediates/
+generated/
 
-# System files
+# 2. СИСТЕМНЫЕ ФАЙЛЫ
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# 3. IDE НАСТРОЙКИ
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.cproject
+.settings/
+tmp/
+*.hprof
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# 4. GRADLE
+.gradle/
+.cxx/
+.externalNativeBuild/
+local.properties
+
+# 5. БЕЗОПАСНОСТЬ И СЕКРЕТЫ (КРИТИЧНО)
+*.jks
+*.keystore
+**/debug.keystore
+**/release.keystore
+keystore.properties
+key.properties
+signing-config.properties
+
+# Firebase / Google Services - БЛОКИРУЕМ ДЛЯ БЕЗОПАСНОСТИ
+google-services.json
+
+# Токены, пароли, API ключи
+*.env
 .env
 .env.local
-*.env.*
+.env.*.local
+.env.development
+.env.production
+.secrets
+secrets.json
+api_keys.json
+firebase_config.json
+credentials.json
+service-account.json
+*.pem
+*.p12
+*.pfx
+password.txt
+pass.txt
+keystore-pass.txt
 
-# Logs and coverage
-*.log
+# 6. ВРЕМЕННЫЕ ФАЙЛЫ И ЛОГИ
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.cache/
 coverage/
 htmlcov/
 .coverage
+*.ec
+gcov/
+*.gcda
+*.gcno
 
-# Compressed files
-*.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
+# 7. ПРОЧИЕ ИНСТРУМЕНТЫ
+node_modules/
+npm-debug.log
+yarn-error.log
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.tox/
+.nox/
+.pytest_cache/
+.mypy_cache/
+
+# 8. ANDROID PROFILER
+captures/
+.navigation/
+.analyzer/
+.profile/
+.apkanalyzer/
+
+# 9. GIT МОДУЛИ
+.git/modules/
+
+# 10. РАЗНОЕ
+sdk-update.cfg
+android-sdk-update.cfg
+*.avd
+*.ini
 *.xz
 *.7z
 *.rar
