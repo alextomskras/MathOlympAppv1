@@ -29,6 +29,7 @@ import androidx.navigation.Navigation;
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.databinding.FragmentLoginBinding;
 import com.dreamer.matholympappv1.domain.usecase.auth.LoginUseCase;
+import com.dreamer.matholympappv1.domain.usecase.auth.LogoutUseCase;
 import com.dreamer.matholympappv1.domain.usecase.session.SessionManager;
 import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
 import com.dreamer.matholympappv1.utils.InputValidator;
@@ -49,6 +50,7 @@ public class LoginFragment extends Fragment {
     private ProgressBar loadingProgressBar;
     private LoginUseCase loginUseCase;
     private SessionManager sessionManager;
+    private LogoutUseCase logoutUseCase;
 
     //    public static LoginFragment newInstance() {
 //        return new LoginFragment();
@@ -59,6 +61,9 @@ public class LoginFragment extends Fragment {
         sharedPrefs = new SecureSharedPrefsUtils(getContext());
         loginUseCase = new LoginUseCase();
         sessionManager = new SessionManager();
+        logoutUseCase = new LogoutUseCase(() -> {
+            Log.d(TAG, "Локальная сессия очищена");
+        });
         
         // Проверяем, есть ли активная сессия Firebase при создании фрагмента
         FirebaseUser currentUser = loginUseCase.checkCurrentSession();
@@ -74,19 +79,9 @@ public class LoginFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-
-        mUser = FirebaseAuth.getInstance().getCurrentUser();
-
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
-    }
-
-    private DatabaseReference mDatabase;
-
-    private void firebaseSignOut() {
-        FirebaseAuth.getInstance().signOut();
-//        finish();
     }
 
     @Override
@@ -250,11 +245,29 @@ public class LoginFragment extends Fragment {
         signoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                firebaseSignOut();
-                sharedPrefs.clearData(); // 💾 очищаем sharedPrefs при выходе
-                Snackbar.make(requireView(), "Выход выполнен", Snackbar.LENGTH_SHORT).show();
-
-
+                // Останавливаем SessionManager перед выходом
+                if (sessionManager != null) {
+                    sessionManager.stop();
+                }
+                
+                // Выполняем выход через LogoutUseCase
+                logoutUseCase.execute(new LogoutUseCase.OnLogoutCompleteCallback() {
+                    @Override
+                    public void onLogoutComplete() {
+                        // Успешный выход - очищаем SharedPreferences и показываем сообщение
+                        sharedPrefs.clearData();
+                        Snackbar.make(requireView(), "Выход выполнен", Snackbar.LENGTH_SHORT).show();
+                        Log.d(TAG, "Пользователь успешно вышел из системы");
+                    }
+                    
+                    @Override
+                    public void onError(String errorMessage) {
+                        // Даже при ошибке Firebase - очищаем локальные данные
+                        sharedPrefs.clearData();
+                        Snackbar.make(requireView(), "Выход выполнен (ошибка: " + errorMessage + ")", Snackbar.LENGTH_LONG).show();
+                        Log.e(TAG, "Ошибка при выходе: " + errorMessage);
+                    }
+                });
             }
         });
 
