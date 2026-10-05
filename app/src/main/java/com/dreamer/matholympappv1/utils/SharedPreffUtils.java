@@ -104,5 +104,18 @@ public class SharedPreffUtils {
 //        return new Integer[0];
 //    }
 
+    /**
+     * Полная очистка обычных SharedPreferences.
+     * Вызывается при выходе из аккаунта, чтобы
+     * не оставлять данные предыдущего пользователя (счёт, лимиты).
+     */
+    public void clearAllPreferences() {
+        if (sharedPreferences != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();
+        }
+    }
+
 }
 

@@ -32,8 +32,10 @@ import com.dreamer.matholympappv1.domain.usecase.auth.LoginUseCase;
 import com.dreamer.matholympappv1.domain.usecase.auth.LogoutUseCase;
 import com.dreamer.matholympappv1.domain.usecase.session.SessionManager;
 import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
+import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 import com.dreamer.matholympappv1.utils.InputValidator;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -60,7 +62,7 @@ public class LoginFragment extends Fragment {
         super.onCreate(savedInstanceState);
         sharedPrefs = new SecureSharedPrefsUtils(getContext());
         loginUseCase = new LoginUseCase();
-        sessionManager = new SessionManager();
+        sessionManager = SessionManager.getInstance();
         logoutUseCase = new LogoutUseCase(() -> {
             Log.d(TAG, "Локальная сессия очищена");
         });
@@ -92,14 +94,21 @@ public class LoginFragment extends Fragment {
         // LoginViewModel больше не используется - аутентификация выполняется напрямую через Firebase
         // Удаляем инициализацию ViewModel для упрощения кода
 
-// 🔁 Автологин
+        // 🔁 Автологин: если Firebase Auth сохранил сессию — сразу на главный экран,
+        // без запроса пароля. Дублирующая проверка getCurrentUser() в MainActivity.onCreate
+        // выполняется раньше и перехватывает этот случай; здесь остаётся страховка на тот
+        // случай, если сессия восстановилась уже после onCreate активности.
         if (isUserAlreadyLoggedIn()) {
             Log.d(TAG, "Пользователь уже авторизован");
-            navController.clearBackStack(R.id.loginFragment);
+            // clearBackStack здесь не нужен и даже вреден (удаляет записи из середины стека).
+            // setPopUpTo(loginFragment, inclusive=true) ниже удалит сам loginFragment из back stack,
+            // поэтому вернуться на него кнопкой Back будет невозможно.
             NavOptions navOptions = new NavOptions.Builder()
                     .setPopUpTo(R.id.loginFragment, true)
                     .build();
             navController.navigate(R.id.RAZDELFragment, null, navOptions);
+            // Заодно восстанавливаем фоновое обновление токена после перезапуска процесса
+            sessionManager.start();
             return;
         }
 //        mAuth = FirebaseAuth.getInstance();
@@ -234,7 +243,8 @@ public class LoginFragment extends Fragment {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navController.clearBackStack(R.id.loginFragment);
+                // Не чистим стек вручную: навигация к регистрации должна оставлять
+                // возможность вернуться Back на экран входа
                 navController.navigate(R.id.action_loginFragment_to_registerFragment);
 
 
@@ -254,16 +264,18 @@ public class LoginFragment extends Fragment {
                 logoutUseCase.execute(new LogoutUseCase.OnLogoutCompleteCallback() {
                     @Override
                     public void onLogoutComplete() {
-                        // Успешный выход - очищаем SharedPreferences и показываем сообщение
+                        // Успешный выход - очищаем ОБА хранилища: зашифрованное и обычное
                         sharedPrefs.clearData();
+                        new SharedPreffUtils(requireContext()).clearAllPreferences();
                         Snackbar.make(requireView(), "Выход выполнен", Snackbar.LENGTH_SHORT).show();
                         Log.d(TAG, "Пользователь успешно вышел из системы");
                     }
                     
                     @Override
                     public void onError(String errorMessage) {
-                        // Даже при ошибке Firebase - очищаем локальные данные
+                        // Даже при ошибке Firebase - очищаем локальные данные (оба хранилища)
                         sharedPrefs.clearData();
+                        new SharedPreffUtils(requireContext()).clearAllPreferences();
                         Snackbar.make(requireView(), "Выход выполнен (ошибка: " + errorMessage + ")", Snackbar.LENGTH_LONG).show();
                         Log.e(TAG, "Ошибка при выходе: " + errorMessage);
                     }
@@ -282,8 +294,10 @@ public class LoginFragment extends Fragment {
             loadUserDataFromFirebase(firebaseUser.getUid(), firebaseUser.getEmail(), true);
             return true;
         }
-        // Также проверяем локальный статус входа (на случай если сессия Firebase ещё не восстановилась)
-        return sharedPrefs.loadLoginStatus();
+        // Локальный флаг loginStatus НЕ проверяем как основание для автологина:
+        // он сохраняется даже при ошибочном выходе из Firebase и мог бы увести
+        // на главный экран без реальной сессии. Единственный источник истины — Firebase Auth.
+        return false;
     }
 
     private void intNavcontroller() {

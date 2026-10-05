@@ -28,17 +28,42 @@ public class SessionManager {
     private static final long TOKEN_REFRESH_INTERVAL_MS = 50 * 60 * 1000; // 50 минут
     private static final long INITIAL_DELAY_MS = 5 * 60 * 1000; // Первая проверка через 5 минут
     
+    /**
+     * Единственный экземпляр менеджера сессий в приложении (lazy-initialized).
+     * Раньше каждый экран создавал свой SessionManager, и stop() в одном месте
+     * не останавливал планировщик, запущенный в другом (например, MainActivity
+     * останавливала новый пустой экземпляр вместо того, что был запущен LoginFragment).
+     */
+    private static volatile SessionManager instance;
+
     private final AuthRepository authRepository;
-    private final ScheduledExecutorService scheduler;
+    private ScheduledExecutorService scheduler;
     private final Handler mainHandler;
     private SessionStateListener stateListener;
     private boolean isRunning;
-    
-    public SessionManager() {
+
+    private SessionManager() {
         this.authRepository = new FirebaseAuthRepository();
-        this.scheduler = Executors.newSingleThreadScheduledExecutor();
         this.mainHandler = new Handler(Looper.getMainLooper());
         this.isRunning = false;
+    }
+
+    /**
+     * Возвращает singleton-экземпляр менеджера сессий.
+     * Все участники приложения (LoginFragment, MainActivity и др.)
+     * должны работать с одним и тем же экземпляром.
+     */
+    public static SessionManager getInstance() {
+        SessionManager result = instance;
+        if (result == null) {
+            synchronized (SessionManager.class) {
+                result = instance;
+                if (result == null) {
+                    result = instance = new SessionManager();
+                }
+            }
+        }
+        return result;
     }
     
     /**
@@ -59,6 +84,12 @@ public class SessionManager {
         
         Log.d(TAG, "Запуск менеджера сессий для пользователя: " + currentUser.getEmail());
         isRunning = true;
+
+        // Планировщик создаётся лениво, чтобы менеджер можно было перезапустить
+        // после stop() (в stop() происходит shutdown() старого планировщика)
+        if (scheduler == null || scheduler.isShutdown()) {
+            scheduler = Executors.newSingleThreadScheduledExecutor();
+        }
         
         // Планируем периодическое обновление токена
         scheduler.scheduleAtFixedRate(
@@ -83,6 +114,8 @@ public class SessionManager {
         
         Log.d(TAG, "Остановка менеджера сессий");
         isRunning = false;
+        // Сбрасываем слушатель: синглтон не должен хранить ссылку на UI
+        stateListener = null;
         scheduler.shutdown();
         
         try {
