@@ -707,10 +707,6 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
                         // Uh-oh, an error occurred!
                     }
                 });
-        if (listFilesFirestore.size() != 0) {
-            Object stringFileName = listFilesFirestore.get(1);
-            Log.e(TAG, "____DATEitem1= " + stringFileName);
-        }
 
 
     }
@@ -839,7 +835,11 @@ public class ZadachiRecyclerViewAdapter extends RecyclerView.Adapter<ZadachiRecy
 //                return false;
 //            }
 //        }).into(circleImageView);
-        final String razdel_id = razdelname;
+        // razdelname приходит через setZadachiList(); если по какой-то причине он ещё null —
+        // берём id раздела из аргументов фрагмента, иначе в ScrollingFragment не определится раздел
+        final String razdel_id = (razdelname != null && !razdelname.isEmpty())
+                ? razdelname
+                : viewModel != null ? viewModel.getsubRazdel().getValue() : null;
         Log.e(TAG, "razdel_id" + razdel_id);
         final String user_id = zadachiList.get(position).Zadachi_id;
         Log.e(TAG, "iconImageViewOnClick at position10 " + zadachiList.size());

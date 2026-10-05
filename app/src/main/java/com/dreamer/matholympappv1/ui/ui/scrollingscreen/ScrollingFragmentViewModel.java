@@ -1,6 +1,7 @@
 package com.dreamer.matholympappv1.ui.ui.scrollingscreen;
 
 import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.ScrollingFragment.SEARCH_ANSWER_IMAGES;
+import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.ScrollingFragment.SEARCH_SOLUTION_IMAGES;
 import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.ScrollingFragment.TAG;
 import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadHintLimits;
 import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadSolutionLimits;
@@ -23,9 +24,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 public class ScrollingFragmentViewModel extends ViewModel {
     public ArrayList myList;
@@ -112,45 +113,80 @@ public class ScrollingFragmentViewModel extends ViewModel {
     }
 
 
+    /**
+     * Загружает картинку ответа/решения задачи из Firebase Storage
+     * (bucket gs://matholymp1.appspot.com, папки answersimages/ и solutionimages/).
+     *
+     * Имя файла определяется ПРЯМЫМ запросом getDownloadUrl("answer<id>" / "solution<id>")
+     * — так же, как это делалось изначально в приложении. Это единственный надёжный способ:
+     * список файлов через listAll() приходит из ZadachiRecyclerViewAdapter асинхронно
+     * и к моменту открытия диалога может быть ещё пуст (или вовсе null после ротации экрана),
+     * поэтому на него больше нельзя полагаться.
+     *
+     * Если файла с таким именем в Storage нет, Firebase вернёт ошибку "not found" (404) —
+     * в этом случае ImageView скрывается, чтобы в диалоге не было пустого места.
+     * Расширение файла указывать не нужно: имена вида answer7.png / answer7.jpg находятся
+     * перебором стандартных расширений.
+     */
     public void setFirebaseImage(String searchimagesPath, ImageView iv1, List listFilesFirestore, List listSolutionFilesFirestore, String zadacha_id, Context context) {
         this.context = context;
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        List locallistFiles;
-        if (Objects.equals(searchimagesPath, SEARCH_ANSWER_IMAGES)) {
-
-            locallistFiles = listFilesFirestore;
-        } else {
-
-            locallistFiles = listSolutionFilesFirestore;
+        if (iv1 == null || context == null) {
+            return;
         }
-
-        StorageReference spaceRef = storageRef.child("answersimages/answer" + zadacha_id);
-        spaceRef.getName();
-        spaceRef.getMetadata();
-
+        final int id;
         try {
-            Object splitString = locallistFiles.get(Integer.parseInt(zadacha_id) - 1).toString();
-            String[] parts = ((String) splitString).split(Pattern.quote("/"));
-            String imageLoad = parts[4];
-            String imagePatch = searchimagesPath + "/" + imageLoad;
-
-            storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(uri -> {
-                // Download directly from StorageReference using Coil
-                ImageRequest request = new ImageRequest.Builder(context)
-                        .data(uri)
-                        .target(iv1)
-                        .build();
-                
-                Coil.imageLoader(context).enqueue(request);
-
-                // Got the download URL for 'users/me/profile.png'
-            }).addOnFailureListener(exception -> {
-                Log.d(TAG, "____DATE= " + "storageRef");
-                // Handle any errors
-            });
-        } catch (Exception e) {
-            Log.e(TAG, "Error getting image URL: " + e.getMessage());
+            id = Integer.parseInt(zadacha_id.trim());
+        } catch (NumberFormatException | NullPointerException e) {
+            Log.e(TAG, "Invalid zadacha_id for image lookup: '" + zadacha_id + "'");
+            iv1.setVisibility(android.view.View.GONE);
+            return;
         }
+
+        // Имена файлов без расширения: для ответов — "answer<id>", для решений — "solution<id>".
+        String stem;
+        if (Objects.equals(searchimagesPath, SEARCH_ANSWER_IMAGES)) {
+            stem = "answer" + id;
+        } else if (Objects.equals(searchimagesPath, SEARCH_SOLUTION_IMAGES)) {
+            stem = "solution" + id;
+        } else {
+            stem = searchimagesPath + id;
+        }
+
+        tryDirectLookup(searchimagesPath, stem, iv1);
+    }
+
+    /**
+     * Прямой поиск картинки в Storage по каноническому имени "answer<id>"/"solution<id>".
+     * Сначала пробуем имя без расширения (исторически файлы в бакете лежат именно так),
+     * затем — со стандартными расширениями. Первый успешно разрешившийся URL грузится в ImageView.
+     */
+    private void tryDirectLookup(final String folder, final String stem, final ImageView iv1) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        tryNextName(storageRef, folder, iv1, 0, new String[]{stem, stem + ".png", stem + ".jpg", stem + ".jpeg", stem + ".webp"});
+    }
+
+    private void tryNextName(final StorageReference storageRef, final String folder,
+                             final ImageView iv1, final int index, final String[] names) {
+        if (index >= names.length) {
+            // Картинки с таким номером в Storage нет — прячем место под неё в диалоге
+            Log.d(TAG, "No image found in '" + folder + "' for name(s): " + Arrays.toString(names));
+            iv1.setVisibility(android.view.View.GONE);
+            return;
+        }
+        final String name = names[index];
+        storageRef.child(folder + "/" + name).getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    ImageRequest request = new ImageRequest.Builder(context)
+                            .data(uri)
+                            .target(iv1)
+                            .build();
+                    Coil.imageLoader(context).enqueue(request);
+                    iv1.setVisibility(android.view.View.VISIBLE);
+                })
+                .addOnFailureListener(exception -> {
+                    // Файла нет (404/not_found) или сеть недоступна — пробуем следующее имя
+                    tryNextName(storageRef, folder, iv1, index + 1, names);
+                });
     }
 
     public void setButtonColors(boolean isDialogShown, Context context) {
