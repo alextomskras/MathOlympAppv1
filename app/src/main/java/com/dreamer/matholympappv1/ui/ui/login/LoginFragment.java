@@ -94,7 +94,10 @@ public class LoginFragment extends Fragment {
         // LoginViewModel больше не используется - аутентификация выполняется напрямую через Firebase
         // Удаляем инициализацию ViewModel для упрощения кода
 
-// 🔁 Автологин
+        // 🔁 Автологин: если Firebase Auth сохранил сессию — сразу на главный экран,
+        // без запроса пароля. Дублирующая проверка getCurrentUser() в MainActivity.onCreate
+        // выполняется раньше и перехватывает этот случай; здесь остаётся страховка на тот
+        // случай, если сессия восстановилась уже после onCreate активности.
         if (isUserAlreadyLoggedIn()) {
             Log.d(TAG, "Пользователь уже авторизован");
             // clearBackStack здесь не нужен и даже вреден (удаляет записи из середины стека).
@@ -104,6 +107,8 @@ public class LoginFragment extends Fragment {
                     .setPopUpTo(R.id.loginFragment, true)
                     .build();
             navController.navigate(R.id.RAZDELFragment, null, navOptions);
+            // Заодно восстанавливаем фоновое обновление токена после перезапуска процесса
+            sessionManager.start();
             return;
         }
 //        mAuth = FirebaseAuth.getInstance();
@@ -289,8 +294,10 @@ public class LoginFragment extends Fragment {
             loadUserDataFromFirebase(firebaseUser.getUid(), firebaseUser.getEmail(), true);
             return true;
         }
-        // Также проверяем локальный статус входа (на случай если сессия Firebase ещё не восстановилась)
-        return sharedPrefs.loadLoginStatus();
+        // Локальный флаг loginStatus НЕ проверяем как основание для автологина:
+        // он сохраняется даже при ошибочном выходе из Firebase и мог бы увести
+        // на главный экран без реальной сессии. Единственный источник истины — Firebase Auth.
+        return false;
     }
 
     private void intNavcontroller() {
