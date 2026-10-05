@@ -82,9 +82,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
     @Override
     public void onDestroy() {
+        // Снимаем слушатель предпочтений; getContext() может быть null на этом этапе
+        if (getPreferenceManager() != null && getPreferenceManager().getSharedPreferences() != null) {
+            getPreferenceManager().getSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(this);
+        }
         super.onDestroy();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     public boolean isDarkThemeEnabled() {

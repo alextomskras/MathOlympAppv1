@@ -99,6 +99,9 @@ public class FirebaseAuthRepository implements AuthRepository {
         Log.d(TAG, "Выход пользователя");
         
         try {
+            // Сначала отвязываем собственный слушатель Firebase, чтобы signOut()
+            // не породил колбэки в уже ненужные слушатели (утечка при пересоздании репозитория)
+            mAuth.removeAuthStateListener(firebaseAuthListener);
             mAuth.signOut();
             Log.i(TAG, "Выполнен выход из системы");
             callback.onSuccess(null);

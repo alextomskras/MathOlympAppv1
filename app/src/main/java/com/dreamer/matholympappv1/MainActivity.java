@@ -142,6 +142,9 @@ import com.dreamer.matholympappv1.utils.NetworkManager;
 import com.dreamer.matholympappv1.utils.NetworkManager.NetworkState;
 import com.dreamer.matholympappv1.domain.usecase.auth.LogoutUseCase;
 import com.dreamer.matholympappv1.domain.usecase.session.SessionManager;
+import androidx.navigation.NavOptions;
+import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
+import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 import android.util.Log;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
@@ -157,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
     // Диалог, информирующий пользователя об отсутствии подключения
     private AlertDialog noInternetDialog;
     private AuthStateListener authStateListener;
+    // Флаг: идёт процесс выхода — блокирует анонимный автологин в AuthStateListener
+    private volatile boolean isLoggingOut = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,8 +201,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth mAuth) {
                 FirebaseUser user = mAuth.getCurrentUser();
-                if (user == null) {
-                    // Пользователь не авторизован - выполняем анонимный вход
+                if (user == null && !isLoggingOut) {
+                    // Пользователь не авторизован - выполняем анонимный вход.
+                    // Во время выхода (isLoggingOut) НЕ перелогиниваемся,
+                    // иначе пользователь сразу возвращается в авторизованное состояние
                     mAuth.signInAnonymously();
                 }
             }
@@ -332,8 +339,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Подключаем слушатель состояния аутентификации при старте активности
-        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
+        // Подключаем слушатель состояния аутентификации при старте активности.
+        // Пока идёт процесс выхода (isLoggingOut), слушатель не возвращаем —
+        // иначе он сразу запустит анонимный вход после signOut.
+        if (!isLoggingOut) {
+            FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
+        }
     }
 
     @Override
@@ -379,44 +390,71 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void logout() {
-        // 1. Останавливаем SessionManager (критично! чтобы не было утечек и ошибок обновления токена)
-        SessionManager sessionManager = new SessionManager();
-        sessionManager.stop();
-        
-        // 2. Используем LogoutUseCase вместо прямого вызова Firebase
+        // Пока мы в процессе выхода, не выполняем анонимный вход
+        isLoggingOut = true;
+
+        // 1. Останавливаем ЕДИНЫЙ (singleton) SessionManager.
+        //    Раньше здесь создавался новой пустой экземпляр,
+        //    и реально работающий планировщик не останавливался.
+        SessionManager.getInstance().stop();
+
+        // 2. Снимаем AuthStateListener до signOut(), чтобы он
+        //    не запустил signInAnonymously() сразу после выхода
+        //    (иначе пользователь "возвращается" в авторизованное состояние).
+        FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
+
+        // 3. Используем LogoutUseCase вместо прямого вызова Firebase.
+        //    В колбэке очистки локальной сессии удаляем ОБА хранилища:
+        //    зашифрованное (login status, username, uid, лимиты) и обычное.
+        SecureSharedPrefsUtils securePrefs = new SecureSharedPrefsUtils(getApplicationContext());
+        SharedPreffUtils plainPrefs = new SharedPreffUtils(getApplicationContext());
+
         LogoutUseCase logoutUseCase = new LogoutUseCase(() -> {
+            securePrefs.clearData();
+            plainPrefs.clearAllPreferences();
             Log.d("logout", "Локальная сессия очищена");
         });
-        
+
         logoutUseCase.execute(new LogoutUseCase.OnLogoutCompleteCallback() {
             @Override
             public void onLogoutComplete() {
                 // Успешный выход - выполняем навигацию
-                runOnUiThread(() -> {
-                    NavController navController = ((NavHostFragment) getSupportFragmentManager()
-                            .findFragmentById(R.id.nav_host_fragment)).getNavController();
-                    
-                    navController.popBackStack(R.id.loginFragment, false);
-                    navController.navigate(R.id.loginFragment);
-                });
+                runOnUiThread(() -> navigateToLogin());
             }
-            
+
             @Override
             public void onError(String errorMessage) {
                 // Даже при ошибке Firebase - выполняем навигацию и очистку
                 runOnUiThread(() -> {
-                    NavController navController = ((NavHostFragment) getSupportFragmentManager()
-                            .findFragmentById(R.id.nav_host_fragment)).getNavController();
-                    
-                    navController.popBackStack(R.id.loginFragment, false);
-                    navController.navigate(R.id.loginFragment);
-                    
-                    Toast.makeText(MainActivity.this, 
-                        "Выход выполнен (ошибка Firebase: " + errorMessage + ")", 
+                    navigateToLogin();
+                    Toast.makeText(MainActivity.this,
+                        "Выход выполнен (ошибка Firebase: " + errorMessage + ")",
                         Toast.LENGTH_LONG).show();
                 });
             }
         });
+    }
+
+    /**
+     * Переход на экран входа после выхода из системы.
+     * Очищает весь back stack (чтобы Back не вернул пользователя
+     * в экраны авторизованной части) и заменяет loginFragment на startDestination,
+     * тоже не оставляя его в back stack.
+     */
+    private void navigateToLogin() {
+        if (navController == null) {
+            return;
+        }
+        navController.popBackStack(R.id.loginFragment, true);
+        NavOptions navOptions = new NavOptions.Builder()
+                .setPopUpTo(navController.getGraph().getStartDestination(), false)
+                .build();
+        navController.navigate(R.id.loginFragment, null, navOptions);
+        // Теперь на экране входа Back должен закрывать приложение,
+        // а не возвраться на пустой стек
+        isLoggingOut = false;
+        // Возвращаем слушатель состояния аутентификации
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
     }
 
 }
