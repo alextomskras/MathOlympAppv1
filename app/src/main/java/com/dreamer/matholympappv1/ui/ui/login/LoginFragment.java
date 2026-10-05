@@ -53,6 +53,8 @@ public class LoginFragment extends Fragment {
     private LoginUseCase loginUseCase;
     private SessionManager sessionManager;
     private LogoutUseCase logoutUseCase;
+    // Ссылка на узел "Users" в Firebase Realtime Database (используется в loadUserDataFromFirebase / checkUsernameAndGetUserId)
+    private DatabaseReference mDatabase;
 
     //    public static LoginFragment newInstance() {
 //        return new LoginFragment();
