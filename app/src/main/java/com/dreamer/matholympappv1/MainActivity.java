@@ -249,15 +249,30 @@ public class MainActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(title);
             });
 
-            // Проверка авторизации и навигация к нужному фрагменту (после инициализации navController)
+            // Проверка авторизации и навигация к нужному фрагменту (после инициализации navController).
+            // Если пользователь уже авторизован в Firebase Auth (сессия сохранена SDK),
+            // сразу открываем главный экран без запроса пароля.
+            // loginFragment при этом удаляется из back stack (popUpTo inclusive),
+            // чтобы Back не возвращал на экран входа.
+            // Логика автологина синхронизирована с LoginFragment.isUserAlreadyLoggedIn().
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (currentUser == null) {
-                // Пользователь не авторизован - показываем экран входа
-                navController.navigate(R.id.loginFragment);
-            } else {
-                // Пользователь авторизован - показываем главный экран (RAZDELFragment)
-                navController.navigate(R.id.RAZDELFragment);
+            if (currentUser != null) {
+                NavOptions toMain = new NavOptions.Builder()
+                        .setPopUpTo(navController.getGraph().getStartDestination(), true)
+                        .build();
+                navController.navigate(R.id.RAZDELFragment, null, toMain);
             }
+            // Иначе ничего не делаем: startDestination (loginFragment) уже показан
+            // самим NavHostFragment — лишний navigate(R.id.loginFragment) создавал
+            // дубликат экрана входа в стеке.
+        }
+
+        // Восстанавливаем SessionManager после перезапуска приложения:
+        // Firebase Auth хранит сессию, но планировщик обновления токена — in-memory,
+        // после убийства процесса он отсутствует. Без этого токен перестает
+        // принудительно обновляться до тех пор, пока пользователь снова не войдёт вручную.
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            SessionManager.getInstance().start();
         }
     }
 
