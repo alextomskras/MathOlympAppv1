@@ -18,11 +18,21 @@ import android.content.SharedPreferences;
 //        return sharedPreferences.getString(key, "");
 //    }
 //}
+/**
+ * Работа с обычными SharedPreferences ("MySharedPreferences").
+ * Поле sharedPreferences статическое, поэтому все чтения и записи защищены
+ * проверками: статические методы могут быть вызваны до создания первого
+ * экземпляра SharedPreffUtils, когда поле ещё равно null. Без проверок
+ * такие вызовы (например, sharedPreffsLoadSolutionLimits из ScrollingFragment
+ * и его ViewModel) приводили к NullPointerException и падению приложения.
+ */
 public class SharedPreffUtils {
     private static SharedPreferences sharedPreferences = null;
 
     public SharedPreffUtils(Context context) {
-        sharedPreferences = context.getSharedPreferences("MySharedPreferences", Context.MODE_PRIVATE);
+        if (context != null) {
+            sharedPreferences = context.getSharedPreferences("MySharedPreferences", Context.MODE_PRIVATE);
+        }
     }
 
     public static void sharedPreffsSaveUserScore(Integer zadacha_score) {
@@ -32,14 +42,18 @@ public class SharedPreffUtils {
     }
 
     public static void saveData(String key, Integer value) {
+        if (sharedPreferences == null || value == null) {
+            return;
+        }
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(key, value);
         editor.apply();
     }
 
     public static void sharedPreffsSaveSolutionLimits(Integer solutionLimits) {
-//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        saveData("solution_limits", solutionLimits);
+        if (solutionLimits != null && sharedPreferences != null) {
+            saveData("solution_limits", solutionLimits);
+        }
     }
 
     public static Integer sharedPreffsLoadSolutionLimits() {
@@ -48,8 +62,9 @@ public class SharedPreffUtils {
     }
 
     public static void sharedPreffsSaveHintLimits(Integer hintLimits) {
-//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-        saveData("hint_limits", hintLimits);
+        if (hintLimits != null && sharedPreferences != null) {
+            saveData("hint_limits", hintLimits);
+        }
     }
 
     public static Integer sharedPreffsLoadHintLimits() {
@@ -65,11 +80,16 @@ public class SharedPreffUtils {
 
 
     public static int getDataFromSharedPreferences(String key) {
-//        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MySharedPreferences", Context.MODE_PRIVATE);
+        if (sharedPreferences == null) {
+            return 0;
+        }
         return sharedPreferences.getInt(key, 0);
     }
 
     public int getArrayFromSharedPreferences(String key, int defaultValue) {
+        if (sharedPreferences == null) {
+            return defaultValue;
+        }
         return sharedPreferences.getInt(key, defaultValue);
     }
 
