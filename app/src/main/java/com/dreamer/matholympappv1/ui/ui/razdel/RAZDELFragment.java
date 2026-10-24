@@ -1,8 +1,5 @@
 package com.dreamer.matholympappv1.ui.ui.razdel;
 
-import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.FirebaseUserScoreManager.firebaseSaveHintLimits;
-import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.FirebaseUserScoreManager.firebaseSaveSolutionLimits;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.utils.MyMenuInflater;
-import com.dreamer.matholympappv1.utils.SharedPreffUtils2;
+import com.dreamer.matholympappv1.utils.PrefKeys;
+import com.dreamer.matholympappv1.utils.UserPrefsRepository;
 import com.dreamer.matholympappv1.utils.StringIntegerConverter;
 import com.dreamer.matholympappv1.utils.UserEmailLoginFirebase;
 import com.google.android.material.snackbar.Snackbar;
@@ -63,7 +61,7 @@ public class RAZDELFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mUsersRef;
-    private SharedPreffUtils2 sharedPreferencesHelper;
+    private UserPrefsRepository prefs;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -72,52 +70,39 @@ public class RAZDELFragment extends Fragment {
     }
 
 
-//    @SuppressWarnings("unused")
-//    public static RAZDELFragment newInstance(int columnCount) {
-//        RAZDELFragment fragment = new RAZDELFragment();
-//        Bundle args = new Bundle();
-//        String username = args.getString("username");
-//        String password = args.getString("password");
-//        String solutionlimits = args.getString("solutionlimits", "1");
-//        String hintlimits = args.getString("hintlimits", "3");
-//
-//
-//        args.putInt(ARG_COLUMN_COUNT, columnCount);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Инициализируем SharedPreferences
-        sharedPreferencesHelper = new SharedPreffUtils2(getContext());
+        // Инициализируем единое хранилище
+        prefs = new UserPrefsRepository(getContext());
         setHasOptionsMenu(true); // Важная строка для того, чтобы вызывать
 
         Bundle args = getArguments();
         if (args != null) {
             String username = args.getString("username");
-            // Пароль больше не передаётся! Удаляем получение пароля
-            // String password = args.getString("password");
-            String solutionlimits = args.getString("solutionlimits", "1");
-            String hintlimits = args.getString("hintlimits", "3");
-            
-            // Больше не вызываем updateUiWithUser с паролем - Firebase Auth уже выполнил аутентификацию
-            // UserEmailLoginFirebase.updateUiWithUser(username, password, getActivity()); // <-- УДАЛЕНО
-            
-            // Сохраняем username в SharedPreferences для использования в других местах
+            String uid = args.getString("uid");
+            String solutionlimits = args.getString("solutionlimits", String.valueOf(PrefKeys.DEFAULT_SOLUTION_LIMITS));
+            String hintlimits = args.getString("hintlimits", String.valueOf(PrefKeys.DEFAULT_HINT_LIMITS));
+
+            int solutionlimitsnum = StringIntegerConverter.stringToInt(solutionlimits);
+            int hintlimitsnum = StringIntegerConverter.stringToInt(hintlimits);
+
             if (username != null && !username.isEmpty()) {
-                sharedPreferencesHelper.saveUsername(username);
                 Username = username;
                 Log.d(TAG, "Username получен из Bundle: " + username);
             }
-            
-            int solutionlimitsnum = StringIntegerConverter.stringToInt(solutionlimits); // num will be 123
-            int hintlimitsnum = StringIntegerConverter.stringToInt(hintlimits); // num will be 123
-
-            firebaseSaveSolutionLimits(solutionlimitsnum);
-            firebaseSaveHintLimits(hintlimitsnum);
+            // username и uid пишутся одним edit(): пара не расходиттся по времени
+            // (раньше uid появлялся только в асинхронном колбэке loadUsername)
+            if (username != null && uid != null) {
+                prefs.saveUsernameAndUid(username, uid);
+            }
+            // bundle пришёл из LoginFragment, где значения прочитаны из Firebase:
+            // их кладём в локальный кэш одним edit(), обратную запись в Firebase
+            // делаем только при реальном расходовании лимитов
+            prefs.saveLimits(solutionlimitsnum, hintlimitsnum);
+            // firebaseSaveSolutionLimits/firebaseSaveHintLimits отсюда убраны:
+            // значения из bundle уже идут из базы, повторная запись создавала гонку
         }
 
         if (getArguments() != null) {
@@ -167,8 +152,11 @@ public class RAZDELFragment extends Fragment {
                         Log.d(TAG, "razdelName:" + razdel.toString().trim());
                         bundle.putString("username", Username);
                         Log.d(TAG, "username:" + bundle);
-                        bundle.putString("solutionlimits", "3");
-                        bundle.putString("hintlimits", "3");
+                        // Лимиты берём из единого локального кэша, а не хардкодом "3":
+                        // хардкод передавался в ZadachaFragment, который записывал 3
+                        // в Firebase и затирал реальные значения лимитов пользователя
+                        bundle.putString("solutionlimits", String.valueOf(prefs.loadSolutionLimits()));
+                        bundle.putString("hintlimits", String.valueOf(prefs.loadHintLimits()));
 
                         // Переход к другому фрагменту с передачей данных через навигационный граф
 //                        NavHostFragment.findNavController(RAZDELFragment.this)
@@ -189,28 +177,28 @@ public class RAZDELFragment extends Fragment {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser != null) {
-            String savedUid = sharedPreferencesHelper.loadUid();
-            String savedUsername = sharedPreferencesHelper.loadUsername();
+            String savedUid = prefs.loadUid();
+            String savedUsername = prefs.loadUsername();
 
-            // Проверка: пользователь новый или данных нет
-            if (!currentUser.getUid().equals(savedUid) || savedUsername.isEmpty()) {
+            if (!currentUser.getUid().equals(savedUid)) {
+                // Данные на устройстве принадлежат другому пользователю: сначала
+                // полностью очищаем хранилище, иначе счёт и лимиты прошлого
+                // пользователя «мигрируют» к новому.
+                prefs.clearData();
+                Username = "";
+                loadUsername(currentUser.getUid());
+            } else if (savedUsername.isEmpty()) {
                 loadUsername(currentUser.getUid());
             } else {
                 Username = savedUsername;
-                Log.d(TAG, "Username загружен из SharedPreferences: " + Username);
-            }
-            
-            // Загружаем лимиты из SharedPreferences если они не были переданы в Bundle
-            String solutionLimits = sharedPreferencesHelper.loadString("solutionlimits");
-            String hintLimits = sharedPreferencesHelper.loadString("hintlimits");
-            
-            if (solutionLimits != null && !solutionLimits.isEmpty()) {
-                firebaseSaveSolutionLimits(StringIntegerConverter.stringToInt(solutionLimits));
-            }
-            if (hintLimits != null && !hintLimits.isEmpty()) {
-                firebaseSaveHintLimits(StringIntegerConverter.stringToInt(hintLimits));
+                Log.d(TAG, "Username загружен из единого хранилища: " + Username);
             }
 
+            // Запись локального кэша в Firebase отсюда убрана. Источник истины для
+            // лимитов — Firebase RTDB; локальный кэш обновляется чтениями из базы
+            // (LoginFragment, ZadachaFragment) и записи в базу делаются только при
+            // реальном расходовании лимитов. push «кто последний записал» затирал
+            // значения других устройств.
         } else {
             // Пользователь не авторизован - возвращаем на экран входа
             navController.clearBackStack(R.id.RAZDELFragment);
@@ -226,19 +214,16 @@ public class RAZDELFragment extends Fragment {
                     String username = dataSnapshot.child("username").getValue(String.class);
                     if (username != null) {
                         Username = username;
-//                        mUsernameTextView.setText(username);
-                        // Сохраняем в SharedPreferences
-                        sharedPreferencesHelper.saveUsername(username);
-                        sharedPreferencesHelper.saveUid(userId);
+                        // Пара username+uid записывается одним edit(): они не
+                        // расходятся по времени, как два раздельных editor.apply()
+                        prefs.saveUsernameAndUid(username, userId);
                         Snackbar.make(getActivity().findViewById(android.R.id.content),
                                 "Username:" + Username, Snackbar.LENGTH_LONG).show();
                     } else {
-//                        mUsernameTextView.setText("Username not found");
                         Snackbar.make(getActivity().findViewById(android.R.id.content),
                                 "Username not found", Snackbar.LENGTH_LONG).show();
                     }
                 } else {
-//                    mUsernameTextView.setText("User not found");
                     Snackbar.make(getActivity().findViewById(android.R.id.content),
                             "User not found", Snackbar.LENGTH_LONG).show();
                 }
@@ -246,7 +231,6 @@ public class RAZDELFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-//                mUsernameTextView.setText("Failed to load username");
                 Snackbar.make(getActivity().findViewById(android.R.id.content),
                         "Failed to load username", Snackbar.LENGTH_LONG).show();
             }

@@ -10,6 +10,7 @@ import androidx.preference.PreferenceManager;
 
 import com.dreamer.matholympappv1.MainActivity;
 import com.dreamer.matholympappv1.R;
+import com.dreamer.matholympappv1.utils.PrefKeys;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -20,7 +21,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        isDarkThemeEnabled = sharedPreferences.getBoolean("dark_theme_enabled", false);
+        isDarkThemeEnabled = sharedPreferences.getBoolean(PrefKeys.DARK_THEME_ENABLED, false);
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         Preference logoutPref = findPreference("logout");
@@ -46,27 +47,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//        if (key.equals("dark_theme_enabled")) {
-//            isDarkThemeEnabled = sharedPreferences.getBoolean(key, false);
-//            Toast.makeText(getContext(), "R.style.AppTheme_Dark = " + R.style.AppTheme_Dark + ", isDarkThemeEnabled = " + isDarkThemeEnabled, Toast.LENGTH_SHORT).show();
-//
-//            // Use the boolean value to set the theme
-//            if (isDarkThemeEnabled) {
-//                getActivity().setTheme(R.style.AppTheme_Dark);
-//            } else {
-//                getActivity().setTheme(R.style.AppTheme);
-//            }
-//
-//
-//            // Recreate the activity to apply the new theme
-//            if (getActivity() != null) {
-//                getActivity().recreate();
-//            }
-//            getActivity().recreate();
-//        }
-//    }
-
-        if (key.equals("dark_theme_enabled")) {
+        if (key.equals(PrefKeys.DARK_THEME_ENABLED)) {
             boolean isDarkThemeEnabled = sharedPreferences.getBoolean(key, false);
 
             // Меняем тему без перезапуска вручную
@@ -76,18 +57,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         }
     }
 
-//    private Context getActivity(Object mainActivity) {
-//        return getContext();
-//    }
-
     @Override
-    public void onDestroy() {
-        // Снимаем слушатель предпочтений; getContext() может быть null на этом этапе
+    public void onDestroyView() {
+        // Слушатель снимаем в onDestroyView: там ещё живы preferenceManager и context,
+        // на этапе onDestroy getContext() уже может быть null
         if (getPreferenceManager() != null && getPreferenceManager().getSharedPreferences() != null) {
             getPreferenceManager().getSharedPreferences()
                     .unregisterOnSharedPreferenceChangeListener(this);
         }
-        super.onDestroy();
+        super.onDestroyView();
     }
 
     public boolean isDarkThemeEnabled() {

@@ -53,8 +53,9 @@ public class ActionBarHelper {
     }
 
     private Integer sharedPreffsLoadUserScore() {
-        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(activity);
-        Integer zadacha_score = sharedPreferencesManager.getDataFromSharedPreferences("zadacha_score");
-        return zadacha_score;
+        // Счёт читается из единого хранилища (ключ user_score); ключа
+        // "zadacha_score" больше нет
+        UserPrefsRepository prefs = new UserPrefsRepository(activity);
+        return prefs.loadUserScore();
     }
 }
