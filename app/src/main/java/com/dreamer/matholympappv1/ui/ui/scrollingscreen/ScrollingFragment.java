@@ -1,12 +1,5 @@
 package com.dreamer.matholympappv1.ui.ui.scrollingscreen;
 
-
-import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadHintLimits;
-import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadSolutionLimits;
-import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadUserScore;
-import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsSaveHintLimits;
-import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsSaveSolutionLimits;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -42,7 +35,7 @@ import com.dreamer.matholympappv1.databinding.FragmentScrollingBinding;
 import com.dreamer.matholympappv1.ui.ui.zadachascreen.ZadachaViewModel;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.MyMenuInflater;
-import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
+import com.dreamer.matholympappv1.utils.UserPrefsRepository;
 import com.dreamer.matholympappv1.utils.InputValidator;
 import com.dreamer.matholympappv1.utils.ScrollingScreenActionBarSetupHelper;
 import com.dreamer.matholympappv1.utils.ScrollingScreenActionBarUpdater;
@@ -90,7 +83,6 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private String zadacha_solution;
     private String zadacha_name;
     public ArrayList<String> myList;
-    public SecureSharedPrefsUtils sharedPreferencesManager;
 
     private Integer userScore;
     private String zadacha_id;
@@ -102,7 +94,8 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private String answerImageUrl;
     private String solutionImageUrl;
     private FirebaseUserScoreManager firebaseUserScoreManager;
-    private SecureSharedPrefsUtils sharedPreffUtils;
+    /** Единое хранилище: единственный путь к локальным данным этого экрана. */
+    private UserPrefsRepository prefs;
     private String searchImagesPath;
     private ImageView iv1;
 
@@ -121,12 +114,9 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
         actionBarSetupHelper = new ScrollingScreenActionBarSetupHelper((AppCompatActivity) getActivity());
         firebaseUserScoreManager = new FirebaseUserScoreManager();
-        sharedPreffUtils = new SecureSharedPrefsUtils(requireContext());
+        prefs = new UserPrefsRepository(requireContext());
         viewModel = new ViewModelProvider(this).get(ScrollingFragmentViewModel.class);
         viewModelRazdel = new ViewModelProvider(requireActivity()).get(ZadachaViewModel.class);
-
-//        viewModelRazdel = ViewModelProviders.of(requireActivity()).get(ZadachaViewModel.class);
-
 
         variableSetup();
 
@@ -313,9 +303,10 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             }); // Передача данных from вью модель через LiveData
 
             MyArrayList.addString(zadacha_id, razdelName);
-            //берет данные из шаредпреффс что может быть не совсем хорошо и выдавать не актуальные данные после зачистки программы на девайсе
-            int userScore = sharedPreffUtils.loadUserScore() + 10;
-            sharedPreffUtils.saveUserScore(userScore);
+            // Счёт читается из единого хранилища: один ключ user_score,
+            // никаких параллельных "zadacha_score"
+            int userScore = prefs.loadUserScore() + 10;
+            prefs.saveUserScore(userScore);
             FirebaseUserScoreManager.saveUserScore(userScore);
         } else {
             alertDiaShow(getString(R.string.alertDialogShowOSHIBKASetTitle), getString(R.string.alertDialogShowOSHIBKAMessageBodySet));
@@ -400,12 +391,14 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
                 tw.setText(MainMessage);
                 builder.setCancelable(true);
                 builder.setPositiveButton(R.string.alertDialogHintButton, (dialog, id) -> {
-                    hintLimits = sharedPreffsLoadHintLimits();
+                    hintLimits = prefs.loadHintLimits();
                     if (hintLimits == 0) {
                         return;
                     }
                     hintLimits = hintLimits - 1;
-                    sharedPreffsSaveHintLimits(hintLimits);
+                    // Расходование подсказки — действие пользователя, оно авторитетно:
+                    // пишем и в локальный кэш, и в Firebase (один источник истины)
+                    prefs.saveHintLimits(hintLimits);
                     FirebaseUserScoreManager.firebaseSaveHintLimits(hintLimits);
                     alertDiaShow(getString(R.string.alertDialogShowTitleHINT), getString(R.string.alertDialogShowMessageBodyHINT) + zadacha_hint);
                     Snackbar.make(getActivity().findViewById(android.R.id.content),
@@ -413,12 +406,14 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
                             Snackbar.LENGTH_LONG).show();
                 });
                 builder.setNeutralButton(R.string.alertDialogREZULTATNeutralButton, (dialog, id) -> {
-                    solutionLimits = sharedPreffsLoadSolutionLimits();
+                    solutionLimits = prefs.loadSolutionLimits();
                     if (solutionLimits == 0) {
                         return;
                     }
                     solutionLimits = solutionLimits - 1;
-                    sharedPreffsSaveSolutionLimits(solutionLimits);
+                    // Расходование попытки — действие пользователя: пишем и в кэш,
+                    // и в Firebase, значения не расходятся
+                    prefs.saveSolutionLimits(solutionLimits);
                     FirebaseUserScoreManager.firebaseSaveSolutionLimits(solutionLimits);
                     alertDiaShow(getString(R.string.alertDialogRezultatForSolutionTitle), getString(R.string.alertDialogRezultatForSolutionMessageBody) + zadacha_solution);
                     Snackbar.make(getActivity().findViewById(android.R.id.content),
@@ -454,61 +449,10 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(color);
         });
 
-        viewModel.setButtonColors(true, getContext());
+        viewModel.setButtonColors(true, getContext(), prefs.loadSolutionLimits(), prefs.loadHintLimits());
 
 
     }
-
-
-//    private void setButtonColors(AlertDialog dialog) {
-//        solutionLimits = sharedPreffsLoadSolutionLimits();
-//        hintLimits = sharedPreffsLoadHintLimits();
-//
-//        Button buttonNeutral = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
-//        Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-//        Button buttonNegative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-//
-//        buttonNeutral.setTextColor(ContextCompat.getColor(getContext(), solutionLimits == 0 ? android.R.color.darker_gray : android.R.color.holo_green_light));
-//        buttonPositive.setTextColor(ContextCompat.getColor(getContext(), hintLimits == 0 ? android.R.color.darker_gray : R.color.green));
-//        buttonNegative.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
-//    }
-
-
-//    private void setFirebaseImage(String searchimagesPath, ImageView iv1) {
-//        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-//        List locallistFiles;
-//        if (searchimagesPath == SEARCH_ANSWER_IMAGES) {
-//            locallistFiles = listFilesFirestore;
-//        } else {
-//            locallistFiles = listSolutionFilesFirestore;
-//        }
-//
-//        StorageReference spaceRef = storageRef.child("answersimages/answer" + zadacha_id);
-//        spaceRef.getName();
-//        spaceRef.getMetadata();
-//
-//        try {
-//            Object splitString = locallistFiles.get(Integer.parseInt(zadacha_id) - 1).toString();
-//            String[] parts = ((String) splitString).split(Pattern.quote("/"));
-//            String imageLoad = parts[4];
-//            String imagePatch = searchimagesPath + "/" + imageLoad;
-//
-//            storageRef.child(searchimagesPath + "/" + imageLoad).getDownloadUrl().addOnSuccessListener(uri -> {
-//                // Download directly from StorageReference using Glide
-//                // (See MyAppGlideModule for Loader registration)
-//                Glide.with(getContext())
-//                        .load(uri)
-//                        .into(iv1);
-//
-//                // Got the download URL for 'users/me/profile.png'
-//            }).addOnFailureListener(exception -> {
-//                Log.d(TAG, "____DATE= " + "storageRef");
-//                // Handle any errors
-//            });
-//        } catch (Exception e) {
-//            Log.e(TAG, "Error getting image URL: " + e.getMessage());
-//        }
-//    }
 
 
     private void intNavcontroller() {
@@ -528,48 +472,4 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         MyMenuInflater.inflateMenu(menu, requireContext(), navController, zadacha_hint);
     }
-//    public void onCreateOptionsMenu(Menu menu, @NonNull MenuInflater menuInflater) {
-//
-//        menuScroll = menu.add(R.string.scrollFrgMenuAddHintTitle);
-//        menuScroll.setTitle(R.string.scrollFrgMenuTitle);
-//        menuScroll.setTitleCondensed(getString(R.string.scrollFrgMenuCondesedTitle));
-//        menuScroll.setOnMenuItemClickListener(v ->
-//                {
-//                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-//                            zadacha_hint, Snackbar.LENGTH_LONG).show();
-//                    return true;
-//                }
-//        );
-//        menuScroll = menu.add("exit");
-//        menuScroll.setTitle("exit");
-//        menuScroll.setTitleCondensed("exit");
-//        menuScroll.setOnMenuItemClickListener(v ->
-//                {
-//                    FirebaseAuth.getInstance().signOut();
-//                    navController.clearBackStack(R.id.scrollingfragment);
-//                    navController.navigate(R.id.action_scrollingFragment2_to_loginFragment);
-////                    onDestroyView();
-////                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-////                            zadacha_hint, Snackbar.LENGTH_LONG).show();
-////                    return true;
-//                    return true;
-//                }
-//        );
-//    }
-
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        super.onCreateOptionsMenu(menu, inflater);
-//
-//        // Add the first menu item
-//        MenuItem item1 = menu.add(0, R.id.menu_item_1, 0, "Menu item 1");
-//        item1.setIcon(com.google.android.material.R.drawable.abc_ic_star_black_16dp);
-//        item1.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-//
-//        // Add the second menu item
-//        MenuItem item2 = menu.add(0, R.id.menu_item_2, 0, "Menu item 2");
-//        item2.setIcon(com.google.android.material.R.drawable.abc_ic_star_black_36dp);
-//        item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-//    }
-
-
 }

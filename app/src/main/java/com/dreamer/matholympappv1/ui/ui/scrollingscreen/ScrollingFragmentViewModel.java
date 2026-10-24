@@ -2,9 +2,6 @@ package com.dreamer.matholympappv1.ui.ui.scrollingscreen;
 
 import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.ScrollingFragment.SEARCH_ANSWER_IMAGES;
 import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.ScrollingFragment.TAG;
-import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadHintLimits;
-import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadSolutionLimits;
-import static com.dreamer.matholympappv1.utils.SharedPreffUtils.sharedPreffsLoadUserScore;
 
 import android.content.Context;
 import android.util.Log;
@@ -17,8 +14,6 @@ import androidx.lifecycle.ViewModel;
 
 import coil.Coil;
 import coil.request.ImageRequest;
-import com.dreamer.matholympappv1.utils.MyArrayList;
-import com.dreamer.matholympappv1.utils.SharedPreffUtils;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -91,27 +86,6 @@ public class ScrollingFragmentViewModel extends ViewModel {
     }
 
 
-    public boolean checkAnswer(String answer, String zadacha_answer, String zadacha_id) {
-        if (answer.isEmpty()) {
-            return false;
-        }
-
-        if (answer.equals(zadacha_answer)) {
-            // Add a string to the list
-            MyArrayList.addString(zadacha_id, "tttt");
-
-            // Update the user score
-            int userScore = sharedPreffsLoadUserScore() + 10;
-            SharedPreffUtils.sharedPreffsSaveUserScore(userScore);
-            FirebaseUserScoreManager.saveUserScore(userScore);
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
     public void setFirebaseImage(String searchimagesPath, ImageView iv1, List listFilesFirestore, List listSolutionFilesFirestore, String zadacha_id, Context context) {
         this.context = context;
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -153,13 +127,16 @@ public class ScrollingFragmentViewModel extends ViewModel {
         }
     }
 
-    public void setButtonColors(boolean isDialogShown, Context context) {
+    /**
+     * Лимиты приходят параметрами из единого хранилища (ScrollingFragment
+     * передаёт prefs.loadSolutionLimits()/prefs.loadHintLimits()); ViewModel
+     * не держит Context и не читает SharedPreferences сам.
+     */
+    public void setButtonColors(boolean isDialogShown, Context context, int solutionLimits, int hintLimits) {
         this.solutionLimits = solutionLimits;
         this.hintLimits = hintLimits;
         this.isDialogShown = isDialogShown;
         this.context = context;
-        solutionLimits = sharedPreffsLoadSolutionLimits();
-        hintLimits = sharedPreffsLoadHintLimits();
         int neutralColor = ContextCompat.getColor(context, solutionLimits == 0 ? android.R.color.darker_gray : android.R.color.holo_green_light);
         int positiveColor = ContextCompat.getColor(context, hintLimits == 0 ? android.R.color.darker_gray : android.R.color.holo_green_dark);
         int negativeColor = ContextCompat.getColor(context, android.R.color.holo_red_dark);

@@ -31,8 +31,9 @@ import com.dreamer.matholympappv1.databinding.FragmentLoginBinding;
 import com.dreamer.matholympappv1.domain.usecase.auth.LoginUseCase;
 import com.dreamer.matholympappv1.domain.usecase.auth.LogoutUseCase;
 import com.dreamer.matholympappv1.domain.usecase.session.SessionManager;
-import com.dreamer.matholympappv1.utils.SecureSharedPrefsUtils;
-import com.dreamer.matholympappv1.utils.SharedPreffUtils;
+import com.dreamer.matholympappv1.utils.PrefKeys;
+import com.dreamer.matholympappv1.utils.StringIntegerConverter;
+import com.dreamer.matholympappv1.utils.UserPrefsRepository;
 import com.dreamer.matholympappv1.utils.InputValidator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,7 +48,7 @@ import com.google.firebase.database.ValueEventListener;
 public class LoginFragment extends Fragment {
     NavController navController;
     private FragmentLoginBinding binding;
-    private SecureSharedPrefsUtils sharedPrefs;
+    private UserPrefsRepository sharedPrefs;
     private FirebaseUser mUser;
     private ProgressBar loadingProgressBar;
     private LoginUseCase loginUseCase;
@@ -62,7 +63,7 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sharedPrefs = new SecureSharedPrefsUtils(getContext());
+        sharedPrefs = new UserPrefsRepository(getContext());
         loginUseCase = new LoginUseCase();
         sessionManager = SessionManager.getInstance();
         logoutUseCase = new LogoutUseCase(() -> {
@@ -113,20 +114,6 @@ public class LoginFragment extends Fragment {
             sessionManager.start();
             return;
         }
-//        mAuth = FirebaseAuth.getInstance();
-//        if (mAuth.getCurrentUser() != null) {
-////        if (mAuth.getCurrentUser() == null) {
-//            Log.d(TAG, "Пользователь уже авторизован: " + mUser.getEmail());
-//            navController.clearBackStack(R.id.loginFragment);
-////            navController.navigate(R.id.action_loginFragment_to_zadachaFragment);
-//            navController.navigate(R.id.action_loginFragment_to_RAZDELFragment);
-//            return;
-//        }
-//        else {
-//            navController.clearBackStack(R.id.loginFragment);
-//            navController.navigate(R.id.loginFragment);
-//        }
-
 
         final EditText usernameEditText = binding.username;
         final EditText passwordEditText = binding.password;
@@ -266,18 +253,18 @@ public class LoginFragment extends Fragment {
                 logoutUseCase.execute(new LogoutUseCase.OnLogoutCompleteCallback() {
                     @Override
                     public void onLogoutComplete() {
-                        // Успешный выход - очищаем ОБА хранилища: зашифрованное и обычное
+                        // Успешный выход - очищаем ЕДИНОЕ хранилище (username, uid,
+                        // login status, счёт, лимиты). clearData() пишет через commit(),
+                        // данные исчезают до того, как следующий экран начнёт их читать.
                         sharedPrefs.clearData();
-                        new SharedPreffUtils(requireContext()).clearAllPreferences();
                         Snackbar.make(requireView(), "Выход выполнен", Snackbar.LENGTH_SHORT).show();
                         Log.d(TAG, "Пользователь успешно вышел из системы");
                     }
-                    
+
                     @Override
                     public void onError(String errorMessage) {
-                        // Даже при ошибке Firebase - очищаем локальные данные (оба хранилища)
+                        // Даже при ошибке Firebase - очищаем локальные данные
                         sharedPrefs.clearData();
-                        new SharedPreffUtils(requireContext()).clearAllPreferences();
                         Snackbar.make(requireView(), "Выход выполнен (ошибка: " + errorMessage + ")", Snackbar.LENGTH_LONG).show();
                         Log.e(TAG, "Ошибка при выходе: " + errorMessage);
                     }
@@ -347,10 +334,12 @@ public class LoginFragment extends Fragment {
                 String userId = user.getUid();
                 Log.d(TAG, "Успешный вход. User ID: " + userId);
                 
-                // Сохраняем статус авторизации и username в зашифрованном хранилище
+                // Статус входа и пара username+uid пишутся в едином хранилище.
+                // uid сохраняется тем же edit(), что и username: пара не может
+                // разойтись (раньше uid появлялся позже, в асинхронном колбэке
+                // RAZDELFragment, и экран мог показывать имя прошлого пользователя)
                 sharedPrefs.saveLoginStatus(true);
-                sharedPrefs.saveUsername(email);
-                sharedPrefs.saveUid(userId);
+                sharedPrefs.saveUsernameAndUid(email, userId);
                 
                 // Запускаем менеджер сессий для автоматического обновления токена
                 sessionManager.start();
@@ -380,22 +369,23 @@ public class LoginFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     // Получаем данные пользователя
-                    String solutionLimits = dataSnapshot.child("solutionlimits").getValue(String.class);
-                    String hintLimits = dataSnapshot.child("hintlimits").getValue(String.class);
-                    
-                    // Значения по умолчанию
-                    if (solutionLimits == null) solutionLimits = "1";
-                    if (hintLimits == null) hintLimits = "3";
-                    
+                    int solutionLimits = parseIntValue(dataSnapshot.child("solutionlimits").getValue(String.class), PrefKeys.DEFAULT_SOLUTION_LIMITS);
+                    int hintLimits = parseIntValue(dataSnapshot.child("hintlimits").getValue(String.class), PrefKeys.DEFAULT_HINT_LIMITS);
+
                     Log.d(TAG, "Данные загружены. solutionLimits: " + solutionLimits + ", hintLimits: " + hintLimits);
-                    
+
+                    // Firebase — источник истины: значения кладутся в локальный кэш
+                    // одним edit(), затем передаются на главный экран в bundle
+                    sharedPrefs.saveLimits(solutionLimits, hintLimits);
+
                     // Навигация к главному экрану с передачей только необходимых данных
-                    navigateToMainScreen(email, solutionLimits, hintLimits);
+                    navigateToMainScreen(email, userId, solutionLimits, hintLimits);
                     
                 } else {
                     Log.w(TAG, "Данные пользователя не найдены в базе. Используем значения по умолчанию.");
                     // Если данных нет, используем значения по умолчанию
-                    navigateToMainScreen(email, "1", "3");
+                    sharedPrefs.saveLimits(PrefKeys.DEFAULT_SOLUTION_LIMITS, PrefKeys.DEFAULT_HINT_LIMITS);
+                    navigateToMainScreen(email, userId, PrefKeys.DEFAULT_SOLUTION_LIMITS, PrefKeys.DEFAULT_HINT_LIMITS);
                 }
             }
             
@@ -403,7 +393,8 @@ public class LoginFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "Ошибка загрузки данных: " + databaseError.getMessage());
                 // При ошибке всё равно переходим на главный экран с дефолтными значениями
-                navigateToMainScreen(email, "1", "3");
+                sharedPrefs.saveLimits(PrefKeys.DEFAULT_SOLUTION_LIMITS, PrefKeys.DEFAULT_HINT_LIMITS);
+                navigateToMainScreen(email, userId, PrefKeys.DEFAULT_SOLUTION_LIMITS, PrefKeys.DEFAULT_HINT_LIMITS);
             }
         });
     }
@@ -419,20 +410,18 @@ public class LoginFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     // Получаем данные пользователя
-                    String solutionLimits = dataSnapshot.child("solutionlimits").getValue(String.class);
-                    String hintLimits = dataSnapshot.child("hintlimits").getValue(String.class);
-                    
-                    // Сохраняем в SharedPreferences для использования в других экранах
-                    sharedPrefs.saveString("solutionlimits", solutionLimits != null ? solutionLimits : "1");
-                    sharedPrefs.saveString("hintlimits", hintLimits != null ? hintLimits : "3");
-                    
+                    int solutionLimits = parseIntValue(dataSnapshot.child("solutionlimits").getValue(String.class), PrefKeys.DEFAULT_SOLUTION_LIMITS);
+                    int hintLimits = parseIntValue(dataSnapshot.child("hintlimits").getValue(String.class), PrefKeys.DEFAULT_HINT_LIMITS);
+
+                    // Сохраняем в единое хранилище как int под каноническими ключами
+                    sharedPrefs.saveLimits(solutionLimits, hintLimits);
+
                     Log.d(TAG, "Данные загружены (auto-login). solutionLimits: " + solutionLimits + ", hintLimits: " + hintLimits);
                     
                 } else {
                     Log.w(TAG, "Данные пользователя не найдены в базе (auto-login).");
                     // Сохраняем значения по умолчанию
-                    sharedPrefs.saveString("solutionlimits", "1");
-                    sharedPrefs.saveString("hintlimits", "3");
+                    sharedPrefs.saveLimits(PrefKeys.DEFAULT_SOLUTION_LIMITS, PrefKeys.DEFAULT_HINT_LIMITS);
                 }
             }
             
@@ -442,18 +431,25 @@ public class LoginFragment extends Fragment {
             }
         });
     }
+
+    private int parseIntValue(String value, int defaultValue) {
+        if (value == null) {
+            return defaultValue;
+        }
+        return StringIntegerConverter.stringToInt(value);
+    }
     
     /**
      * Переход на главный экран (RAZDELFragment) без передачи пароля.
-     * Передаём только email и лимиты, которые будут использованы в приложении.
+     * Передаём email, uid и лимиты, которые будут использованы в приложении.
      */
-    private void navigateToMainScreen(String email, String solutionLimits, String hintLimits) {
+    private void navigateToMainScreen(String email, String uid, int solutionLimits, int hintLimits) {
         Bundle args = new Bundle();
         args.putString("username", email);
+        args.putString("uid", uid);
         // Пароль больше не передаём! Он не нужен после аутентификации Firebase
-        // args.putString("password", password); // <-- УДАЛЕНО
-        args.putString("solutionlimits", solutionLimits);
-        args.putString("hintlimits", hintLimits);
+        args.putString("solutionlimits", String.valueOf(solutionLimits));
+        args.putString("hintlimits", String.valueOf(hintLimits));
         
         // Навигация с очисткой loginFragment из back stack
         NavOptions navOptions = new NavOptions.Builder()

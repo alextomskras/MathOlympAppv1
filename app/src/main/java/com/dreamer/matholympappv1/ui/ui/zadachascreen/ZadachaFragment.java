@@ -1,7 +1,5 @@
 package com.dreamer.matholympappv1.ui.ui.zadachascreen;
 
-import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.FirebaseUserScoreManager.firebaseSaveHintLimits;
-import static com.dreamer.matholympappv1.ui.ui.scrollingscreen.FirebaseUserScoreManager.firebaseSaveSolutionLimits;
 import static com.dreamer.matholympappv1.utils.MyArrayList.firebaseGetSolutionLimits;
 
 import android.app.Activity;
@@ -29,7 +27,7 @@ import com.dreamer.matholympappv1.R;
 import com.dreamer.matholympappv1.utils.ActionBarHelper;
 import com.dreamer.matholympappv1.utils.FirebaseHelper;
 import com.dreamer.matholympappv1.utils.MyArrayList;
-import com.dreamer.matholympappv1.utils.SharedPreffUtils;
+import com.dreamer.matholympappv1.utils.UserPrefsRepository;
 import com.dreamer.matholympappv1.utils.StringIntegerConverter;
 import com.dreamer.matholympappv1.utils.UserEmailLoginFirebase;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -60,6 +58,7 @@ public class ZadachaFragment extends Fragment {
 
 
     private ZadachaViewModel viewModel;
+    private UserPrefsRepository prefs;
 
 
     @Override
@@ -67,6 +66,9 @@ public class ZadachaFragment extends Fragment {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ZadachaViewModel.class);
         mAuth = FirebaseAuth.getInstance();
+        // Единое зашифрованное хранилище: ZadachaFragment больше не создаёт
+        // локальные обёртки SharedPreffUtils
+        prefs = new UserPrefsRepository(getContext());
 // Get arguments passed from previous fragment
         Bundle args = getArguments();
         if (args != null) {
@@ -87,8 +89,12 @@ public class ZadachaFragment extends Fragment {
             int solutionlimitsnum = StringIntegerConverter.stringToInt(solutionlimits); // num will be 123
             int hintlimitsnum = StringIntegerConverter.stringToInt(hintlimits); // num will be 123
 
-            firebaseSaveSolutionLimits(solutionlimitsnum);
-            firebaseSaveHintLimits(hintlimitsnum);
+            // Значения из bundle кладём в локальный кэш, но НЕ pushим их в
+            // Firebase: источник истины для лимитов — RTDB, значения которой
+            // читаются в onStart (getSolutionLimitsFromFirebase,
+            // FirebaseHelper). Запись сюда затирала данные пользователя с
+            // других устройств («кто последний записал»).
+            prefs.saveLimits(solutionlimitsnum, hintlimitsnum);
 
 
         }
@@ -180,7 +186,7 @@ public class ZadachaFragment extends Fragment {
         MyArrayList.loadArrayListFromFirebase();
         //get values of Solutions and Hints Limits from firebaseDB and save to sharedPreffs
         getSolutionLimitsFromFirebase();
-        FirebaseHelper.getHintLimitsFromFirebase();
+        FirebaseHelper.getHintLimitsFromFirebase(prefs);
 
         //other metod for catch data from firebaseDB
         getSolutionLimitsFromFirebase(new MyArrayList.SolutionLimitsCallback() {
@@ -225,9 +231,8 @@ public class ZadachaFragment extends Fragment {
 //    }
 
     private void sharedPreffsSaveHintLimits(Integer hintLimits) {
-        if (hintLimits != 0 && getContext() != null) {
-            SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(getContext());
-            sharedPreferencesManager.saveData("hint_limits", hintLimits);
+        if (hintLimits != null && hintLimits != 0 && getContext() != null) {
+            prefs.saveHintLimits(hintLimits);
         }
     }
 
@@ -235,32 +240,9 @@ public class ZadachaFragment extends Fragment {
         if (solutionLimits == null || getContext() == null) {
             return;
         }
-        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(getContext());
-        sharedPreferencesManager.saveData("solution_limits", solutionLimits);
-
+        prefs.saveSolutionLimits(solutionLimits);
     }
 
-
-//    private Integer sharedPreffsLoadSolutionLimits() {
-//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-//        Integer solutionLimits = sharedPreferencesManager.getDataFromSharedPreferences("solution_limits");
-//        return solutionLimits;
-//    }
-
-//    private void updateActionBarTextViewScore(String score) {
-//        Integer userScore = sharedPreffsLoadUserScore();
-//        if (userScore != 0) {
-//            myAppBarScoreTextView.setText(score + userScore);
-//
-//        }
-//
-//    }
-
-//    private Integer sharedPreffsLoadUserScore() {
-//        SharedPreffUtils sharedPreferencesManager = new SharedPreffUtils(requireContext());
-//        Integer zadacha_score = sharedPreferencesManager.getDataFromSharedPreferences("zadacha_score");
-//        return zadacha_score;
-//    }
 
     private void intNavcontroller() {
         Activity MainActivity = getActivity();
@@ -296,26 +278,6 @@ public class ZadachaFragment extends Fragment {
         MyArrayList.firebaseGetSolutionLimits(callback);
     }
 
-//    public void getHintLimitsFromFirebase() {
-//        MyArrayList.firebaseGetHintLimits(hintlimits -> {
-//            if (hintlimits != null) {
-//                // Do something with the solution limits value here
-//                hintslimits = hintlimits;
-//                Log.d(TAG, "Solution limits3: " + hintlimits);
-//                Log.d(TAG, "Solution limits31: " + hintslimits);
-//                sharedPreffsSaveHintLimits(hintslimits);
-//            } else {
-//                // Handle the null value here
-//                Log.e(TAG, "Hint limits value is null");
-//            }
-//        }, new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                // Handle the error here
-//                Log.e(TAG, "Error getting solution limits from Firebase: " + e.getMessage());
-//            }
-//        });
-//    }
 public void onDestroyView() {
     super.onDestroyView();
 

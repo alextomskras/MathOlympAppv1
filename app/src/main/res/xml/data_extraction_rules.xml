@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-   Sample data extraction rules file; uncomment and customize as necessary.
+   Data extraction rules (API 31+).
    See https://developer.android.com/about/versions/12/backup-restore#xml-changes
    for details.
+
+   Тот же смысл, что в backup_rules.xml: зашифрованные prefs не имеют
+   смысла на другом устройстве (мастер-ключ не переносится), данные
+   пользователя берутся из Firebase RTDB.
 -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
+        <exclude domain="sharedpref" path="secure_shared_prefs.xml" />
+        <exclude domain="sharedpref" path="MySharedPreferences.xml" />
+        <exclude domain="sharedpref" path="google_app_measure.xml" />
+        <exclude domain="sharedpref" path="firebase-storage-internal-0.xml" />
+        <exclude domain="sharedpref" path="com.google.android.gms.appid.xml" />
+        <exclude domain="sharedpref" path="com.google.android.gms.measurement.prefs.xml" />
     </cloud-backup>
-    <!--
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <exclude domain="sharedpref" path="secure_shared_prefs.xml" />
+        <exclude domain="sharedpref" path="MySharedPreferences.xml" />
+        <exclude domain="sharedpref" path="google_app_measure.xml" />
+        <exclude domain="sharedpref" path="firebase-storage-internal-0.xml" />
+        <exclude domain="sharedpref" path="com.google.android.gms.appid.xml" />
+        <exclude domain="sharedpref" path="com.google.android.gms.measurement.prefs.xml" />
     </device-transfer>
-    -->
 </data-extraction-rules>
