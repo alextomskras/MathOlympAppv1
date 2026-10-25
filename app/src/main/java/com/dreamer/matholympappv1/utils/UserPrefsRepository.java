@@ -13,20 +13,15 @@ import java.security.GeneralSecurityException;
 /**
  * Единственное локальное хранилище приложения.
  *
- * Раньше данных касались три класса-обёртки:
- *   SharedPreffUtils    ("MySharedPreferences", int, статическое поле — падало при NPE),
- *   SharedPreffUtils2   ("MySharedPreferences", int/string/boolean),
- *   SecureSharedPrefsUtils ("secure_shared_prefs", те же данные под другими именами).
- * Они писали в разные файлы, счёт хранился как "zadacha_score" и "user_score",
- * лимиты — как int "solution_limits" и строка "solutionlimits". Значения
- * рассинхронизировались, а при выходе часть хранилищ не очищалась.
+ * Один зашифрованный файл, один набор ключей (PrefKeys), все чтения и записи
+ * защищены: поле prefs не бывает null, пара username+uid пишется одним редактором,
+ * лимиты — одним edit().
  *
- * Теперь всё локальное состояние проходит через этот класс:
- * один файл, зашифрованный (EncryptedSharedPreferences), один набор ключей
- * (см. PrefKeys), все чтения/записи защищены — поле не бывает null.
- *
- * Instance создаётся с ApplicationContext и живёт коротко: SharedPreferences
- * кэшируются системой, объект не keeps Activity и не протекает.
+ * Миграция старых значений (PR #62) читает legacy-ключи типобезопасно: старые
+ * обёртки писали лимиты то как int ("solution_limits"), то как String
+ * ("solutionlimits"), поэтому getInt() на таком ключе бросает ClassCastException.
+ * Здесь тип определяется чтением (getInt → fallback на getString), и старые
+ * ключи удаляются из файла после переноса, чтобы crash не повторился.
  */
 public class UserPrefsRepository {
 
@@ -58,11 +53,18 @@ public class UserPrefsRepository {
             );
         } catch (GeneralSecurityException | IOException e) {
             Log.e(TAG, "Не удалось создать EncryptedSharedPreferences: " + e.getMessage());
-            // Fallback к обычным SharedPreferences (менее безопасно, но данные не теряются)
+            // Fallback к обычным SharedPreferences (менее безопасно, но данные не теряются).
+            // Приложение должно предупредить пользователя, что приватные данные
+            // лежат открытым текстом (SettingsFragment/диалог).
             encrypted = appContext.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
         }
         prefs = encrypted;
-        migrateFromLegacy(appContext);
+        try {
+            migrateFromLegacy(appContext);
+        } catch (Exception e) {
+            // Миграция не должна ронять приложение: данные останутся в старом виде.
+            Log.e(TAG, "Миграция локальных данных не выполнена: " + e.getMessage(), e);
+        }
     }
 
     // --- Идентификация пользователя ---
@@ -95,14 +97,17 @@ public class UserPrefsRepository {
      * и экран мог показывать имя прошлого пользователя с новым uid.
      */
     public void saveUsernameAndUid(String username, String uid) {
-        if (username == null || uid == null) {
-            return;
-        }
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PrefKeys.USERNAME, username);
-        editor.putString(PrefKeys.UID, uid);
+        if (username != null) {
+            editor.putString(PrefKeys.USERNAME, username);
+        }
+        if (uid != null) {
+            editor.putString(PrefKeys.UID, uid);
+        }
         editor.apply();
     }
+
+    // --- Статус логина (используется LoginFragment) ---
 
     public void saveLoginStatus(boolean isLoggedIn) {
         prefs.edit().putBoolean(PrefKeys.IS_LOGGED_IN, isLoggedIn).apply();
@@ -112,33 +117,31 @@ public class UserPrefsRepository {
         return prefs.getBoolean(PrefKeys.IS_LOGGED_IN, false);
     }
 
-    // --- Лимиты (единственный ключ для всех мест приложения) ---
+    // --- Лимиты и счёт ---
 
-    public void saveSolutionLimits(int solutionLimits) {
-        prefs.edit().putInt(PrefKeys.SOLUTION_LIMITS, solutionLimits).apply();
+    public void saveSolutionLimits(int value) {
+        prefs.edit().putInt(PrefKeys.SOLUTION_LIMITS, value).apply();
     }
 
     public int loadSolutionLimits() {
         return prefs.getInt(PrefKeys.SOLUTION_LIMITS, PrefKeys.DEFAULT_SOLUTION_LIMITS);
     }
 
-    public void saveHintLimits(int hintLimits) {
-        prefs.edit().putInt(PrefKeys.HINT_LIMITS, hintLimits).apply();
+    public void saveHintLimits(int value) {
+        prefs.edit().putInt(PrefKeys.HINT_LIMITS, value).apply();
     }
 
     public int loadHintLimits() {
         return prefs.getInt(PrefKeys.HINT_LIMITS, PrefKeys.DEFAULT_HINT_LIMITS);
     }
 
-    /** Обе пары значений одним edit(): они не расходятся по времени записи. */
+    /** Лимиты пишутся одним edit(): значения не расходятся. */
     public void saveLimits(int solutionLimits, int hintLimits) {
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(PrefKeys.SOLUTION_LIMITS, solutionLimits);
-        editor.putInt(PrefKeys.HINT_LIMITS, hintLimits);
-        editor.apply();
+        prefs.edit()
+                .putInt(PrefKeys.SOLUTION_LIMITS, solutionLimits)
+                .putInt(PrefKeys.HINT_LIMITS, hintLimits)
+                .apply();
     }
-
-    // --- Счёт ---
 
     public void saveUserScore(int score) {
         prefs.edit().putInt(PrefKeys.USER_SCORE, score).apply();
@@ -149,62 +152,71 @@ public class UserPrefsRepository {
     }
 
     /**
-     * Полная очистка локальных данных. Используется при выходе из аккаунта.
-     * apply() здесь не подходит: следующий экран читает эти значения сразу
-     * после навигации, и apply() мог бы не успеть примениться.
+     * Очистка локальной сессии при выходе. commit(), а не apply():
+     * выход завершается навигацией и очисткой, данные должны исчезнуть
+     * до того, как процесс будет убит.
      */
     public void clearData() {
-        prefs.edit().clear().commit();
+        prefs.edit()
+                .remove(PrefKeys.USERNAME)
+                .remove(PrefKeys.UID)
+                .remove(PrefKeys.IS_LOGGED_IN)
+                .remove(PrefKeys.SOLUTION_LIMITS)
+                .remove(PrefKeys.HINT_LIMITS)
+                .remove(PrefKeys.USER_SCORE)
+                .commit();
     }
 
-    /**
-     * Однократный перенос данных со старого слоя в единые ключи.
-     * Ставится флаг, поэтому выполняется один раз за установку; старые файлы
-     * после переноса очищаются, чтобы их больше никто не читал.
-     */
+    // --- Миграция ---
+
     private void migrateFromLegacy(Context appContext) {
         if (prefs.getBoolean(PrefKeys.MIGRATED_LEGACY, false)) {
             return;
         }
-        SharedPreferences legacyPlain = appContext
-                .getSharedPreferences(LEGACY_PLAIN_FILE, Context.MODE_PRIVATE);
+
+        SharedPreferences legacyPlain =
+                appContext.getSharedPreferences(LEGACY_PLAIN_FILE, Context.MODE_PRIVATE);
+
+        // Счёт: приоритет каноническому ключу, затем secure-наследию, затем plain.
+        int score = readInt(prefs, PrefKeys.USER_SCORE, -1);
+        if (score < 0) {
+            score = readInt(prefs, LEGACY_SECURE_SCORE_KEY, -1);
+        }
+        if (score < 0) {
+            score = readInt(legacyPlain, LEGACY_SCORE_KEY, -1);
+        }
+        if (score < 0) {
+            score = readInt(legacyPlain, PrefKeys.USER_SCORE, -1);
+        }
+
+        // Лимиты решений: int "solution_limits" (обе старые обёртки), затем
+        // строка "solutionlimits" из SecureSharedPrefsUtils.
+        int solutionLimits = readInt(prefs, PrefKeys.SOLUTION_LIMITS, -1);
+        if (solutionLimits < 0) {
+            solutionLimits = readInt(legacyPlain, PrefKeys.SOLUTION_LIMITS, -1);
+        }
+        if (solutionLimits < 0) {
+            solutionLimits = readInt(legacyPlain, LEGACY_SOLUTION_LIMITS_STR, -1);
+        }
+
+        int hintLimits = readInt(prefs, PrefKeys.HINT_LIMITS, -1);
+        if (hintLimits < 0) {
+            hintLimits = readInt(legacyPlain, PrefKeys.HINT_LIMITS, -1);
+        }
+        if (hintLimits < 0) {
+            hintLimits = readInt(legacyPlain, LEGACY_HINT_LIMITS_STR, -1);
+        }
+
         SharedPreferences.Editor out = prefs.edit();
+        if (score >= 0) {
+            out.putInt(PrefKeys.USER_SCORE, score);
+        }
+        out.putInt(PrefKeys.SOLUTION_LIMITS,
+                solutionLimits >= 0 ? solutionLimits : PrefKeys.DEFAULT_SOLUTION_LIMITS);
+        out.putInt(PrefKeys.HINT_LIMITS,
+                hintLimits >= 0 ? hintLimits : PrefKeys.DEFAULT_HINT_LIMITS);
 
-        // Счёт: "zadacha_score" (plain) и "user_score" (secure) -> user_score
-        int legacyScore = legacyPlain.getInt(LEGACY_SCORE_KEY, 0);
-        int legacySecureScore = prefs.getInt(LEGACY_SECURE_SCORE_KEY, 0);
-        int bestScore = Math.max(legacyScore, legacySecureScore);
-        if (bestScore > 0 && prefs.getInt(PrefKeys.USER_SCORE, 0) == 0) {
-            out.putInt(PrefKeys.USER_SCORE, bestScore);
-        }
-
-        // Лимиты: int из plain-файла
-        int legacySolution = legacyPlain.getInt(PrefKeys.SOLUTION_LIMITS, -1);
-        if (legacySolution >= 0 && !prefs.contains(PrefKeys.SOLUTION_LIMITS)) {
-            out.putInt(PrefKeys.SOLUTION_LIMITS, legacySolution);
-        }
-        int legacyHint = legacyPlain.getInt(PrefKeys.HINT_LIMITS, -1);
-        if (legacyHint >= 0 && !prefs.contains(PrefKeys.HINT_LIMITS)) {
-            out.putInt(PrefKeys.HINT_LIMITS, legacyHint);
-        }
-
-        // Лимиты: строки "solutionlimits"/"hintlimits" из secure-файла
-        String legacySolutionStr = prefs.getString(LEGACY_SOLUTION_LIMITS_STR, null);
-        if (legacySolutionStr != null && !prefs.contains(PrefKeys.SOLUTION_LIMITS)) {
-            int value = parseInt(legacySolutionStr);
-            if (value >= 0) {
-                out.putInt(PrefKeys.SOLUTION_LIMITS, value);
-            }
-        }
-        String legacyHintStr = prefs.getString(LEGACY_HINT_LIMITS_STR, null);
-        if (legacyHintStr != null && !prefs.contains(PrefKeys.HINT_LIMITS)) {
-            int value = parseInt(legacyHintStr);
-            if (value >= 0) {
-                out.putInt(PrefKeys.HINT_LIMITS, value);
-            }
-        }
-
-        // Идентификация: SharedPreffUtils2 писал username/uid в plain-файл
+        // Идентификация: SharedPreffUtils2 писал username/uid в plain-файл.
         String legacyUsername = legacyPlain.getString(PrefKeys.USERNAME, "");
         if (prefs.getString(PrefKeys.USERNAME, "").isEmpty() && !legacyUsername.isEmpty()) {
             out.putString(PrefKeys.USERNAME, legacyUsername);
@@ -214,14 +226,45 @@ public class UserPrefsRepository {
             out.putString(PrefKeys.UID, legacyUid);
         }
 
+        // Старые строковые ключи удаляем: после миграции getInt() на канонических
+        // ключах больше не встречает String. Ключ "user_score" НЕ удаляем — под ним
+        // SecureSharedPrefsUtils писал тот же канонический счёт, remove его стёр бы.
+        out.remove(LEGACY_SOLUTION_LIMITS_STR);
+        out.remove(LEGACY_HINT_LIMITS_STR);
+
         out.putBoolean(PrefKeys.MIGRATED_LEGACY, true);
         out.commit();
+
         // Plain-файл больше никем не читается — чистим, чтобы старые значения
         // не остались на устройстве после миграции.
         legacyPlain.edit().clear().commit();
     }
 
+    /**
+     * Типобезопасное чтение int: если значение записано как String,
+     * ClassCastException перехватывается и строка парсится.
+     */
+    private int readInt(SharedPreferences p, String key, int defaultValue) {
+        if (!p.contains(key)) {
+            return defaultValue;
+        }
+        try {
+            return p.getInt(key, defaultValue);
+        } catch (ClassCastException e) {
+            try {
+                int parsed = parseInt(p.getString(key, null));
+                return parsed >= 0 ? parsed : defaultValue;
+            } catch (Exception ex) {
+                Log.e(TAG, "readInt: ключ " + key + " не читается как int/строка", ex);
+                return defaultValue;
+            }
+        }
+    }
+
     private int parseInt(String s) {
+        if (s == null) {
+            return -1;
+        }
         try {
             return Integer.parseInt(s.trim());
         } catch (NumberFormatException e) {

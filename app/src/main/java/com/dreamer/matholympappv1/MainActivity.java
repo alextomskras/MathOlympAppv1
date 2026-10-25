@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
 // рџ‘‡ РЈРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ СЃС‚СЂРµР»РєР° РЅРµ РЅСѓР¶РЅР° С‚РѕР»СЊРєРѕ РІ RAZDELFragment (РІРµСЂС…РЅРµСѓСЂРѕРІРЅРµРІС‹Р№ СЌРєСЂР°РЅ)
             AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                    R.id.RAZDELFragment
+                    R.id.RAZDELFragment, R.id.loginFragment
             ).build();
 
 // рџ‘‡ РџРѕРґРєР»СЋС‡Р°РµРј Рє AppBar
@@ -302,6 +302,7 @@ public class MainActivity extends AppCompatActivity {
     public void logout() {
         // РџРѕРєР° РјС‹ РІ РїСЂРѕС†РµСЃСЃРµ РІС‹С…РѕРґР°, РЅРµ РІС‹РїРѕР»РЅСЏРµРј Р°РЅРѕРЅРёРјРЅС‹Р№ РІС…РѕРґ
         isLoggingOut = true;
+        dismissNoInternetDialog();
 
         // 1. РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р•Р”РРќР«Р™ (singleton) SessionManager.
         //    Р Р°РЅСЊС€Рµ Р·РґРµСЃСЊ СЃРѕР·РґР°РІР°Р»СЃСЏ РЅРѕРІРѕР№ РїСѓСЃС‚РѕР№ СЌРєР·РµРјРїР»СЏСЂ,
@@ -362,6 +363,7 @@ public class MainActivity extends AppCompatActivity {
         // РўРµРїРµСЂСЊ РЅР° СЌРєСЂР°РЅРµ РІС…РѕРґР° Back РґРѕР»Р¶РµРЅ Р·Р°РєСЂС‹РІР°С‚СЊ РїСЂРёР»РѕР¶РµРЅРёРµ,
         // Р° РЅРµ РІРѕР·РІСЂР°С‚СЊСЃСЏ РЅР° РїСѓСЃС‚РѕР№ СЃС‚РµРє
         isLoggingOut = false;
+        FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
         // Р’РѕР·РІСЂР°С‰Р°РµРј СЃР»СѓС€Р°С‚РµР»СЊ СЃРѕСЃС‚РѕСЏРЅРёСЏ Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёРё
         FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
     }

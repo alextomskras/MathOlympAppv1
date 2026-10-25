@@ -36,6 +36,7 @@ import com.dreamer.matholympappv1.ui.ui.zadachascreen.ZadachaViewModel;
 import com.dreamer.matholympappv1.utils.MyArrayList;
 import com.dreamer.matholympappv1.utils.MyMenuInflater;
 import com.dreamer.matholympappv1.utils.UserPrefsRepository;
+import com.dreamer.matholympappv1.utils.MinioProxyImageLoader;
 import com.dreamer.matholympappv1.utils.InputValidator;
 import com.dreamer.matholympappv1.utils.ScrollingScreenActionBarSetupHelper;
 import com.dreamer.matholympappv1.utils.ScrollingScreenActionBarUpdater;
@@ -89,6 +90,10 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
     private Integer solutionLimits;
     private Integer hintLimits;
     public AlertDialog.Builder builder;
+    // Диалог, созданный alertDiaShow: он живёт в Activity и сам не закрывается при
+    // повороте экрана (leaked window) или при выходе (останется поверх экрана входа).
+    // Держим ссылку и снимаем диалог в onDestroyView.
+    private AlertDialog currentDialog;
     private String MainMessage;
     private String searchimagesPath = "answersimages";
     private String answerImageUrl;
@@ -344,7 +349,11 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             case USPEH_TITLE:
                 builder.setView(team);
                 tw.setText(MainMessage);
-                viewModel.setFirebaseImage(SEARCH_ANSWER_IMAGES, iv1, listFilesFirestore, listSolutionFilesFirestore, zadacha_id, getContext());
+                if (MinioProxyImageLoader.isConfigured(getContext())) {
+                    viewModel.setRemoteImage(razdelName, zadacha_id, false, iv1, getContext());
+                } else {
+                    viewModel.setFirebaseImage(SEARCH_ANSWER_IMAGES, iv1, listFilesFirestore, listSolutionFilesFirestore, zadacha_id, getContext());
+                }
                 builder
                         .setCancelable(true)
                         .setPositiveButton(R.string.alertDialogUSPEHPositiveButton, (dialog, id) -> {
@@ -376,7 +385,11 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
             case SOLUTION_TITLE:
                 builder.setView(team);
                 tw.setText(MainMessage);
-                viewModel.setFirebaseImage(SEARCH_SOLUTION_IMAGES, iv1, listFilesFirestore, listSolutionFilesFirestore, zadacha_id, getContext());
+                if (MinioProxyImageLoader.isConfigured(getContext())) {
+                    viewModel.setRemoteImage(razdelName, zadacha_id, true, iv1, getContext());
+                } else {
+                    viewModel.setFirebaseImage(SEARCH_SOLUTION_IMAGES, iv1, listFilesFirestore, listSolutionFilesFirestore, zadacha_id, getContext());
+                }
                 builder
                         .setCancelable(true)
                         .setPositiveButton(R.string.alertDialogPositiveButtonSolution, (dialog, id) -> dialog.cancel())
@@ -431,6 +444,7 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
 
         final AlertDialog dialog = builder.create();
+        currentDialog = dialog;
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         builder.setInverseBackgroundForced(true);
 
@@ -464,6 +478,13 @@ public class ScrollingFragment extends Fragment implements ScrollingFragmentIntf
 
     @Override
     public void onDestroyView() {
+        // Диалог alertDiaShow создаётся с контекстом Activity. Если вид уничтожается
+        // (поворот экрана, выход через меню), диалог снимается здесь — иначе он
+        // повиснет поверх экрана входа и Activity получит leaked window.
+        if (currentDialog != null) {
+            currentDialog.dismiss();
+            currentDialog = null;
+        }
         super.onDestroyView();
         binding = null;
     }

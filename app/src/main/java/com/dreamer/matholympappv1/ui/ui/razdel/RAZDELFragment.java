@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -200,9 +201,17 @@ public class RAZDELFragment extends Fragment {
             // реальном расходовании лимитов. push «кто последний записал» затирал
             // значения других устройств.
         } else {
-            // Пользователь не авторизован - возвращаем на экран входа
-            navController.clearBackStack(R.id.RAZDELFragment);
-            navController.navigate(R.id.action_RAZDELFragment_to_loginFragment);
+            // Пользователь не авторизован - возвращаем на экран входа.
+            // Нельзя вызывать clearBackStack(RAZDEL) и затем navigate(action_RAZDEL...):
+            // clearBackStack снимает RAZDEL с текущей позиции, и последующий navigate
+            // по action-идентификатору RAZDEL бросает IllegalStateException
+            // ("action not owned by current destination").
+            // Один navigate с popUpTo(start, inclusive) очищает весь стек и
+            // ставит login единственныйым элементом: Back на нём закрывает приложение.
+            NavOptions toLogin = new NavOptions.Builder()
+                    .setPopUpTo(navController.getGraph().getStartDestination(), true)
+                    .build();
+            navController.navigate(R.id.loginFragment, null, toLogin);
         }
     }
 
