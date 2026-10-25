@@ -204,3 +204,7 @@ License terms are specified in the project repository. For support, open an issu
 **Package Name**: `com.dreamer.matholympappv1`
 **Version**: 1.0 (versionCode 1)
 **Minimum Android Version**: 5.0 (API Level 21)
+
+---
+
+Тестовая строка пуша: проверка, что git подхватывает учётные данные из менеджера паролей Windows и пуш проходит без интерактивного запроса токена.
