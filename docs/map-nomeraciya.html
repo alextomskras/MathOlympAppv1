@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Сквозная нумерация: Firabase -> MinIO</title>
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; background:#f7f7fb; color:#222; margin:24px; }
+  h1 { font-size: 20px; } h2 { font-size: 16px; margin-top:28px; }
+  pre { background:#fff; border:1px solid #ccd; padding:12px; line-height:1.45; font-size:14px; }
+  table { border-collapse:collapse; margin-top:8px; }
+  td,th { border:1px solid #ccd; padding:6px 10px; font-size:14px; }
+  .g { background:#dfe7d9; } .num { font-weight:bold; color:#1b5e20; }
+  .old { color:#888; } code { background:#eef; padding:1px 4px; }
+  .step { margin:8px 0; }
+  .arrow { color:#567; }
+</style>
+</head>
+<body>
+
+<h1>Как плоский список MinIO привязан к разделу и номеру задачи</h1>
+<p>Идея одна: сквозной номер = <b>сколько задач стоит левее этого раздела</b> + номер задачи внутри раздела. Папок по разделам в MinIO нет — только нумерованные объекты.</p>
+
+<h2>1. Firabase RTDB (как сейчас, номера только внутри раздела)</h2>
+<pre>Zadachi/
+├── razdel_1/   zadacha_1, zadacha_2, zadacha_3, zadacha_4, zadacha_5   (5 задач)
+├── razdel_2/   zadacha_1, zadacha_2, zadacha_3, zadacha_4              (4 задачи)
+└── razdel_3/   zadacha_1, zadacha_2, zadacha_3, zadacha_4, zadacha_5, zadacha_6  (6 задач)
+</pre>
+
+<h2>2. Считаем смещение разделов (цифра в конце ключа = номер раздела)</h2>
+<table>
+  <tr><th>Раздел</th><th>Задач</th><th>Задачи левее (смещение offset)</th><th>Диапазон сквозных номеров</th></tr>
+  <tr><td>razdel_1</td><td>5</td><td>0</td><td class="g">1 … 5</td></tr>
+  <tr><td>razdel_2</td><td>4</td><td>5</td><td class="g">6 … 9</td></tr>
+  <tr><td>razdel_3</td><td>6</td><td>5+4=9</td><td class="g">10 … 15</td></tr>
+</table>
+
+<h2>3. Плоский список MinIO — ровно 15 объектов, порядок = сквозной номер</h2>
+<pre>tasks/1/answer.jpg      razdel_1 / zadacha_1
+tasks/1/solution.jpg    razdel_1 / zadacha_1
+tasks/2/answer.jpg      razdel_1 / zadacha_2
+...
+tasks/5/solution.jpg    razdel_1 / zadacha_5
+tasks/6/answer.jpg      <b>razdel_2</b> / zadacha_1   (6 = 5 задач r1 + 1)
+tasks/7/answer.jpg      razdel_2 / zadacha_2
+tasks/8/answer.jpg      razdel_2 / zadacha_3
+tasks/9/solution.jpg    razdel_2 / zadacha_4
+tasks/10/answer.jpg     razdel_3 / zadacha_1   (10 = 5+4 + 1)
+...
+tasks/15/solution.jpg   razdel_3 / zadacha_6
+</pre>
+
+<h2>4. Как приложение считает для текущей задачи</h2>
+<p class="step">Открыта <b>razdel_2, zadacha_3</b>:</p>
+<pre>номер раздела:  razdel_2 -> 2
+задачи левее:   раздел 1 = 5  -> offset = 5
+сквозной:       offset + номер задачи = 5 + 3 = <span class="num">8</span>
+запрос прокси:  POST {"global": 8, "kind":"answer"}  (подпись X-Auth)
+ответ прокси:   {"url": "presigned на tasks/8/answer.jpg"}
+</pre>
+<p class="step">В MinIO за это отвечает одна строка маппинга: <code>global = offset(раздел) + номер_задачи</code>. Отдельной таблицы соответствий «раздел -> папки» нет и не нужно.</p>
+
+<h2>5. Почему в Firabase это не хранилось</h2>
+<p>В RTDB нет поля «сквозной номер», нумерация разделов тоже не хранится — она выводится из цифр в ключах (<code>razdel_12</code> = 12). Поэтому номер считается на телефоне при загрузке картинки; сервер прокси просто принимает <code>global</code> и открывает <code>tasks/&lt;global&gt;/kind.jpg</code>.</p>
+
+<h2>6. Старая дорога (Firebase Storage, путь parts[4])</h2>
+<p class="old">Старый путь картинок разбивается по слешам и берётся 5-я часть — это имя файла, список файлов берётся по позиции задачи в списке раздела. Эта схема остаётся запасной, если прокси выключён: Firebase Storage не ломается, а MinIO включается тумблером в Settings.</p>
+
+<h2>7. Загрузчик</h2>
+<p><code>proxy/upload_images.py</code> делает ровно тот же пересчёт, что приложение: читает JSON-выгрузку <code>Zadachi</code>, считает offset, кладёт файлы <code>&lt;раздел&gt;/answer_3.jpg -> tasks/8/answer.jpg</code>. Номера в приложении и в MinIO совпадают по построению.</p>
+
+</body>
+</html>
