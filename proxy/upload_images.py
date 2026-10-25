@@ -35,6 +35,10 @@ def trailing_number(key: str) -> int:
 
 
 def compute_global(export: dict, section: str, task_key: str) -> int:
+    """Стабильное поле global задачи; фолбэк — старая формула offset+task_num."""
+    task = export[section][task_key]
+    if isinstance(task, dict) and task.get("global") is not None:
+        return int(task["global"])
     section_num = trailing_number(section)
     task_num = trailing_number(task_key)
     if section_num < 0 or task_num < 0:
@@ -58,6 +62,8 @@ def main() -> None:
         export = json.load(fh)
     if "Zadachi" in export:
         export = export["Zadachi"]
+    # .meta — служебный узел (global_counter), не раздел задач
+    export = {k: v for k, v in export.items() if not k.startswith(".")}
 
     bucket = os.environ.get("MINIO_BUCKET", "")
     client = None

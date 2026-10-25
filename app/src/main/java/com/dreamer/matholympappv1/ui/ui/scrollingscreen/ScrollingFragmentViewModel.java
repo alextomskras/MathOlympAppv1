@@ -35,8 +35,10 @@ public class ScrollingFragmentViewModel extends ViewModel {
 
     /**
      * Картинка из MinIO через токен-подписной прокси, по сквозному номеру задачи.
-     * Сквозная нумерация в Firebase RTDB не хранится: она считается на клиенте
-     * как offset(все разделы с номером меньше текущего) + номер задачи в разделе.
+     * Приоритет: стабильное поле global в задаче (Zadachi/<раздел>/zadacha_N/global),
+     * которое один раз проставляет скрипт proxy/assign_global.py и никогда не меняет.
+     * Если поля нет (старые данные, скрипт ещё не запускался), фолбэк на старую
+     * формулу: offset(все разделы с номером меньше текущего) + номер задачи.
      * Нумерация разделов — по цифре в конце ключа ("razdel_3" -> 3).
      * Если ключ раздела без цифры, пропуск: картинку грузит вызывающий код
      * (ScrollingFragment выбирает источник, Firebase остаётся резервным путём).
@@ -63,19 +65,31 @@ public class ScrollingFragmentViewModel extends ViewModel {
         sections.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int offset = 0;
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    String key = child.getKey();
-                    if (key == null) {
-                        continue;
+                int global;
+                String source;
+                DataSnapshot task = snapshot.child(sectionKey).child(zadachaId).child("global");
+                Long stored = task.getValue(Long.class);
+                if (stored != null && stored > 0) {
+                    global = stored.intValue();
+                    source = "поле";
+                } else {
+                    int offset = 0;
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        String key = child.getKey();
+                        if (key == null || key.startsWith(".")) {
+                            continue;
+                        }
+                        int n = trailingNumber(key);
+                        if (n >= 0 && n < sectionNumber) {
+                            offset += child.getChildrenCount();
+                        }
                     }
-                    int n = trailingNumber(key);
-                    if (n >= 0 && n < sectionNumber) {
-                        offset += child.getChildrenCount();
-                    }
+                    global = offset + taskNumber;
+                    source = "формула(нет поля global)";
+                    Log.w(TAG, "setRemoteImage: поле global отсутствует в "
+                            + sectionKey + "/" + zadachaId + ", нужен запуск assign_global.py");
                 }
-                int global = offset + taskNumber;
-                Log.d(TAG, "Сквозной номер: global=" + global + " (offset=" + offset
+                Log.d(TAG, "Сквозной номер: global=" + global + " (" + source
                         + ", section=" + sectionNumber + ", task=" + taskNumber + ")");
                 MinioProxyImageLoader.loadImage(global,
                         isSolution ? MinioProxyImageLoader.KIND_SOLUTION : MinioProxyImageLoader.KIND_ANSWER,
