@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Изображения ответов/решений читает приложение (нужна авторизация),
+    // записывает только администратор — клиент не имеет права писать.
+    match /answersimages/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Всё остальное в бакете закрыто.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

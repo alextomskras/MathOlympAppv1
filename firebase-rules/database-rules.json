@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "Razdel": {
+      ".read": "auth != null",
+      ".write": false
+    },
+    "Zadachi": {
+      ".read": "auth != null",
+      ".write": false
+    },
+    "Users": {
+      ".read": false,
+      ".write": false,
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    }
+  }
+}

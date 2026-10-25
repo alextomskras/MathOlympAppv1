@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Менеджер сессий для управления временем жизни пользовательской сессии
  * и автоматическим обновлением токенов.
- * 
+ *
  * Этот класс реализует механизм refresh token с периодическим обновлением:
  * - Firebase ID токен действителен 1 час
  * - Firebase SDK автоматически обновляет токен каждые 55 минут
@@ -23,11 +23,11 @@ import java.util.concurrent.TimeUnit;
  * - При обнаружении проблем с сессией уведомляет слушателей
  */
 public class SessionManager {
-    
+
     private static final String TAG = "SessionManager";
     private static final long TOKEN_REFRESH_INTERVAL_MS = 50 * 60 * 1000; // 50 минут
     private static final long INITIAL_DELAY_MS = 5 * 60 * 1000; // Первая проверка через 5 минут
-    
+
     /**
      * Единственный экземпляр менеджера сессий в приложении (lazy-initialized).
      * Раньше каждый экран создавал свой SessionManager, и stop() в одном месте
@@ -65,7 +65,7 @@ public class SessionManager {
         }
         return result;
     }
-    
+
     /**
      * Запускает менеджер сессий с автоматическим обновлением токена.
      * Вызывать после успешного входа пользователя.
@@ -75,14 +75,16 @@ public class SessionManager {
             Log.w(TAG, "Менеджер сессий уже запущен");
             return;
         }
-        
+
         FirebaseUser currentUser = authRepository.getCurrentUser();
         if (currentUser == null) {
             Log.w(TAG, "Невозможно запустить менеджер сессий: пользователь не авторизован");
             return;
         }
-        
-        Log.d(TAG, "Запуск менеджера сессий для пользователя: " + currentUser.getEmail());
+
+        // В лог пишется uid, а не email: email — персональные данные
+        // пользователя, они не должны попадать в logcat и в сборы логов.
+        Log.d(TAG, "Запуск менеджера сессий, uid=" + currentUser.getUid());
         isRunning = true;
 
         // Планировщик создаётся лениво, чтобы менеджер можно было перезапустить
@@ -90,7 +92,7 @@ public class SessionManager {
         if (scheduler == null || scheduler.isShutdown()) {
             scheduler = Executors.newSingleThreadScheduledExecutor();
         }
-        
+
         // Планируем периодическое обновление токена
         scheduler.scheduleAtFixedRate(
                 this::refreshTokenPeriodically,
@@ -98,10 +100,10 @@ public class SessionManager {
                 TOKEN_REFRESH_INTERVAL_MS,
                 TimeUnit.MILLISECONDS
         );
-        
+
         Log.i(TAG, "Периодическое обновление токена запущено (интервал: 50 минут)");
     }
-    
+
     /**
      * Останавливает менеджер сессий.
      * Вызывать при выходе пользователя или уничтожении приложения.
@@ -111,13 +113,13 @@ public class SessionManager {
             Log.w(TAG, "Менеджер сессий уже остановлен");
             return;
         }
-        
+
         Log.d(TAG, "Остановка менеджера сессий");
         isRunning = false;
         // Сбрасываем слушатель: синглтон не должен хранить ссылку на UI
         stateListener = null;
         scheduler.shutdown();
-        
+
         try {
             if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
                 scheduler.shutdownNow();
@@ -126,10 +128,10 @@ public class SessionManager {
             scheduler.shutdownNow();
             Thread.currentThread().interrupt();
         }
-        
+
         Log.i(TAG, "Менеджер сессий остановлен");
     }
-    
+
     /**
      * Периодическое обновление токена.
      */
@@ -137,91 +139,93 @@ public class SessionManager {
         if (!isRunning) {
             return;
         }
-        
+
         FirebaseUser currentUser = authRepository.getCurrentUser();
         if (currentUser == null) {
             Log.w(TAG, "Пользователь не авторизован, пропускаем обновление токена");
             stop();
             return;
         }
-        
-        Log.d(TAG, "Периодическое обновление токена для: " + currentUser.getEmail());
-        
+
+        Log.d(TAG, "Периодическое обновление токена, uid=" + currentUser.getUid());
+
         authRepository.getIdToken(true, new AuthRepository.TokenCallback() {
             @Override
             public void onTokenReceived(String token) {
                 Log.i(TAG, "Токен успешно обновлен");
-                
+
                 if (stateListener != null) {
                     mainHandler.post(() -> stateListener.onTokenRefreshed(token));
                 }
             }
-            
+
             @Override
             public void onError(String errorMessage) {
                 Log.e(TAG, "Ошибка обновления токена: " + errorMessage);
-                
+
                 if (stateListener != null) {
                     mainHandler.post(() -> stateListener.onSessionError(errorMessage));
                 }
             }
         });
     }
-    
+
     /**
      * Принудительно обновляет токен вне расписания.
      */
     public void forceRefreshToken(OnTokenRefreshCallback callback) {
         FirebaseUser currentUser = authRepository.getCurrentUser();
         if (currentUser == null) {
-            callback.onError("Пользователь не авторизован");
+            if (callback != null) {
+                callback.onError("Пользователь не авторизован");
+            }
             return;
         }
-        
+
         Log.d(TAG, "Принудительное обновление токена");
-        
+
         authRepository.getIdToken(true, new AuthRepository.TokenCallback() {
             @Override
             public void onTokenReceived(String token) {
                 Log.i(TAG, "Токен успешно обновлен принудительно");
-                
+
                 if (callback != null) {
                     mainHandler.post(() -> callback.onTokenRefreshed(token));
                 }
             }
-            
+
             @Override
             public void onError(String errorMessage) {
                 Log.e(TAG, "Ошибка принудительного обновления токена: " + errorMessage);
-                
+
                 if (callback != null) {
                     mainHandler.post(() -> callback.onError(errorMessage));
                 }
             }
         });
     }
-    
+
     /**
      * Проверяет текущее состояние сессии.
      */
     public boolean isSessionActive() {
         return isRunning && authRepository.isSessionValid();
     }
-    
+
     /**
      * Устанавливает слушателя состояния сессии.
      */
     public void setStateListener(SessionStateListener listener) {
         this.stateListener = listener;
     }
-    
+
     /**
      * Удаляет слушателя состояния сессии.
      */
     public void removeStateListener() {
         this.stateListener = null;
     }
-    
+
     /**
      * Callback для уведомления об изменении состояния сессии.
      */
@@ -229,7 +233,7 @@ public class SessionManager {
         void onTokenRefreshed(String newToken);
         void onSessionError(String errorMessage);
     }
-    
+
     /**
      * Callback для результата обновления токена.
      */
