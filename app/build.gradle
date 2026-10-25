@@ -88,6 +88,8 @@ dependencies {
 
     // Coil for image loading
     implementation 'io.coil-kt:coil:2.5.0'
+    // OkHttp — POST-запросы к токен-подписному прокси MinIO (MinioProxyImageLoader)
+    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
     
     // FirebaseUI Storage only
     implementation 'com.firebaseui:firebase-ui-storage:7.2.0'

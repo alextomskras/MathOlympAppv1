@@ -7,6 +7,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -14,16 +15,92 @@ import androidx.lifecycle.ViewModel;
 
 import coil.Coil;
 import coil.request.ImageRequest;
+import com.dreamer.matholympappv1.utils.MinioProxyImageLoader;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ScrollingFragmentViewModel extends ViewModel {
     public ArrayList myList;
+
+    /**
+     * Картинка из MinIO через токен-подписной прокси, по сквозному номеру задачи.
+     * Сквозная нумерация в Firebase RTDB не хранится: она считается на клиенте
+     * как offset(все разделы с номером меньше текущего) + номер задачи в разделе.
+     * Нумерация разделов — по цифре в конце ключа ("razdel_3" -> 3).
+     * Если ключ раздела без цифры, пропуск: картинку грузит вызывающий код
+     * (ScrollingFragment выбирает источник, Firebase остаётся резервным путём).
+     */
+    public void setRemoteImage(String sectionKey, String zadachaId, boolean isSolution,
+                               ImageView iv1, Context context) {
+        if (context == null || iv1 == null || sectionKey == null) {
+            Log.w(TAG, "setRemoteImage: context/ImageView/sectionKey пустые, пропуск");
+            return;
+        }
+        int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(zadachaId);
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "setRemoteImage: нечисловой zadacha_id=" + zadachaId);
+            return;
+        }
+        int sectionNumber = trailingNumber(sectionKey);
+        if (sectionNumber < 0) {
+            Log.w(TAG, "setRemoteImage: ключ раздела '" + sectionKey + "' без цифры, пропуск");
+            return;
+        }
+        DatabaseReference sections = FirebaseDatabase.getInstance().getReference("Zadachi");
+        sections.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int offset = 0;
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String key = child.getKey();
+                    if (key == null) {
+                        continue;
+                    }
+                    int n = trailingNumber(key);
+                    if (n >= 0 && n < sectionNumber) {
+                        offset += child.getChildrenCount();
+                    }
+                }
+                int global = offset + taskNumber;
+                Log.d(TAG, "Сквозной номер: global=" + global + " (offset=" + offset
+                        + ", section=" + sectionNumber + ", task=" + taskNumber + ")");
+                MinioProxyImageLoader.loadImage(global,
+                        isSolution ? MinioProxyImageLoader.KIND_SOLUTION : MinioProxyImageLoader.KIND_ANSWER,
+                        iv1, context);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "setRemoteImage: снимок Zadachi отменён: " + error.getMessage());
+            }
+        });
+    }
+
+    /** Цифра в конце ключа ("razdel_12" -> 12); -1, если цифр нет. */
+    private static int trailingNumber(String key) {
+        Matcher m = Pattern.compile(".*?(\\d+)$").matcher(key);
+        if (!m.matches()) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(m.group(1));
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
 
     /**
      * ViewModel не хранит Context: поле `private Context context` убрано.

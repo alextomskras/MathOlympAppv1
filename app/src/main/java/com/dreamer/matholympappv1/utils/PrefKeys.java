@@ -27,6 +27,11 @@ public interface PrefKeys {
     /** Настройка тёмной темы живёт в дефолтных SharedPreferences (PreferenceFragment). */
     String DARK_THEME_ENABLED = "dark_theme_enabled";
 
+    /** Конфиг прокси MinIO (SettingsFragment, дефолтные SharedPreferences). */
+    String REMOTE_PROXY_BASE_URL = "remote_proxy_base_url";
+    String REMOTE_PROXY_SECRET = "remote_proxy_secret";
+    String REMOTE_PROXY_ENABLED = "remote_proxy_enabled";
+
     /** Флаг: данные старого слоя уже перенесены в единое хранилище. */
     String MIGRATED_LEGACY = "migrated_from_legacy";
 

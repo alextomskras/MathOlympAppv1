@@ -11,6 +11,20 @@
     <!--            android:icon="@drawable/ic_dark_theme" />-->
 
     <!--    </PreferenceScreen>-->
+    <EditTextPreference
+        android:key="remote_proxy_base_url"
+        android:summary="HTTPS-адрес FastAPI-прокси (Render)"
+        android:title="MinIO proxy: URL" />
+    <EditTextPreference
+        android:key="remote_proxy_secret"
+        android:summary="Секрет HMAC-SHA256 подписи POST-запросов"
+        android:title="MinIO proxy: секрет" />
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="remote_proxy_enabled"
+        android:summary="Грузить картинки задач через прокси (иначе — Firebase Storage)"
+        android:title="MinIO proxy: включён" />
+
     <Preference
         android:icon="@drawable/ic_baseline_bubble_chart_24"
         android:key="logout"
