@@ -118,16 +118,12 @@ public class SessionManager {
         isRunning = false;
         // Сбрасываем слушатель: синглтон не должен хранить ссылку на UI
         stateListener = null;
-        scheduler.shutdown();
-
-        try {
-            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
-                scheduler.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            scheduler.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
+        // shutdownNow() прерывает очередь заданий сразу. awaitTermination(5, SECONDS)
+        // здесь не нужен: stop() вызывается с главного потока (кнопка Exit в меню и
+        // кнопка signout в LoginFragment), и до 5 секунд UI подвисает. Для выхода
+        // graceful-ожидание не требуется: refresh-задание асинхронное, shutdownNow
+        // снимает его из очереди мгновенно.
+        scheduler.shutdownNow();
 
         Log.i(TAG, "Менеджер сессий остановлен");
     }
