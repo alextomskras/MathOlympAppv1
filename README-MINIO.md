@@ -48,19 +48,28 @@ uvicorn fastapi_minio_proxy:app --host 0.0.0.0 --port 8088
 ENV: MINIO_PROXY_SECRET, MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY, MINIO_BUCKET, MINIO_SECURE
 ```
 
-Cron (пример с внешнего cron, раз в минуту, подпись в cron-скрипте):
+Cron: `proxy/cron_ping.py` (ENV PROXY_URL, PROXY_SECRET; подпись `ts + "\n" + пустое
+тело`, POST `/ping`), crontab:
 
 ```
-0 * * * *  python3 /path/to/cron_ping.py
-# cron_ping.py: ts=...; body=""; sig=hmac(secret, ts+"\n"+body);
-# curl -X POST https://<url>/ping -H "X-Auth: ts:sig"
+* * * * * /usr/bin/python3 /path/to/proxy/cron_ping.py >> /var/log/cron_ping.log 2>&1
 ```
 
 ## Загрузка в MinIO (скрипт мигрирует старые картинки)
 
-Объекты должны называться `tasks/<global>/answer.jpg` и `tasks/<global>/solution.jpg`,
-где global — сквозной номер. Пересчёт старых путей `parts[4]` в сквозные номера
-делается по разделам RTDB; при загрузке сверяйте номер с ответом задачи.
+`proxy/upload_images.py --export export.json --dir ./images [--dry-run]`:
+JSON-выгрузка каталога `Zadachi` из Firebase Console + локальные картинки по
+схеме `<dir>/<section_key>/answer_N.jpg` / `solution_N.jpg`. Сквозной номер
+считается по той же формуле, что приложение (цифра в конце ключа раздела,
+offset по разделам с меньшим номером), номера совпадут. Объекты:
+
+```
+tasks/<global>/answer.jpg
+tasks/<global>/solution.jpg
+```
+
+Совпадение подписи клиент/сервер закреплено юнит-тестом
+`MinioProxyHmacTest` (векторы из `proxy/gen_vectors.py`).
 
 ## Ограничения
 
